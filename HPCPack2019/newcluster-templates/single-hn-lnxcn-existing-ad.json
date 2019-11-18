@@ -36,10 +36,10 @@
     },
     "headNodeOS": {
       "type": "string",
-      "defaultValue": "WindowsServer2016",
+      "defaultValue": "WindowsServer2019",
       "allowedValues": [
-        "WindowsServer2012R2",
         "WindowsServer2016",
+        "WindowsServer2019",
         "CustomImage"
       ],
       "metadata": {
@@ -74,7 +74,7 @@
     },
     "computeNodeImage": {
       "type": "string",
-      "defaultValue": "CentOS_7.3",
+      "defaultValue": "CentOS_7.7",
       "allowedValues": [
         "CentOS_6.5",
         "CentOS_6.6",

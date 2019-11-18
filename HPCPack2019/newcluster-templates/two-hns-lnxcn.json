@@ -86,7 +86,7 @@
     },
     "computeNodeImage": {
       "type": "string",
-      "defaultValue": "CentOS_7.3",
+      "defaultValue": "CentOS_7.7",
       "allowedValues": [
         "CentOS_6.5",
         "CentOS_6.6",
