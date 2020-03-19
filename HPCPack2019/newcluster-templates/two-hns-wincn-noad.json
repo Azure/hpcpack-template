@@ -853,7 +853,7 @@
       "properties": {
         "publisher": "Microsoft.HpcCompute",
         "type": "InfiniBandDriverWindows",
-        "typeHandlerVersion": "1.1",
+        "typeHandlerVersion": "1.2",
         "autoUpgradeMinorVersion": true
       }
     },
@@ -959,6 +959,7 @@
             "SSLThumbprint": "[parameters('certThumbprint')]",
             "ClusterName": "[parameters('clusterName')]",
             "SQLServerInstance": "[parameters('sqlServerVMName')]",
+            "EnableBuiltinHA": true,
             "CNSize": "[parameters('computeNodeVMSize')]",
             "SubscriptionId": "[subscription().subscriptionId]",
             "VNet": "[variables('virtualNetworkName')]",
