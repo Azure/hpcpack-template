@@ -60,7 +60,7 @@ Param
 )
 
 Write-Host "Validating the input parameters ..." -ForegroundColor Green
-[System.Net.ServicePointManager]::SecurityProtocol = 'SystemDefault'
+[System.Net.ServicePointManager]::SecurityProtocol = 'tls,tls11,tls12'
 $azContext = Get-AzContext -ErrorAction Stop
 if($azContext.Account.Type -ne "User")
 {
