@@ -20,6 +20,13 @@
         "description": "The VM role size"
       }
     },
+    "vmPriority": {
+      "type": "string",
+      "defaultValue": "Regular",
+      "metadata": {
+        "description": "Specify the priority of the virtual machines in the scale set, Regular or Low."
+      }
+    },
     "osDiskType": {
       "type": "string",
       "defaultValue": "StandardSSD_LRS",
@@ -250,6 +257,11 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
             }
           ]
+        },
+        "priority": "[parameters('vmPriority')]",
+        "evictionPolicy": "Deallocate",
+        "billingProfile": {
+          "maxPrice": -1
         }
       },
       "resources": [

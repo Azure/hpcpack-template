@@ -314,7 +314,11 @@
           "extensionProfile": {
             "extensions": "[variables('vmssExtensions')]"
           },
-          "priority": "[parameters('vmPriority')]"
+          "priority": "[parameters('vmPriority')]",
+          "evictionPolicy": "Deallocate",
+          "billingProfile": {
+            "maxPrice": -1
+          }
         }
       }
     }
