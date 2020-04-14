@@ -259,10 +259,7 @@
           ]
         },
         "priority": "[parameters('vmPriority')]",
-        "evictionPolicy": "Deallocate",
-        "billingProfile": {
-          "maxPrice": -1
-        }
+        "evictionPolicy": "[if(equals(parameters('vmPriority'), 'Regular'), json('null'), 'Deallocate')]"
       },
       "resources": [
         {
