@@ -201,6 +201,17 @@
         "description": "Thumbprint of the certificate."
       }
     },
+    "enableManagedIdentityOnHeadNode": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether to enable system-assigned managed identity on the head node, and use it to manage the Azure IaaS compute nodes."
+      }
+    },
     "createPublicIPAddressForHeadNode": {
       "type": "string",
       "defaultValue": "Yes",
@@ -311,6 +322,9 @@
     }
   },
   "variables": {
+    "managedIdentity": {
+      "type": "SystemAssigned"
+    },
     "emptyArray": [],
     "diskTypes": {
       "Standard_HDD": "Standard_LRS",
@@ -911,6 +925,7 @@
         "name": "createHeadNodeCopy",
         "count": "[length(variables('headNodes'))]"
       },
+      "identity": "[if(equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes'), variables('managedIdentity'), json('null'))]",
       "properties": {
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetNameHN'))]"
@@ -947,6 +962,24 @@
           ]
         }
       }
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[guid(resourceGroup().id, parameters('clusterName'), variables('headNodes')[copyIndex()])]",
+      "apiVersion": "2017-09-01",
+      "copy": {
+        "name": "msiRoleAssignmentCopy",
+        "count": "[length(variables('headNodes'))]"
+      },
+      "properties": {
+        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('headNodes')[copyIndex()]), '2019-03-01', 'Full').identity.principalId]",
+        "scope": "[resourceGroup().id]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('headNodes')[copyIndex()])]"
+      ]
     },
     {
       "condition": "[variables('hnRDMACapable')]",

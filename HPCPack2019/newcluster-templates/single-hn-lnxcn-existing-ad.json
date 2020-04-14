@@ -212,6 +212,17 @@
         "description": "Thumbprint of the certificate."
       }
     },
+    "enableManagedIdentityOnHeadNode": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether to enable system-assigned managed identity on the head node, and use it to manage the Azure IaaS compute nodes."
+      }
+    },
     "createPublicIPAddressForHeadNode": {
       "type": "string",
       "defaultValue": "Yes",
@@ -322,6 +333,9 @@
     }
   },
   "variables": {
+    "managedIdentity": {
+      "type": "SystemAssigned"
+    },
     "emptyArray": [],
     "diskTypes": {
       "Standard_HDD": "Standard_LRS",
@@ -814,6 +828,7 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicNameHN'))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
       ],
+      "identity": "[if(equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes'), variables('managedIdentity'), json('null'))]",
       "properties": {
         "availabilitySet": "[if(variables('createHNInAVSet'), variables('availabilitySet'), json('null'))]",
         "hardwareProfile": {
@@ -848,6 +863,34 @@
           ]
         }
       }
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[guid(resourceGroup().id, parameters('clusterName'))]",
+      "apiVersion": "2017-09-01",
+      "properties": {
+        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', parameters('clusterName')), '2019-03-01', 'Full').identity.principalId]",
+        "scope": "[resourceGroup().id]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[guid(variables('vnetID'), parameters('clusterName'))]",
+      "apiVersion": "2017-09-01",
+      "properties": {
+        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', parameters('clusterName')), '2019-03-01', 'Full').identity.principalId]",
+        "scope": "[resourceGroup().id]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'))]"
+      ]
     },
     {
       "condition": "[and(variables('createHNInAVSet'), variables('hnRDMACapable'))]",
