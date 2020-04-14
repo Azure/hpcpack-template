@@ -270,7 +270,7 @@
       "Standard_A9"
     ],
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
-    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/HPCPack2019/shared-resources"
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/sunbinzhu/hpcpack-template/master/HPCPack2019/shared-resources"
   },
   "resources": [
     {
