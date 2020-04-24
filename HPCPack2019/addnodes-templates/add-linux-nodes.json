@@ -223,12 +223,22 @@
       "type": "string",
       "defaultValue": "No",
       "allowedValues": [
-        "No",
-        "Regular",
-        "LowPriority"
+        "Yes",
+        "No"
       ],
       "metadata": {
-        "description": "Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Select 'No' for not use, 'Regular' for regular VM scale set, 'LowPriority' for low-priority VM scale set. Note that it is not recommended to use this feature in production cluster."
+        "description": "Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Note that it is not recommended to use this feature in production cluster."
+      }
+    },
+    "useSpotInstanceForComputeNodes": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to use the experimental feature to create compute nodes as <a href='https://azure.microsoft.com/pricing/spot/' target='_blank'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster."
       }
     },
     "dnsServer": {
@@ -472,15 +482,14 @@
     "availabilitySetName": "[if(empty(parameters('availabilitySetName')), 'passsyntaxchecking', parameters('availabilitySetName'))]",
     "vnetID": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('subnetName'))]",
-    "nicNameSuffix": "[concat('-nic', uniqueString(variables('subnetRef')))]",
     "rdmaASeries": [
       "Standard_A8",
       "Standard_A9"
     ],
     "rdmaDriverSupportedCNImage": "[and(or(contains(parameters('computeNodeImage'), 'CentOS_7'), contains(parameters('computeNodeImage'), 'RHEL_7')), not(contains(parameters('computeNodeImage'), '_HPC')))]",
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
-    "useVmssForCN": "[not(equals(parameters('useVmssForComputeNodes'), 'No'))]",
-    "vmPriority": "[if(equals(parameters('useVmssForComputeNodes'), 'LowPriority'), 'Low', 'Regular')]",
+    "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
+    "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(parameters('computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
     "sharedResxBaseUrl": "https://raw.githubusercontent.com/sunbinzhu/hpcpack-template/master/HPCPack2019/shared-resources"
@@ -501,7 +510,6 @@
       }
     },
     {
-      "condition": "[not(variables('useVmssForCN'))]",
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', parameters('computeNodeNamePrefix'), padLeft(string(copyIndex(parameters('computeNodeNameStartIndex'))), 3, '0'))]",
@@ -555,6 +563,9 @@
           "availabilitySetName": {
             "value": "[parameters('availabilitySetName')]"
           },
+          "vmPriority": {
+            "value": "[variables('vmPriority')]"
+          },
           "installRDMADriver": {
             "value": "[and(variables('cnRDMACapable'), not(empty(parameters('availabilitySetName'))), variables('rdmaDriverSupportedCNImage'))]"
           },
@@ -594,7 +605,7 @@
       }
     },
     {
-      "condition": "[variables('useVmssForCN')]",
+      "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeVmssName'))]",

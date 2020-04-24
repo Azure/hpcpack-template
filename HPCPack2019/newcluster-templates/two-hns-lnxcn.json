@@ -352,7 +352,29 @@
         "Premium_SSD"
       ],
       "metadata": {
-        "description": "Compute node data disk type. Note that Premium_SSD only supports some VM sizes, see <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>"
+        "description": "Compute node data disk type. Note that Premium_SSD only supports some VM sizes, see <a href='https://azure.microsoft.com/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>"
+      }
+    },
+    "useVmssForComputeNodes": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Note that it is not recommended to use this feature in production cluster."
+      }
+    },
+    "useSpotInstanceForComputeNodes": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to use the experimental feature to create compute nodes as <a href='https://azure.microsoft.com/pricing/spot/' target='_blank'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster."
       }
     }
   },
@@ -404,8 +426,8 @@
       "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]"
     },
     "availabilitySetNameHN": "[concat(parameters('clusterName'), '-avset')]",
-    "cnAvailabilitySetNamePrefix": "[concat(parameters('computeNodeNamePrefix'), 'avset')]",
-    "nbrVMPerAvailabilitySet": 80,
+    "cnAvailabilitySetName": "[concat(parameters('computeNodeNamePrefix'), 'avset')]",
+    "nbrVMPerAvailabilitySet": 200,
     "cnAvailabilitySetNumber": "[add(div(parameters('computeNodeNumber'), variables('nbrVMPerAvailabilitySet')), 1)]",
     "uniqueSuffix": "[uniqueString(variables('subnetRef'))]",
     "uniqueNicSuffix": "[concat('-nic-', variables('uniqueSuffix'))]",
@@ -418,6 +440,10 @@
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
     "hnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('headNodeVMSize')), contains(toLower(split(parameters('headNodeVMSize'), '_')[1]), 'r'))]",
     "createCNInAVSet": "[or(equals(parameters('computeNodeInAVSet'), 'Yes'), and(equals(parameters('computeNodeInAVSet'), 'Auto'), variables('cnRDMACapable')))]",
+    "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
+    "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
+    "computeVmssName": "[take(replace(parameters('computeNodeNamePrefix'), '-', ''), 9)]",
+    "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
     "winCertSecrets": [
       {
         "sourceVault": {
@@ -682,7 +708,7 @@
       }
     },
     "headNodeImageRef": "[variables('headNodeImages')[parameters('headNodeOS')]]",
-    "selectedLinuxImageRef": "[variables('computeNodeImages')[parameters('computeNodeImage')]]",
+    "computeNodeImageRef": "[variables('computeNodeImages')[parameters('computeNodeImage')]]",
     "rdmaDriverSupportedCNImage": "[and(or(contains(parameters('computeNodeImage'), 'CentOS_7'), contains(parameters('computeNodeImage'), 'RHEL_7')), not(contains(parameters('computeNodeImage'), '_HPC')))]",
     "sharedResxBaseUrl": "https://raw.githubusercontent.com/sunbinzhu/hpcpack-template/master/HPCPack2019/shared-resources"
   },
@@ -1228,7 +1254,7 @@
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
-        "typeHandlerVersion": "2.20",
+        "typeHandlerVersion": "2.80",
         "autoUpgradeMinorVersion": true,
         "settings": {
           "configuration": {
@@ -1279,7 +1305,7 @@
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
-        "typeHandlerVersion": "2.20",
+        "typeHandlerVersion": "2.80",
         "autoUpgradeMinorVersion": true,
         "settings": {
           "configuration": {
@@ -1306,7 +1332,7 @@
     {
       "condition": "[variables('createCNInAVSet')]",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[concat(variables('cnAvailabilitySetNamePrefix'), padLeft(string(copyIndex()), 2, '0'))]",
+      "name": "[concat(variables('cnAvailabilitySetName'), padLeft(string(copyIndex()), 2, '0'))]",
       "apiVersion": "2019-03-01",
       "location": "[resourceGroup().location]",
       "sku": {
@@ -1322,6 +1348,7 @@
       }
     },
     {
+      "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', parameters('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]",
@@ -1362,7 +1389,7 @@
             "value": "[variables('diskTypes')[parameters('computeNodeDataDiskType')]]"
           },
           "imageReference": {
-            "value": "[variables('selectedLinuxImageRef')]"
+            "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
             "value": "linux"
@@ -1374,10 +1401,94 @@
             "value": "[parameters('adminPassword')]"
           },
           "availabilitySetName": {
-            "value": "[if(variables('createCNInAVSet'), concat(variables('cnAvailabilitySetNamePrefix'), padLeft(string(div(copyIndex(), variables('nbrVMPerAvailabilitySet'))), 2, '0')), '')]"
+            "value": "[if(variables('createCNInAVSet'), concat(variables('cnAvailabilitySetName'), padLeft(string(div(copyIndex(), variables('nbrVMPerAvailabilitySet'))), 2, '0')), '')]"
+          },
+          "vmPriority": {
+            "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
             "value": "[and(variables('createCNInAVSet'), variables('cnRDMACapable'), variables('rdmaDriverSupportedCNImage'))]"
+          },
+          "enableAcceleratedNetworking": {
+            "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
+          },
+          "secrets": {
+            "value": "[variables('lnxCertSecrets')]"
+          },
+          "certThumbprint": {
+            "value": "[trim(parameters('certThumbprint'))]"
+          },
+          "headNodeList": {
+            "value": "[parameters('headNodeList')]"
+          },
+          "joinDomain": {
+            "value": false
+          },
+          "domainName": {
+            "value": ""
+          }
+        }
+      }
+    },
+    {
+      "condition": "[and(greater(parameters('computeNodeNumber'), 0), variables('useVmssForCN'))]",
+      "apiVersion": "2019-05-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('create', variables('computeVmssName'))]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('sharedResxBaseUrl'), '/computevmss.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[variables('subnetRef')]"
+          },
+          "vmssName": {
+            "value": "[variables('computeVmssName')]"
+          },
+          "vmNumber": {
+            "value": "[parameters('computeNodeNumber')]"
+          },
+          "vmSize": {
+            "value": "[parameters('computeNodeVMSize')]"
+          },
+          "osDiskType": {
+            "value": "[variables('diskTypes')[parameters('computeNodeOsDiskType')]]"
+          },
+          "dataDiskSizeInGB": {
+            "value": "[parameters('computeNodeDataDiskSize')]"
+          },
+          "dataDiskCount": {
+            "value": "[parameters('computeNodeDataDiskCount')]"
+          },
+          "dataDiskType": {
+            "value": "[variables('diskTypes')[parameters('computeNodeDataDiskType')]]"
+          },
+          "imageReference": {
+            "value": "[variables('computeNodeImageRef')]"
+          },
+          "imageOsPlatform": {
+            "value": "linux"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "singlePlacementGroup": {
+            "value": "[variables('vmssSinglePlacementGroup')]"
+          },
+          "vmPriority": {
+            "value": "[variables('vmPriority')]"
+          },
+          "installRDMADriver": {
+            "value": "[and(variables('cnRDMACapable'), variables('rdmaDriverSupportedCNImage'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
