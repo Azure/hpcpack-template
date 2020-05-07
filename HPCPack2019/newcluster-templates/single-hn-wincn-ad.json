@@ -1001,7 +1001,7 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "linux"
+            "value": "windows"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"

@@ -449,7 +449,7 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "linux"
+            "value": "windows"
           },
           "adminUsername": {
             "value": "[parameters('domainUsername')]"
@@ -480,7 +480,8 @@
                 },
                 "vaultCertificates": [
                   {
-                    "certificateUrl": "[parameters('certificateUrl')]"
+                    "certificateUrl": "[parameters('certificateUrl')]",
+                    "certificateStore": "My"
                   }
                 ]
               }
