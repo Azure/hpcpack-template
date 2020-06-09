@@ -1055,7 +1055,7 @@
       ]
     },
     {
-      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",      
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "msiKeyVaultRoleAssignment",
@@ -1118,9 +1118,30 @@
     {
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
+      "name": "getVNetName",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+          ],
+          "outputs": {
+            "virtualNetworkName": {
+              "type": "string",
+              "value": "[variables('virtualNetworkName')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-05-01",
+      "type": "Microsoft.Resources/deployments",
       "name": "updateVNetDNS",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'), '/extensions/setupHpcHeadNode')]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'), '/extensions/setupHpcHeadNode')]",
+        "getVNetName"
       ],
       "properties": {
         "mode": "Incremental",
@@ -1130,7 +1151,7 @@
           "resources": [
             {
               "apiVersion": "2019-04-01",
-              "name": "[variables('virtualNetworkName')]",
+              "name": "[reference('getVNetName').outputs.virtualNetworkName.value]",
               "type": "Microsoft.Network/virtualNetworks",
               "location": "[resourceGroup().location]",
               "properties": {
@@ -1186,11 +1207,32 @@
     {
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
+      "name": "getHeadNodeExtensionName",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+          ],
+          "outputs": {
+            "extensionName": {
+              "type": "string",
+              "value": "setupHpcHeadNode"
+            }
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-05-01",
+      "type": "Microsoft.Resources/deployments",
       "name": "installHpcHeadNode",
       "dependsOn": [
         "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]",
         "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'), '/extensions/installInfiniBandDriver')]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "getHeadNodeExtensionName"
       ],
       "properties": {
         "mode": "Incremental",
@@ -1200,7 +1242,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
-              "name": "[concat(parameters('clusterName'),'/setupHpcHeadNode')]",
+              "name": "[concat(parameters('clusterName'),'/', reference('getHeadNodeExtensionName').outputs.extensionName.value)]",
               "apiVersion": "2019-03-01",
               "location": "[resourceGroup().location]",
               "properties": {

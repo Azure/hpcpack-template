@@ -919,7 +919,6 @@
         }
       }
     },
-
     {
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
