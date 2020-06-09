@@ -473,7 +473,7 @@
         "Premium_SSD"
       ],
       "metadata": {
-        "description": "Compute node data disk type. Note that Premium_SSD only supports some VM sizes, see <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>"
+        "description": "Compute node data disk type. Note that Premium_SSD only supports some VM sizes, see <a href='https://azure.microsoft.com/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>"
       }
     },
     "useVmssForComputeNodes": {

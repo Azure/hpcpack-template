@@ -197,7 +197,7 @@
         "description": "Thumbprint of the certificate."
       }
     },
-    "useVmssForComputeNodes": {
+    "useVMScaleSet": {
       "type": "string",
       "defaultValue": "No",
       "allowedValues": [
@@ -208,7 +208,7 @@
         "description": "Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Note that it is not recommended to use this feature in production cluster."
       }
     },
-    "useSpotInstanceForComputeNodes": {
+    "useSpotInstances": {
       "type": "string",
       "defaultValue": "No",
       "allowedValues": [
@@ -291,8 +291,8 @@
       "Standard_A9"
     ],
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
-    "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
-    "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
+    "useVmssForCN": "[equals(parameters('useVMScaleSet'), 'Yes')]",
+    "vmPriority": "[if(equals(parameters('useSpotInstances'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(parameters('computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
     "sharedResxBaseUrl": "https://raw.githubusercontent.com/sunbinzhu/hpcpack-template/master/HPCPack2019/shared-resources"
