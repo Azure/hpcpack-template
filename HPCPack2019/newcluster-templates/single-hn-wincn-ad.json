@@ -306,6 +306,12 @@
     }
   },
   "variables": {
+    "clusterName": "[trim(parameters('clusterName'))]",
+    "domainName": "[trim(parameters('domainName'))]",
+    "vaultName": "[trim(parameters('vaultName'))]",
+    "vaultResourceGroup": "[trim(parameters('vaultResourceGroup'))]",
+    "certThumbprint": "[trim(parameters('certThumbprint'))]",
+    "computeNodeNamePrefix": "[trim(parameters('computeNodeNamePrefix'))]",
     "managedIdentity": {
       "type": "SystemAssigned"
     },
@@ -331,28 +337,28 @@
         }
       ]
     },
-    "storageAccountName": "[concat('hpc', uniqueString(resourceGroup().id, parameters('clusterName')))]",
+    "storageAccountName": "[concat('hpc', uniqueString(resourceGroup().id, variables('clusterName')))]",
     "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts',variables('storageAccountName'))]",
     "addressPrefix": "10.0.0.0/16",
     "subnet1Name": "Subnet-1",
     "subnet1Prefix": "10.0.0.0/22",
-    "virtualNetworkName": "[concat(parameters('clusterName'),'vnet')]",
+    "virtualNetworkName": "[concat(variables('clusterName'),'vnet')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
-    "privateClusterFQDN": "[concat(toLower(parameters('clusterName')), '.', parameters('domainName'))]",
-    "publicIPName": "[concat(parameters('clusterName'),'publicip')]",
-    "publicIPDNSNameLabel": "[concat(toLower(parameters('clusterName')), uniqueString(resourceGroup().id))]",
+    "privateClusterFQDN": "[concat(toLower(variables('clusterName')), '.', variables('domainName'))]",
+    "publicIPName": "[concat(variables('clusterName'),'publicip')]",
+    "publicIPDNSNameLabel": "[concat(toLower(variables('clusterName')), uniqueString(resourceGroup().id))]",
     "publicIPAddressType": "Dynamic",
     "publicIpAddressId": {
       "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]"
     },
-    "availabilitySetName": "[concat(parameters('clusterName'), '-avset')]",
+    "availabilitySetName": "[concat(variables('clusterName'), '-avset')]",
     "availabilitySet": {
       "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
     },
     "uniqueSuffix": "[uniqueString(variables('subnetRef'))]",
     "uniqueNicSuffix": "[concat('-nic-', variables('uniqueSuffix'))]",
-    "nicNameHN": "[concat(parameters('clusterName'), variables('uniqueNicSuffix'))]",
+    "nicNameHN": "[concat(variables('clusterName'), variables('uniqueNicSuffix'))]",
     "nsgName": "[concat('hpcnsg-',uniquestring(resourceGroup().id, variables('subnetRef')))]",
     "networkSecurityGroupId": {
       "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
@@ -367,12 +373,12 @@
     "createHNInAVSet": "[and(not(variables('useVmssForCN')), or(equals(parameters('availabilitySetOption'), 'AllNodes'), and(equals(parameters('availabilitySetOption'), 'Auto'), variables('hnRDMACapable'))))]",
     "createCNInAVSet": "[and(not(variables('useVmssForCN')), or(or(equals(parameters('availabilitySetOption'), 'AllNodes'), equals(parameters('availabilitySetOption'), 'ComputeNodes')), and(equals(parameters('availabilitySetOption'), 'Auto'), variables('cnRDMACapable'))))]",
     "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
-    "computeVmssName": "[take(replace(parameters('computeNodeNamePrefix'), '-', ''), 9)]",
+    "computeVmssName": "[take(replace(variables('computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
     "certSecrets": [
       {
         "sourceVault": {
-          "id": "[resourceId(trim(parameters('vaultResourceGroup')), 'Microsoft.KeyVault/vaults', trim(parameters('vaultName')))]"
+          "id": "[resourceId(variables('vaultResourceGroup'), 'Microsoft.KeyVault/vaults', variables('vaultName'))]"
         },
         "vaultCertificates": [
           {
@@ -396,7 +402,7 @@
         "version": "latest"
       },
       "CustomImage": {
-        "id": "[parameters('headNodeImageResourceId')]"
+        "id": "[trim(parameters('headNodeImageResourceId'))]"
       }
     },
     "computeNodeImages": {
@@ -443,7 +449,7 @@
         "version": "latest"
       },
       "CustomImage": {
-        "id": "[parameters('computeNodeImageResourceId')]"
+        "id": "[trim(parameters('computeNodeImageResourceId'))]"
       }
     },
     "headNodeImageRef": "[variables('headNodeImages')[parameters('headNodeOS')]]",
@@ -639,7 +645,7 @@
     {
       "apiVersion": "2019-03-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('clusterName')]",
+      "name": "[variables('clusterName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicNameHN'))]",
@@ -652,7 +658,7 @@
           "vmSize": "[parameters('headNodeVMSize')]"
         },
         "osProfile": {
-          "computerName": "[parameters('clusterName')]",
+          "computerName": "[variables('clusterName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
@@ -663,7 +669,7 @@
         "storageProfile": {
           "imageReference": "[variables('headNodeImageRef')]",
           "osDisk": {
-            "name": "[concat(parameters('clusterName'), '-osdisk')]",
+            "name": "[concat(variables('clusterName'), '-osdisk')]",
             "caching": "ReadOnly",
             "createOption": "FromImage",
             "managedDisk": {
@@ -675,7 +681,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('clusterName'), variables('uniqueNicSuffix')))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('clusterName'), variables('uniqueNicSuffix')))]"
             }
           ]
         }
@@ -684,15 +690,15 @@
     {
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "type": "Microsoft.Authorization/roleAssignments",
-      "name": "[guid(resourceGroup().id, parameters('clusterName'))]",
+      "name": "[guid(resourceGroup().id, variables('clusterName'))]",
       "apiVersion": "2017-09-01",
       "properties": {
         "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', parameters('clusterName')), '2019-03-01', 'Full').identity.principalId]",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]",
         "scope": "[resourceGroup().id]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
       ]
     },
     {
@@ -700,9 +706,9 @@
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "msiKeyVaultRoleAssignment",
-      "resourceGroup": "[parameters('vaultResourceGroup')]",
+      "resourceGroup": "[variables('vaultResourceGroup')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -712,11 +718,11 @@
           "resources": [
             {
               "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-              "name": "[concat(parameters('vaultName'), '/Microsoft.Authorization/', guid(parameters('vaultName'), variables('vnetID'), parameters('clusterName')))]",
+              "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('vaultName'), variables('vnetID'), variables('clusterName')))]",
               "apiVersion": "2017-09-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395",
-                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', parameters('clusterName')), '2019-03-01', 'Full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
               }
             }
           ]
@@ -726,10 +732,10 @@
     {
       "apiVersion": "2019-03-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('clusterName'),'/setupHpcHeadNode')]",
+      "name": "[concat(variables('clusterName'),'/setupHpcHeadNode')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
@@ -743,7 +749,7 @@
             "function": "CreateADPDC"
           },
           "configurationArguments": {
-            "DomainName": "[parameters('domainName')]"
+            "DomainName": "[variables('domainName')]"
           }
         },
         "protectedSettings": {
@@ -781,7 +787,7 @@
       "type": "Microsoft.Resources/deployments",
       "name": "updateVNetDNS",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'), '/extensions/setupHpcHeadNode')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'), '/extensions/setupHpcHeadNode')]",
         "getVNetName"
       ],
       "properties": {
@@ -824,7 +830,7 @@
     {
       "condition": "[and(variables('createHNInAVSet'), variables('hnRDMACapable'))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('clusterName'),'/installInfiniBandDriver')]",
+      "name": "[concat(variables('clusterName'),'/installInfiniBandDriver')]",
       "apiVersion": "2019-03-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -862,7 +868,7 @@
       "type": "Microsoft.Resources/deployments",
       "name": "installHpcHeadNode",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterName'), '/extensions/installInfiniBandDriver')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'), '/extensions/installInfiniBandDriver')]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "getHeadNodeExtensionName"
       ],
@@ -874,7 +880,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
-              "name": "[concat(parameters('clusterName'),'/', reference('getHeadNodeExtensionName').outputs.extensionName.value)]",
+              "name": "[concat(variables('clusterName'),'/', reference('getHeadNodeExtensionName').outputs.extensionName.value)]",
               "apiVersion": "2019-03-01",
               "location": "[resourceGroup().location]",
               "properties": {
@@ -889,23 +895,23 @@
                     "function": "InstallPrimaryHeadNode"
                   },
                   "configurationArguments": {
-                    "ClusterName": "[parameters('clusterName')]",
-                    "SSLThumbprint": "[parameters('certThumbprint')]",
+                    "ClusterName": "[variables('clusterName')]",
+                    "SSLThumbprint": "[variables('certThumbprint')]",
                     "CNSize": "[parameters('computeNodeVMSize')]",
                     "SubscriptionId": "[subscription().subscriptionId]",
                     "VNet": "[variables('virtualNetworkName')]",
                     "Subnet": "[variables('subnet1Name')]",
                     "Location": "[resourceGroup().location]",
                     "ResourceGroup": "[resourceGroup().name]",
-                    "VaultResourceGroup": "[parameters('VaultResourceGroup')]",
+                    "VaultResourceGroup": "[variables('vaultResourceGroup')]",
                     "CertificateUrl": "[parameters('CertificateUrl')]",
-                    "CNNamePrefix": "[parameters('computeNodeNamePrefix')]"
+                    "CNNamePrefix": "[variables('computeNodeNamePrefix')]"
                   }
                 },
                 "protectedSettings": {
                   "configurationArguments": {
                     "SetupUserCredential": {
-                      "UserName": "[concat(parameters('domainName'), '\\', parameters('adminUsername'))]",
+                      "UserName": "[concat(variables('domainName'), '\\', parameters('adminUsername'))]",
                       "Password": "[parameters('adminPassword')]"
                     },
                     "AzureStorageConnString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value)]"
@@ -921,7 +927,7 @@
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
       "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('create', parameters('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]",
+      "name": "[concat('create', variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]",
       "dependsOn": [
         "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
         "Microsoft.Resources/deployments/updateVNetDNS"
@@ -941,7 +947,7 @@
             "value": "[variables('subnetRef')]"
           },
           "vmName": {
-            "value": "[concat(parameters('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]"
+            "value": "[concat(variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]"
           },
           "vmSize": {
             "value": "[parameters('computeNodeVMSize')]"
@@ -986,16 +992,16 @@
             "value": "[variables('certSecrets')]"
           },
           "certThumbprint": {
-            "value": "[trim(parameters('certThumbprint'))]"
+            "value": "[variables('certThumbprint')]"
           },
           "headNodeList": {
-            "value": "[parameters('clusterName')]"
+            "value": "[variables('clusterName')]"
           },
           "joinDomain": {
             "value": true
           },
           "domainName": {
-            "value": "[parameters('domainName')]"
+            "value": "[variables('domainName')]"
           }
         }
       }
@@ -1067,16 +1073,16 @@
             "value": "[variables('certSecrets')]"
           },
           "certThumbprint": {
-            "value": "[trim(parameters('certThumbprint'))]"
+            "value": "[variables('certThumbprint')]"
           },
           "headNodeList": {
-            "value": "[parameters('clusterName')]"
+            "value": "[variables('clusterName')]"
           },
           "joinDomain": {
             "value": true
           },
           "domainName": {
-            "value": "[parameters('domainName')]"
+            "value": "[variables('domainName')]"
           }
         }
       }
