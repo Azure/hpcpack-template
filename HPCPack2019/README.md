@@ -1,4 +1,4 @@
-# Deploy an HPC Pack cluster in Azure with Microsoft HPC Pack 2019 Preview
+# Deploy an HPC Pack cluster in Azure with Microsoft HPC Pack 2019
 
 ## **Note:**
 
@@ -96,61 +96,42 @@ This template deploys an HPC Pack cluster with one **single** head node and a co
 ---
 ## <a name="prerequisites"></a>Pre-Requisites:
 
-### 1. Prepare a PFX certificate
+An Azure Key Vault Certificate is required to deploy Microsoft HPC Pack 2019 cluster in Azure, it must be created in the **same Azure location** where the HPC Pack cluster will be deployed. The certificate will be installed on all the HPC nodes during the deployment, it is used to secure the communication between the HPC nodes. The certificate must meet the following requirements:
 
-Microsoft HPC Pack 2019 cluster requires a Personal Information Exchange (PFX) certificate to secure the communication between the HPC nodes. The certificate must meet the following requirements: 1.Have a private key capable of **key exchange**; 2.Key usage includes **Digital Signature** and **Key Encipherment**; 3.Enhanced key usage includes **Client Authentication** and **Server Authentication**.You can generate a self-signed certificate which meets the requirements with the following commands and export it as a PFX certificate.
+* It must have a private key capable of **key exchange**
+* Key usage includes **Digital Signature** and **Key Encipherment**
+* Enhanced key usage includes **Client Authentication** and **Server Authentication**
 
-For operating system **Windows 10, Windows Server 2016, or Windows Server 2019**, just run the built-in ***New-SelfSignedCertificate*** command as following:
+If you don't have an existing Azure Key Vault certificate which meets the above requirements, you shall either import a PFX certificate file to Azure Key Vault or directly generate a new Azure Key Vault certificate. 
 
-```PowerShell
-New-SelfSignedCertificate -Subject "CN=HPC Pack Node Communication" -KeySpec KeyExchange -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.1,1.3.6.1.5.5.7.3.2") -CertStoreLocation cert:\CurrentUser\My -KeyExportPolicy Exportable -HashAlgorithm SHA256 -NotAfter (Get-Date).AddYears(5) -NotBefore (Get-Date).AddDays(-1)
+### Create Azure Key Vault Certificate on [Azure Portal](https://portal.azure.com) 
+
+1. Select an existing Azure key vault or [Create](https://portal.azure.com/#create/Microsoft.KeyVault) a new Azure Key Vault in the location where the HPC Pack cluster will be deployed, make sure to enable access to **Azure Virtual Machines for deployment** and **Azure Resource Manager for template deployment** in the **Access policies** setting. And record the **Vault Name**, **Vault Resource Group**.
+
+2. Click the Azure key vault, choose **Settings** -> **Certificates** -> **Generate/Import**, and following the wizard to generate or import the certificate.
+
+![New self-signed key vault certificate](../../media/hpcpack-cluster/GenerateAzureKeyVaultCertificate.png)
+
+3. After the certificate is created, click into the current certificate version, record ***X.509 SHA-1 Thumbprint***  as **Cert Thumbprint**, and ***Secret Identifier*** (but not ***Certificate Identifier***) as **Certificate URL**.
+
+### Create Azure Key Vault Certificate with PowerShell
+
+Install [Azure PowerShell module](https://docs.microsoft.com/powershell/azure/install-az-ps) on your computer, run the following PowerShell commands to either generate or import an Azure Key Vault Certificate. And record the output **Vault Name**, **Vault Resource Group**, **Certificate URL**, and **Cert thumbprint** values.
+
+Generate a new self-signed Azure Key Vault certificate:
+
+```powershell
+wget https://raw.githubusercontent.com/Azure/hpcpack-template/master/Scripts/CreateHpcKeyVaultCertificate.ps1
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+Connect-AzAccount
+.\CreateHpcKeyVaultCertificate.ps1 -VaultName <vaultName> -Name <certName> -ResourceGroup <resourceGroupName> -Location <azureLocation> -CommonName "HPC Pack Node Communication"
 ```
 
-For operating system **earlier than Windows 10 or Windows Server 2016**, you can download the [Self-signed certificate generator](https://gallery.technet.microsoft.com/scriptcenter/Self-signed-certificate-5920a7c6/) from Microsoft Script Center. Extract its contents and run the following command.
+Import an existing PFX certificate file to Azure Key Vault
 
-```PowerShell
-Import-Module -Name c:\ExtractedModule\New-SelfSignedCertificateEx.ps1
-New-SelfSignedCertificateEx -Subject "CN=HPC Pack Node Communication" -KeySpec Exchange -KeyUsage "DigitalSignature,KeyEncipherment" -EnhancedKeyUsage "Server Authentication","Client Authentication" -StoreLocation CurrentUser -SignatureAlgorithm SHA256 -Exportable -NotAfter (Get-Date).AddYears(5) -NotBefore (Get-Date).AddDays(-1)
-```
-
-### 2. Upload the certificate to Azure Key Vault 
-
-Before deploying the HPC cluster, you shall import the PFX certificate as an **Azure Key Vault certificate**. The Azure Key Vault must be in the same location where you plan to deploy your HPC cluster.
-
-You can create an Azure Key Vault and import the PFX certificate manually on [Azure Portal](https://portal.azure.com), make sure to check the two options ***Enable access to Azure Virtual Machines for deployment*** and ***Enable access to Azure Resource Manager for template deployment*** in ***advanced access policies*** when you create the Azure Key Vault.
-
-Or you can [install Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps) in your computer and refer to the PowerShell script as below to create the Azure key vault and import the certificate. 
-
-Remember the following information which will be used in deployment: key vault name, resource group name, secret Id, and certificate thumbprint. 
-
-```PowerShell
-#Give the following values
-$VaultName = "mytestvault"
-$CertName = "hpcpfxcert"
-$VaultRG = "myresourcegroup"
-$location = "westus"
-$PfxFile = "c:\Temp\mytest.pfx"
-$Password = "yourpfxkeyprotectionpassword"
-#Validate the pfx file
-try {
-    $pfxCert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList $PfxFile, $Password
-}
-catch [System.Management.Automation.MethodInvocationException]
-{
-    throw $_.Exception.InnerException
-}
-$pfxCert.Dispose()
-$rg = Get-AzResourceGroup -Name $VaultRG -Location $location -ErrorAction SilentlyContinue
-if($null -eq $rg)
-{
-    $rg = New-AzResourceGroup -Name $VaultRG -Location $location
-}
-$hpcKeyVault = New-AzKeyVault -Name $VaultName -ResourceGroupName $VaultRG -Location $location -EnabledForDeployment -EnabledForTemplateDeployment
-$secpass = ConvertTo-SecureString -String $Password -AsPlainText -Force
-$keyVaultCert = Import-AzKeyVaultCertificate -VaultName $VaultName -Name $CertName -FilePath $PfxFile -Password $secpass
-"The following Information will be used in the deployment template"
-"Vault Name             :   $VaultName"
-"Vault Resource Group   :   $VaultRG"
-"Certificate URL        :   $($keyVaultCert.SecretId)"
-"Certificate Thumbprint :   $($keyVaultCert.Thumbprint)"
+```powershell
+wget https://raw.githubusercontent.com/Azure/hpcpack-template/master/Scripts/CreateHpcKeyVaultCertificate.ps1
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+Connect-AzAccount
+.\CreateHpcKeyVaultCertificate.ps1 -VaultName <vaultName> -Name <certName> -ResourceGroup <resourceGroupName> -Location <azureLocation> -PfxFilePath <filePath>
 ```
