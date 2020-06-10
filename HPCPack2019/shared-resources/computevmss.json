@@ -198,6 +198,7 @@
       {
         "name": "installHPCNodeAgent",
         "properties": {
+          "provisionAfterExtensions": "[if(parameters('installRDMADriver'), array('installRDMADriver'), variables('emptyArray'))]",
           "publisher": "Microsoft.HpcPack",
           "type": "LinuxNodeAgent2016U1",
           "typeHandlerVersion": "2.4",
@@ -214,6 +215,7 @@
       {
         "name": "configHpcComputeNode",
         "properties": {
+          "provisionAfterExtensions": "[if(parameters('installRDMADriver'), array('installRDMADriver'), variables('emptyArray'))]",
           "publisher": "Microsoft.HpcPack",
           "type": "HPCComputeNode",
           "typeHandlerVersion": "2.0",
@@ -235,7 +237,9 @@
         "publisher": "Microsoft.HpcCompute",
         "type": "InfiniBandDriverWindows",
         "typeHandlerVersion": "1.2",
-        "autoUpgradeMinorVersion": true
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+        }
       }
     },
     "hpcLinuxDriverExtension": {
@@ -243,8 +247,10 @@
       "properties": {
         "publisher": "Microsoft.HpcCompute",
         "type": "InfiniBandDriverLinux",
-        "typeHandlerVersion": "1.0",
-        "autoUpgradeMinorVersion": true
+        "typeHandlerVersion": "1.1",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+        }
       }
     },
     "basicVmssExtension": "[if(variables('isWindowsOS'), variables('winBasicExtension'), variables('lnxBasicExtension'))]",
@@ -314,7 +320,8 @@
           "extensionProfile": {
             "extensions": "[variables('vmssExtensions')]"
           },
-          "priority": "[parameters('vmPriority')]"
+          "priority": "[parameters('vmPriority')]",
+          "evictionPolicy": "[if(equals(parameters('vmPriority'), 'Regular'), json('null'), 'Deallocate')]"
         }
       }
     }
