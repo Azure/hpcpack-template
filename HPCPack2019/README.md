@@ -110,7 +110,7 @@ If you don't have an existing Azure Key Vault certificate which meets the above 
 
 2. Click the Azure key vault, choose **Settings** -> **Certificates** -> **Generate/Import**, and following the wizard to generate or import the certificate.
 
-![New self-signed key vault certificate](../../media/hpcpack-cluster/GenerateAzureKeyVaultCertificate.png)
+![New self-signed key vault certificate](https://docs.microsoft.com/powershell/media/hpcpack-cluster/generateazurekeyvaultcertificate.png)
 
 3. After the certificate is created, click into the current certificate version, record ***X.509 SHA-1 Thumbprint***  as **Cert Thumbprint**, and ***Secret Identifier*** (but not ***Certificate Identifier***) as **Certificate URL**.
 
