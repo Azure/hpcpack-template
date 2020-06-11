@@ -215,6 +215,7 @@
       "type": "string",
       "defaultValue": "WindowsServer2019",
       "allowedValues": [
+        "WindowsServer2016",
         "WindowsServer2019",
         "CustomImage"
       ],
