@@ -36,8 +36,10 @@
     },
     "sqlServerName": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 63,
       "metadata": {
-        "description": "The Azure SQL Server name."
+        "description": "The Azure SQL Server name. It can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 63 characters."
       }
     },
     "ManagementDBServiceTier": {
@@ -535,6 +537,7 @@
     "vaultResourceGroup": "[trim(parameters('vaultResourceGroup'))]",
     "certThumbprint": "[trim(parameters('certThumbprint'))]",
     "headNodeList": "[trim(parameters('headNodeList'))]",
+    "sqlServerName": "[toLower(trim(parameters('sqlServerName')))]",
     "computeNodeNamePrefix": "[trim(parameters('computeNodeNamePrefix'))]",
     "managedIdentity": {
       "type": "SystemAssigned"
@@ -1141,7 +1144,7 @@
       }
     },
     {
-      "name": "[parameters('sqlServerName')]",
+      "name": "[variables('sqlServerName')]",
       "type": "Microsoft.Sql/servers",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -1163,7 +1166,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('ManagementDBServiceTier'), '_')[0]]",
@@ -1181,7 +1184,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('SchedulerDBServiceTier'), '_')[0]]",
@@ -1199,7 +1202,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('ReportingDBServiceTier'), '_')[0]]",
@@ -1217,7 +1220,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('DiagnosticsDBServiceTier'), '_')[0]]",
@@ -1235,7 +1238,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('MonitoringDBServiceTier'), '_')[0]]",
@@ -1253,7 +1256,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('HAStorageDBServiceTier'), '_')[0]]",
@@ -1271,7 +1274,7 @@
           },
           "apiVersion": "2014-04-01",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "properties": {
             "edition": "[split(parameters('HAWitnessDBServiceTier'), '_')[0]]",
@@ -1284,7 +1287,7 @@
           "type": "virtualNetworkRules",
           "apiVersion": "2015-05-01-preview",
           "dependsOn": [
-            "[parameters('sqlServerName')]"
+            "[variables('sqlServerName')]"
           ],
           "location": "[resourceGroup().location]",
           "name": "[concat(variables('virtualNetworkResourceGroupName'), '-', variables('virtualNetworkName'))]",
@@ -1331,7 +1334,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('headNodes')[0], '/extensions/JoinADDomain')]",
-        "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]",
+        "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
       ],
       "properties": {
@@ -1348,7 +1351,7 @@
           "configurationArguments": {
             "SSLThumbprint": "[variables('certThumbprint')]",
             "ClusterName": "[variables('clusterName')]",
-            "SQLServerInstance": "[reference(concat('Microsoft.Sql/servers/', parameters('sqlServerName'))).fullyQualifiedDomainName]",
+            "SQLServerInstance": "[reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName]",
             "EnableBuiltinHA": true,
             "CNSize": "[parameters('computeNodeVMSize')]",
             "SubscriptionId": "[subscription().subscriptionId]",

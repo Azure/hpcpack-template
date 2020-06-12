@@ -385,7 +385,7 @@
     "certThumbprint": "[trim(parameters('certThumbprint'))]",
     "headNodeList": "[trim(parameters('headNodeList'))]",
     "sqlServerVMName": "[trim(parameters('sqlServerVMName'))]",
-    "computeNodeNamePrefix": "[trim(variables('computeNodeNamePrefix'))]",
+    "computeNodeNamePrefix": "[trim(parameters('computeNodeNamePrefix'))]",
     "managedIdentity": {
       "type": "SystemAssigned"
     },
