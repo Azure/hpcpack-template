@@ -825,7 +825,8 @@
             "ResourceGroup": "[variables('virtualNetworkResourceGroupName')]",
             "VaultResourceGroup": "[variables('vaultResourceGroup')]",
             "CertificateUrl": "[parameters('CertificateUrl')]",
-            "CNNamePrefix": "[variables('computeNodeNamePrefix')]"
+            "CNNamePrefix": "[variables('computeNodeNamePrefix')]",
+            "AutoGSUseManagedIdentity": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]"
           }
         },
         "protectedSettings": {
