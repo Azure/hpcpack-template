@@ -50,41 +50,20 @@
     },
     "computeNodeImage": {
       "type": "string",
-      "defaultValue": "CentOS_7.7",
+      "defaultValue": "CentOS_7.8",
       "allowedValues": [
-        "CentOS_6.5",
-        "CentOS_6.6",
-        "CentOS_6.7",
-        "CentOS_6.8",
-        "CentOS_6.9",
-        "CentOS_6.10",
-        "CentOS_7.0",
-        "CentOS_7.1",
-        "CentOS_7.2",
-        "CentOS_7.3",
-        "CentOS_7.4",
         "CentOS_7.5",
         "CentOS_7.6",
         "CentOS_7.7",
-        "CentOS_6.5_HPC",
-        "CentOS_6.8_HPC",
-        "CentOS_7.1_HPC",
-        "CentOS_7.3_HPC",
-        "CentOS_7.4_HPC",
+        "CentOS_7.8",
         "CentOS_7.6_HPC",
         "CentOS_7.7_HPC",
-        "RHEL_6.7",
-        "RHEL_6.8",
-        "RHEL_7.2",
-        "RHEL_7.3",
-        "RHEL_7.4",
         "RHEL_7.5",
         "RHEL_7.6",
         "RHEL_7.7",
-        "SLES_12_SP3",
-        "SLES_12_SP3_HPC",
-        "SLES_12_SP3_HPC_Premium",
-        "SLES_12_SP3_Premium",
+        "RHEL_7.8",
+        "SLES_12_SP5",
+        "SLES_12_SP5_HPC",
         "Ubuntu_14.04",
         "Ubuntu_16.04",
         "Ubuntu_18.04",
@@ -525,6 +504,12 @@
         "sku": "7.7",
         "version": "latest"
       },
+      "CentOS_7.8": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_8",
+        "version": "latest"
+      },
       "CentOS_6.5_HPC": {
         "publisher": "OpenLogic",
         "offer": "CentOS-HPC",
@@ -615,28 +600,22 @@
         "sku": "7.7",
         "version": "latest"
       },
-      "SLES_12_SP3": {
-        "publisher": "SUSE",
-        "offer": "SLES",
-        "sku": "12-SP3",
+      "RHEL_7.8": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "7.8",
         "version": "latest"
       },
-      "SLES_12_SP3_HPC": {
+      "SLES_12_SP5": {
         "publisher": "SUSE",
-        "offer": "SLES-HPC",
-        "sku": "12-SP3",
+        "offer": "sles-12-sp5",
+        "sku": "gen1",
         "version": "latest"
       },
-      "SLES_12_SP3_HPC_Premium": {
+      "SLES_12_SP5_HPC": {
         "publisher": "SUSE",
-        "offer": "SLES-HPC-Priority",
-        "sku": "12-SP3",
-        "version": "latest"
-      },
-      "SLES_12_SP3_Premium": {
-        "publisher": "SUSE",
-        "offer": "SLES-Priority",
-        "sku": "12-SP3",
+        "offer": "sles-12-sp5-hpc",
+        "sku": "gen1",
         "version": "latest"
       },
       "Ubuntu_14.04": {

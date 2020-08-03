@@ -201,7 +201,7 @@
           "provisionAfterExtensions": "[if(parameters('installRDMADriver'), array('installRDMADriver'), variables('emptyArray'))]",
           "publisher": "Microsoft.HpcPack",
           "type": "LinuxNodeAgent2016U1",
-          "typeHandlerVersion": "2.4",
+          "typeHandlerVersion": "6.5",
           "autoUpgradeMinorVersion": true,
           "settings": {
             "ClusterConnectionString": "[parameters('headNodeList')]",
