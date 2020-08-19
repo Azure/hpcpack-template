@@ -173,6 +173,13 @@
         "description": "Specify the fully qualified domain name (FQDN) for the existing domain forest if your HPC cluster is domain joined, for example 'hpc.local'."
       }
     },
+    "domainOUPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The organizational unit (OU) in the domain, for example 'OU=testOU,DC=domain,DC=Domain,DC=com', used only when 'domainName' is specified."
+      }
+    },
     "vaultName": {
       "type": "string",
       "metadata": {
@@ -406,6 +413,9 @@
           },
           "domainName": {
             "value": "[parameters('domainName')]"
+          },
+          "domainOUPath":{
+            "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
           }
         }
       }
@@ -499,6 +509,9 @@
           },
           "domainName": {
             "value": "[parameters('domainName')]"
+          },
+          "domainOUPath":{
+            "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
           }
         }
       }
