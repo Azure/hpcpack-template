@@ -406,13 +406,13 @@
             "value": "[trim(parameters('certThumbprint'))]"
           },
           "headNodeList": {
-            "value": "[parameters('headNodeList')]"
+            "value": "[trim(parameters('headNodeList'))]"
           },
           "joinDomain": {
             "value": "[not(empty('domainName'))]"
           },
           "domainName": {
-            "value": "[parameters('domainName')]"
+            "value": "[trim(parameters('domainName'))]"
           },
           "domainOUPath":{
             "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
@@ -502,13 +502,13 @@
             "value": "[trim(parameters('certThumbprint'))]"
           },
           "headNodeList": {
-            "value": "[parameters('headNodeList')]"
+            "value": "[trim(parameters('headNodeList'))]"
           },
           "joinDomain": {
             "value": "[not(empty('domainName'))]"
           },
           "domainName": {
-            "value": "[parameters('domainName')]"
+            "value": "[trim(parameters('domainName'))]"
           },
           "domainOUPath":{
             "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
