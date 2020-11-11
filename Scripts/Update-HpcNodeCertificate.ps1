@@ -141,13 +141,13 @@ try
         {
             if($PSBoundParameters.ContainsKey("Password"))
             {
-                $pfxcert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList $PfxFilePath,$Password
+                $pfxcert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList $PfxFilePath,$Password,$keyFlags
             }
             else
             {
                 $prompt = "Input the protection password of the certificate file $PfxFilePath"
                 $secPsw = Read-Host -Prompt $prompt -AsSecureString
-                $pfxcert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList $PfxFilePath,$secPsw
+                $pfxcert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList $PfxFilePath,$secPsw,$keyFlags
                 $pswBSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secPsw)
                 $Password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($pswBSTR)
             }
