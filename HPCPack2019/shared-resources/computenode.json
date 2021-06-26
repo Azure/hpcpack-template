@@ -225,7 +225,7 @@
       ]
     },
     "linuxConfiguration": {
-      "disablePasswordAuthentication": "[not(empty(variables('trimmedSSHPublicKey'))]",
+      "disablePasswordAuthentication": "[not(empty(variables('trimmedSSHPublicKey')))]",
       "ssh": "[if(empty(variables('trimmedSSHPublicKey')), json('null'), variables('sshKeyConfig'))]"
     }
   },
