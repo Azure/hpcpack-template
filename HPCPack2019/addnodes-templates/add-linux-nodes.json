@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "computeNodeNamePrefix": {
@@ -126,10 +126,21 @@
         "description": "The administrator user name, for example 'johnlee'."
       }
     },
-    "adminUserPassword": {
+    "authenticationType": {
+      "type": "string",
+      "defaultValue": "sshPublicKey",
+      "allowedValues": [
+          "sshPublicKey",
+          "password"
+      ],
+      "metadata": {
+          "description": "Type of authentication to use on the Linux Virtual Machine."
+      }
+    },    
+    "adminPasswordOrKey": {
       "type": "securestring",
       "metadata": {
-        "description": "The administrator user password."
+        "description": "SSH Key or password for the administrator."
       }
     },
     "virtualNetworkName": {
@@ -548,7 +559,10 @@
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminUserPassword')]"
+            "value": "[parameters('adminPasswordOrKey')]"
+          },
+          "sshPublicKey": {
+            "value": "[if(equals(parameters('authenticationType'), 'sshPublicKey'), parameters('adminPasswordOrKey'), '')]"
           },
           "availabilitySetName": {
             "value": "[trim(parameters('availabilitySetName'))]"
@@ -643,7 +657,10 @@
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminUserPassword')]"
+            "value": "[parameters('adminPasswordOrKey')]"
+          },
+          "sshPublicKey": {
+            "value": "[if(equals(parameters('authenticationType'), 'sshPublicKey'), parameters('adminPasswordOrKey'), '')]"
           },
           "singlePlacementGroup": {
             "value": "[variables('vmssSinglePlacementGroup')]"

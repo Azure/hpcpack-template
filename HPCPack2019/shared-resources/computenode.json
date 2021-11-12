@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "subnetId": {
@@ -71,6 +71,13 @@
       "metadata": {
         "description": "The password of the administrator"
       }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If specified, the SSH Key for the administrator, only valid for Linux Virtual Machine."
+      }      
     },
     "availabilitySetName": {
       "type": "string",
@@ -175,6 +182,7 @@
     "nicName": "[concat(parameters('vmName'), '-nic-', uniqueString(parameters('subnetId')))]",
     "dataDiskNamePrefix": "[concat(parameters('vmName'), '-datadisk-')]",
     "isWindowsOS": "[equals(toLower(parameters('imageOsPlatform')), 'windows')]",
+    "trimmedSSHPublicKey": "[trim(parameters('sshPublicKey'))]",
     "windowsConfiguration": {
       "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]"
     },
@@ -208,8 +216,17 @@
     "protectedSettings": {
       "userPassword": "[parameters('adminPassword')]"
     },
+    "sshKeyConfig": {
+      "publicKeys": [
+          {
+              "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+              "keyData": "[variables('trimmedSSHPublicKey')]"
+          }
+      ]
+    },
     "linuxConfiguration": {
-      "disablePasswordAuthentication": false
+      "disablePasswordAuthentication": "[not(empty(variables('trimmedSSHPublicKey')))]",
+      "ssh": "[if(empty(variables('trimmedSSHPublicKey')), json('null'), variables('sshKeyConfig'))]"
     }
   },
   "resources": [
