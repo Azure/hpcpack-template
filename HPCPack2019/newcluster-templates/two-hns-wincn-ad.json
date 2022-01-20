@@ -113,11 +113,11 @@
       "type": "string",
       "defaultValue": "WindowsServer2019",
       "allowedValues": [
-        "WindowsServer2008R2",
         "WindowsServer2012",
         "WindowsServer2012R2",
         "WindowsServer2016",
         "WindowsServer2019",
+        "WindowsServer2022",
         "WindowsServer2012R2WithExcel",
         "WindowsServer2016WithExcel",
         "CustomImage"
@@ -480,6 +480,12 @@
         "publisher": "MicrosoftWindowsServer",
         "offer": "WindowsServer",
         "sku": "2019-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter",
         "version": "latest"
       },
       "WindowsServer2012R2WithExcel": {

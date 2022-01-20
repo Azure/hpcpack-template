@@ -74,23 +74,27 @@
     },
     "computeNodeImage": {
       "type": "string",
-      "defaultValue": "CentOS_7.8",
+      "defaultValue": "CentOS_7.9",
       "allowedValues": [
-        "CentOS_7.5",
         "CentOS_7.6",
         "CentOS_7.7",
         "CentOS_7.8",
+        "CentOS_7.9",
         "CentOS_7.6_HPC",
         "CentOS_7.7_HPC",
-        "RHEL_7.5",
-        "RHEL_7.6",
+        "CentOS_7.8_HPC",
+        "CentOS_7.9_HPC",
         "RHEL_7.7",
         "RHEL_7.8",
+        "RHEL_7.9",
+        "RHEL_8.5",
         "SLES_12_SP5",
         "SLES_12_SP5_HPC",
-        "Ubuntu_14.04",
+        "SLES_15_SP3",
+        "SLES_15_SP3_HPC",
         "Ubuntu_16.04",
         "Ubuntu_18.04",
+        "Ubuntu_18.04_HPC",
         "CustomImage"
       ],
       "metadata": {
@@ -452,76 +456,16 @@
       }
     },
     "computeNodeImages": {
-      "CentOS_6.5": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.5",
+      "AlmaLinux_8.5": {
+        "publisher": "almalinux",
+        "offer": "almalinux",
+        "sku": "8_5",
         "version": "latest"
       },
-      "CentOS_6.6": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.6",
-        "version": "latest"
-      },
-      "CentOS_6.7": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.7",
-        "version": "latest"
-      },
-      "CentOS_6.8": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.8",
-        "version": "latest"
-      },
-      "CentOS_6.9": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.9",
-        "version": "latest"
-      },
-      "CentOS_6.10": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.10",
-        "version": "latest"
-      },
-      "CentOS_7.0": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.0",
-        "version": "latest"
-      },
-      "CentOS_7.1": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.1",
-        "version": "latest"
-      },
-      "CentOS_7.2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.2",
-        "version": "latest"
-      },
-      "CentOS_7.3": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.3",
-        "version": "latest"
-      },
-      "CentOS_7.4": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.4",
-        "version": "latest"
-      },
-      "CentOS_7.5": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.5",
+      "AlmaLinux_8.5_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_5",
         "version": "latest"
       },
       "CentOS_7.6": {
@@ -542,34 +486,10 @@
         "sku": "7_8",
         "version": "latest"
       },
-      "CentOS_6.5_HPC": {
+      "CentOS_7.9": {
         "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "6.5",
-        "version": "latest"
-      },
-      "CentOS_6.8_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "6.8",
-        "version": "latest"
-      },
-      "CentOS_7.1_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.1",
-        "version": "latest"
-      },
-      "CentOS_7.3_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.3",
-        "version": "latest"
-      },
-      "CentOS_7.4_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.4",
+        "offer": "CentOS",
+        "sku": "7_9",
         "version": "latest"
       },
       "CentOS_7.6_HPC": {
@@ -584,46 +504,16 @@
         "sku": "7.7",
         "version": "latest"
       },
-      "RHEL_6.7": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "6.7",
+      "CentOS_7.8_HPC": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_8",
         "version": "latest"
       },
-      "RHEL_6.8": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "6.8",
-        "version": "latest"
-      },
-      "RHEL_7.2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.2",
-        "version": "latest"
-      },
-      "RHEL_7.3": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.3",
-        "version": "latest"
-      },
-      "RHEL_7.4": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.4",
-        "version": "latest"
-      },
-      "RHEL_7.5": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.5",
-        "version": "latest"
-      },
-      "RHEL_7.6": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.6",
+      "CentOS_7.9_HPC": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_9",
         "version": "latest"
       },
       "RHEL_7.7": {
@@ -638,6 +528,18 @@
         "sku": "7.8",
         "version": "latest"
       },
+      "RHEL_7.9": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "7_9",
+        "version": "latest"
+      },
+      "RHEL_8.5": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_5",
+        "version": "latest"
+      },
       "SLES_12_SP5": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
@@ -650,10 +552,16 @@
         "sku": "gen1",
         "version": "latest"
       },
-      "Ubuntu_14.04": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "14.04.5-LTS",
+      "SLES_15_SP3": {
+        "publisher": "SUSE",
+        "offer": "sles-15-sp3",
+        "sku": "gen1",
+        "version": "latest"
+      },
+      "SLES_15_SP3_HPC": {
+        "publisher": "SUSE",
+        "offer": "sles-15-sp3-hpc",
+        "sku": "gen1",
         "version": "latest"
       },
       "Ubuntu_16.04": {
@@ -666,6 +574,12 @@
         "publisher": "Canonical",
         "offer": "UbuntuServer",
         "sku": "18.04-LTS",
+        "version": "latest"
+      },
+      "Ubuntu_18.04_HPC": {
+        "publisher": "Microsoft-DSVM",
+        "offer": "Ubuntu-HPC",
+        "sku": "1804",
         "version": "latest"
       },
       "CustomImage": {
