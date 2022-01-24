@@ -1,4 +1,4 @@
-# Deploy an HPC Pack cluster in Azure with Microsoft HPC Pack 2019
+# Deploy an HPC Pack cluster in Azure with Microsoft HPC Pack 2019 Update 1
 
 ## **Note:**
 
