@@ -194,7 +194,7 @@
           "count": "[if(equals(parameters('dataDiskCount'), 0), 1, parameters('dataDiskCount'))]",
           "input": {
             "lun": "[copyIndex('dataDisks')]",
-            "name": "[if(empty(variables('dataDiskNamePrefix')), json('null'), concat(variables('dataDiskNamePrefix'), '-', string(copyIndex('dataDisks'))))]",
+            "name": "[if(empty(variables('dataDiskNamePrefix')), json('null'), concat(variables('dataDiskNamePrefix'), string(copyIndex('dataDisks'))))]",
             "createOption": "Empty",
             "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
             "managedDisk": {

@@ -1095,7 +1095,7 @@
           "vmSize": {
             "value": "[parameters('sqlServerVMSize')]"
           },
-          "storageAccountType": {
+          "osDiskType": {
             "value": "[variables('diskTypes')[parameters('sqlServerDiskType')]]"
           },
           "imageReference": {
@@ -1115,8 +1115,14 @@
           "availabilitySetName": {
             "value": "[variables('availabilitySetNameHN')]"
           },
+          "dataDiskCount":{
+            "value": 1
+          },
           "dataDiskSizeInGB": {
             "value": 200
+          },
+          "dataDiskType": {
+            "value": "[variables('diskTypes')[parameters('sqlServerDiskType')]]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
