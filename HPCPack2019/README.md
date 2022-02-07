@@ -135,3 +135,11 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 Connect-AzAccount
 .\CreateHpcKeyVaultCertificate.ps1 -VaultName <vaultName> -Name <certName> -ResourceGroup <resourceGroupName> -Location <azureLocation> -PfxFilePath <filePath>
 ```
+
+---
+
+## <a name="knownissues"></a>Known Issues
+
+### 1. Deployment failed due to nested deployment 'msiKeyVaultRoleAssignment*' failure
+
+If you enable Managed Identity on the head node(s), in some rare conditions, the deployment may fail in the nested deployment named ***'msiKeyVaultRoleAssignment', 'msiKeyVaultRoleAssignment1', or 'msiKeyVaultRoleAssignment2'*** with error message ***"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."***. In that case, you can go to [Azure Portal](https://portal.azure.com/), find the Azure Key Vault you are using, delete the unknown identities under **Access control(IAM) -> Role assignments -> Key Vault Contributor** and re-run the deployment.
