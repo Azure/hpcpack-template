@@ -61,7 +61,7 @@ This template deploys an HPC Pack cluster with one **single** head node for Wind
 ---
 ## Following templates are NOT Active Directory Domain integrated
 
-> [!NOTE]
+> **Note**
 >
 > The HPC Pack cluster without Active Directory Domain integrated only supports limited feature set, you shall use it only for Experimentation/Testing purposes.
 
