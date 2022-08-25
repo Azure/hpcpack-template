@@ -34,6 +34,13 @@
         "description": "The fully qualified domain name (FQDN) for the existing domain forest in which the HPC cluster will join, for example 'hpc.local'."
       }
     },
+    "domainOUPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional, the organizational unit (OU) in the domain, for example 'OU=testOU,DC=domain,DC=Domain,DC=com'. The default value is the default OU for machine objects in the domain."
+      }
+    },
     "headNodeOS": {
       "type": "string",
       "defaultValue": "WindowsServer2019",
@@ -329,6 +336,7 @@
     "virtualNetworkResourceGroupName": "[trim(parameters('virtualNetworkResourceGroupName'))]",
     "subnetName": "[trim(parameters('subnetName'))]",
     "domainName": "[trim(parameters('domainName'))]",
+    "domainOUPath": "[trim(parameters('domainOUPath'))]",
     "vaultName": "[trim(parameters('vaultName'))]",
     "vaultResourceGroup": "[trim(parameters('vaultResourceGroup'))]",
     "certThumbprint": "[trim(parameters('certThumbprint'))]",
@@ -789,6 +797,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "Name": "[variables('domainName')]",
+          "OUPath": "[variables('domainOUPath')]",
           "User": "[concat(variables('domainName'), '\\', parameters('adminUsername'))]",
           "NumberOfRetries": "50",
           "RetryIntervalInMilliseconds": "10000",
@@ -924,6 +933,9 @@
           },
           "domainName": {
             "value": "[variables('domainName')]"
+          },
+          "domainOUPath":{
+            "value": "[variables('domainOUPath')]"            
           }
         }
       }
@@ -1005,6 +1017,9 @@
           },
           "domainName": {
             "value": "[variables('domainName')]"
+          },
+          "domainOUPath":{
+            "value": "[variables('domainOUPath')]"            
           }
         }
       }
