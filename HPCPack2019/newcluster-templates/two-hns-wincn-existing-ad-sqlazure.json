@@ -298,6 +298,11 @@
         "WindowsServer2022",
         "WindowsServer2012R2WithExcel",
         "WindowsServer2016WithExcel",
+        "WindowsServer2012_Gen2",
+        "WindowsServer2012R2_Gen2",
+        "WindowsServer2016_Gen2",
+        "WindowsServer2019_Gen2",
+        "WindowsServer2022_Gen2",
         "CustomImage"
       ],
       "metadata": {
@@ -686,6 +691,36 @@
         "publisher": "MicrosoftWindowsServerHPCPack",
         "offer": "WindowsServerHPCPack",
         "sku": "2016U2CN-WS2016-Excel",
+        "version": "latest"
+      },
+      "WindowsServer2012_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2012R2_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-r2-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2016_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2019_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2022_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter-g2",
         "version": "latest"
       },
       "CustomImage": {

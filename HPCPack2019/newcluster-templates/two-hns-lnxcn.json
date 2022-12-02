@@ -106,7 +106,25 @@
         "SLES_15_SP3_HPC",
         "Ubuntu_16.04",
         "Ubuntu_18.04",
-        "Ubuntu_18.04_HPC",
+        "CentOS_7.6_Gen2",
+        "CentOS_7.7_Gen2",
+        "CentOS_7.8_Gen2",
+        "CentOS_7.9_Gen2",
+        "CentOS_7.6_HPC_Gen2",
+        "CentOS_7.7_HPC_Gen2",
+        "CentOS_7.8_HPC_Gen2",
+        "CentOS_7.9_HPC_Gen2",
+        "RHEL_7.7_Gen2",
+        "RHEL_7.8_Gen2",
+        "RHEL_7.9_Gen2",
+        "RHEL_8.5_Gen2",
+        "SLES_12_SP5_Gen2",
+        "SLES_12_SP5_HPC_Gen2",
+        "SLES_15_SP3_Gen2",
+        "SLES_15_SP3_HPC_Gen2",
+        "Ubuntu_16.04_Gen2",
+        "Ubuntu_18.04_Gen2",
+        "Ubuntu_18.04_HPC_Gen2",
         "CustomImage"
       ],
       "metadata": {
@@ -544,6 +562,54 @@
         "sku": "7_9",
         "version": "latest"
       },
+      "CentOS_7.6_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_6-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.7_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_7-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.8_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_8-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.9_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_9-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.6_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_6gen2",
+        "version": "latest"
+      },
+      "CentOS_7.7_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_7-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.8_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_8-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.9_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_9-gen2",
+        "version": "latest"
+      },
       "RHEL_7.7": {
         "publisher": "RedHat",
         "offer": "RHEL",
@@ -566,6 +632,30 @@
         "publisher": "RedHat",
         "offer": "RHEL",
         "sku": "8_5",
+        "version": "latest"
+      },
+      "RHEL_7.7_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "77-gen2",
+        "version": "latest"
+      },
+      "RHEL_7.8_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "78-gen2",
+        "version": "latest"
+      },
+      "RHEL_7.9_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "79-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.5_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "85-gen2",
         "version": "latest"
       },
       "SLES_12_SP5": {
@@ -592,6 +682,30 @@
         "sku": "gen1",
         "version": "latest"
       },
+      "SLES_12_SP5_Gen2": {
+        "publisher": "SUSE",
+        "offer": "sles-12-sp5",
+        "sku": ".04_Gen2",
+        "version": "latest"
+      },
+      "SLES_12_SP5_HPC_Gen2": {
+        "publisher": "SUSE",
+        "offer": "sles-12-sp5-hpc",
+        "sku": "gen2",
+        "version": "latest"
+      },
+      "SLES_15_SP3_Gen2": {
+        "publisher": "SUSE",
+        "offer": "sles-15-sp3",
+        "sku": "gen2",
+        "version": "latest"
+      },
+      "SLES_15_SP3_HPC_Gen2": {
+        "publisher": "SUSE",
+        "offer": "sles-15-sp3-hpc",
+        "sku": "gen2",
+        "version": "latest"
+      },
       "Ubuntu_16.04": {
         "publisher": "Canonical",
         "offer": "UbuntuServer",
@@ -604,7 +718,19 @@
         "sku": "18.04-LTS",
         "version": "latest"
       },
-      "Ubuntu_18.04_HPC": {
+      "Ubuntu_16.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "16_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_18.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "18_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_18.04_HPC_Gen2": {
         "publisher": "Microsoft-DSVM",
         "offer": "Ubuntu-HPC",
         "sku": "1804",
