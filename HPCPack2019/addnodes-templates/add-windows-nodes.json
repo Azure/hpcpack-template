@@ -244,6 +244,13 @@
       "metadata": {
         "description": "The DNS server for the compute nodes. If not specified, the DNS setting for the VNet will be applied. You can specify multiple DNS servers in order separated with ','."
       }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional, specify the resource ID of the user assigned identity to associate with the virtual machines in the form: /subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.ManagedIdentity/userAssignedIdentities/&lt;identityName&gt;"
+      }
     }
   },
   "variables": {
@@ -469,6 +476,9 @@
           },
           "domainOUPath":{
             "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
+          },
+          "userAssignedIdentity":{
+            "value": "[trim(parameters('userAssignedIdentity'))]"            
           }
         }
       }
@@ -568,6 +578,9 @@
           },
           "domainOUPath":{
             "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
+          },
+          "userAssignedIdentity":{
+            "value": "[trim(parameters('userAssignedIdentity'))]"            
           }
         }
       }

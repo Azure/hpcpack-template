@@ -173,7 +173,14 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "The organizational unit (OU) in the domain, used only 'domainName' is specified."
+        "description": "The organizational unit (OU) in the domain, used only when 'domainName' is specified."
+      }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional, specify the resource ID of the user assigned identity to associate with the virtual machine in the form: /subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.ManagedIdentity/userAssignedIdentities/&lt;identityName&gt;"
       }
     },
     "dnsServers": {
@@ -185,6 +192,12 @@
     }
   },
   "variables": {
+    "userAssignedIdentityObject": {
+      "type": "UserAssigned",
+      "userAssignedIdentities": {
+          "[parameters('userAssignedIdentity')]": {}
+      }
+    },
     "isWindowsOS": "[equals(toLower(parameters('imageOsPlatform')), 'windows')]",
     "trimmedSSHPublicKey": "[trim(parameters('sshPublicKey'))]",
     "windowsConfiguration": {
@@ -300,6 +313,7 @@
         "tier": "Standard",
         "capacity": "[parameters('vmNumber')]"
       },
+      "identity": "[if(empty(trim(parameters('userAssignedIdentity'))), json('null'), variables('userAssignedIdentityObject'))]",
       "properties": {
         "singlePlacementGroup": "[parameters('singlePlacementGroup')]",
         "overprovision": false,
