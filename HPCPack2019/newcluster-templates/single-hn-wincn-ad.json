@@ -308,6 +308,17 @@
       "metadata": {
         "description": "Specify whether you want to use the experimental feature to create compute nodes as <a href='https://azure.microsoft.com/pricing/spot/' target='_blank'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster."
       }
+    },
+    "autoInstallInfiniBandDriver": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network."
+      }
     }
   },
   "variables": {
@@ -374,6 +385,7 @@
     ],
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
     "hnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('headNodeVMSize')), contains(toLower(split(parameters('headNodeVMSize'), '_')[1]), 'r'))]",
+    "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
     "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
     "createHNInAVSet": "[and(not(variables('useVmssForCN')), or(equals(parameters('availabilitySetOption'), 'AllNodes'), and(equals(parameters('availabilitySetOption'), 'Auto'), variables('hnRDMACapable'))))]",
     "createCNInAVSet": "[and(not(variables('useVmssForCN')), or(or(equals(parameters('availabilitySetOption'), 'AllNodes'), equals(parameters('availabilitySetOption'), 'ComputeNodes')), and(equals(parameters('availabilitySetOption'), 'Auto'), variables('cnRDMACapable'))))]",
@@ -869,7 +881,7 @@
       }
     },
     {
-      "condition": "[and(variables('createHNInAVSet'), variables('hnRDMACapable'))]",
+      "condition": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'),'/installInfiniBandDriver')]",
       "apiVersion": "2019-03-01",
@@ -1025,7 +1037,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('createCNInAVSet'), variables('cnRDMACapable'))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
@@ -1106,7 +1118,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[variables('cnRDMACapable')]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"

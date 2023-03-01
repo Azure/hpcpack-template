@@ -238,6 +238,17 @@
         "description": "Specify whether you want to use the experimental feature to create compute nodes as <a href='https://azure.microsoft.com/pricing/spot/' target='_blank'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster."
       }
     },
+    "autoInstallInfiniBandDriver": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network."
+      }
+    },
     "dnsServer": {
       "type": "string",
       "defaultValue": "",
@@ -356,6 +367,7 @@
       "Standard_A9"
     ],
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
+    "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
     "useVmssForCN": "[equals(parameters('useVMScaleSet'), 'Yes')]",
     "vmPriority": "[if(equals(parameters('useSpotInstances'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(variables('computeNodeNamePrefix'), '-', ''), 9)]",
@@ -439,7 +451,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), not(empty(trim(parameters('availabilitySetName')))))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[if(equals(parameters('enableAcceleratedNetworking'), 'Yes'), bool('true'), bool('false'))]"
@@ -541,7 +553,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[variables('cnRDMACapable')]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[if(equals(parameters('enableAcceleratedNetworking'), 'Yes'), bool('true'), bool('false'))]"

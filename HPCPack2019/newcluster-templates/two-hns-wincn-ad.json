@@ -346,6 +346,17 @@
       "metadata": {
         "description": "Specify whether you want to use the experimental feature to create compute nodes as <a href='https://azure.microsoft.com/pricing/spot/' target='_blank'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster."
       }
+    },
+    "autoInstallInfiniBandDriver": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network."
+      }
     }
   },
   "variables": {
@@ -423,6 +434,7 @@
     "hnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('headNodeVMSize')), contains(toLower(split(parameters('headNodeVMSize'), '_')[1]), 'r'))]",
     "createCNInAVSet": "[or(equals(parameters('computeNodeInAVSet'), 'Yes'), and(equals(parameters('computeNodeInAVSet'), 'Auto'), variables('cnRDMACapable')))]",
     "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
+    "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
     "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(variables('computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
@@ -1155,7 +1167,7 @@
       }
     },
     {
-      "condition": "[variables('hnRDMACapable')]",
+      "condition": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('headNodes')[copyIndex()], '/installInfiniBandDriver')]",
       "apiVersion": "2019-03-01",
@@ -1536,7 +1548,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('createCNInAVSet'), variables('cnRDMACapable'))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
@@ -1617,7 +1629,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[variables('cnRDMACapable')]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
