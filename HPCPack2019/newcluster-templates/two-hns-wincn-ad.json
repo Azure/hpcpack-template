@@ -17,6 +17,13 @@
         "description": "The fully qualified domain name (FQDN) for the private domain forest which will be created by this template, for example 'hpc.local'."
       }
     },
+    "domainControllerVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_D2_v3",
+      "metadata": {
+        "description": "The VM size for the domain controller, all available VM sizes in Azure can be found at https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes"
+      }
+    },
     "sqlServerVMName": {
       "type": "string",
       "minLength": 3,
@@ -833,7 +840,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D2_v3"
+          "vmSize": "[parameters('domainControllerVMSize')]"
         },
         "osProfile": {
           "computerName": "[variables('dcVMName')]",
