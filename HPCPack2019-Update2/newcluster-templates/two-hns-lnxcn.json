@@ -50,7 +50,7 @@
       "type": "string",
       "defaultValue": "WindowsServer2019",
       "allowedValues": [
-        "WindowsServer2016",
+        "WindowsServer2022",
         "WindowsServer2019",
         "CustomImage"
       ],
@@ -105,13 +105,13 @@
         "CentOS_7.8_HPC_Gen2",
         "CentOS_7.9_HPC_Gen2",
         "AlmaLinux_8.5",
-        "AlmaLinux 8.5_Gen2",
+        "AlmaLinux_8.5_Gen2",
         "AlmaLinux_8.5_HPC",
-        "AlmaLinux 8.5_HPC_Gen2",
-        "AlmaLinux 8.6_HPC",
-        "AlmaLinux 8.6_HPC_Gen2",
-        "AlmaLinux 8.7_HPC",
-        "AlmaLinux 8.7_HPC_Gen2",
+        "AlmaLinux_8.5_HPC_Gen2",
+        "AlmaLinux_8.6_HPC",
+        "AlmaLinux_8.6_HPC_Gen2",
+        "AlmaLinux_8.7_HPC",
+        "AlmaLinux_8.7_HPC_Gen2",
         "Rocky Linux 8.6",
         "Rocky Linux 8.7",
         "RHEL_7.7",
@@ -121,13 +121,6 @@
         "RHEL_8.6",
         "RHEL_8.7",
         "RHEL_8.8",
-        "SLES_12_SP5",
-        "SLES_12_SP5_HPC",
-        "SLES_15_SP3",
-        "SLES_15_SP3_HPC",
-        "Ubuntu_16.04",
-        "Ubuntu_18.04",
-        "Ubuntu_20.04",
         "RHEL_7.7_Gen2",
         "RHEL_7.8_Gen2",
         "RHEL_7.9_Gen2",
@@ -135,10 +128,14 @@
         "RHEL_8.6_Gen2",
         "RHEL_8.7_Gen2",
         "RHEL_8.8_Gen2",
+        "SLES_12_SP5",
+        "SLES_12_SP5_HPC",
         "SLES_12_SP5_Gen2",
         "SLES_12_SP5_HPC_Gen2",
-        "SLES_15_SP3_Gen2",
-        "SLES_15_SP3_HPC_Gen2",
+        "SLES_15_SP3_HPC",
+        "Ubuntu_16.04",
+        "Ubuntu_18.04",
+        "Ubuntu_20.04",
         "Ubuntu_16.04_Gen2",
         "Ubuntu_18.04_Gen2",
         "Ubuntu_20.04_Gen2",
@@ -515,16 +512,16 @@
       }
     ],
     "headNodeImages": {
-      "WindowsServer2016": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2019hn-ws2016",
-        "version": "latest"
-      },
       "WindowsServer2019": {
         "publisher": "MicrosoftWindowsServerHPCPack",
         "offer": "WindowsServerHPCPack",
         "sku": "2019hn-ws2019",
+        "version": "latest"
+      },
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2019hn-ws2022",
         "version": "latest"
       },
       "CustomImage": {
@@ -784,18 +781,6 @@
         "sku": "gen1",
         "version": "latest"
       },
-      "SLES_15_SP3": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
       "SLES_12_SP5_Gen2": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
@@ -808,16 +793,10 @@
         "sku": "gen2",
         "version": "latest"
       },
-      "SLES_15_SP3_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC_Gen2": {
+      "SLES_15_SP3_HPC": {
         "publisher": "SUSE",
         "offer": "sles-15-sp3-hpc",
-        "sku": "gen2",
+        "sku": "gen1",
         "version": "latest"
       },
       "Ubuntu_16.04": {
