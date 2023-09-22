@@ -2,7 +2,10 @@
 
 You can now easily deploy a Microsoft HPC Pack cluster in Azure, select an HPC Pack version to deploy.
 
-### [Microsoft HPC Pack 2019 Update 1](HPCPack2019/README.md)
+### [Microsoft HPC Pack 2019 Update 2](HPCPack2019-Update2/README.md)
+
+
+### [Microsoft HPC Pack 2019 Update 1](HPCPack2019-Update1/README.md)
 
 
 ### [Microsoft HPC Pack 2016 Update 3](https://github.com/azure/hpcpack-template-2016)

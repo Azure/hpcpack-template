@@ -1,0 +1,603 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "computeNodeNamePrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 12,
+      "metadata": {
+        "description": "The name prefix of the compute nodes. It must be no more than 12 characters, begin with a letter, and contain only letters, numbers; The compute node name pattern is '&lt;NamePrefix&gt;&lt;index&gt;', the width of index is 3 characters, make sure the compute node names are unique in the domain forest."
+      }
+    },
+    "computeNodeNameStartIndex": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "The start index of the compute node name series. For example, computeNodeNamePrefix is specified as 'IaaSCN', and computeNodeNameStartIndex is specified as 2, the compute node names will be 'IaaSCN002', 'IaaSCN003', ..."
+      }
+    },
+    "computeNodeNumber": {
+      "type": "int",
+      "defaultValue": 10,
+      "minValue": 1,
+      "maxValue": 50,
+      "metadata": {
+        "description": "The number of the compute nodes."
+      }
+    },
+    "computeNodeImage": {
+      "type": "string",
+      "defaultValue": "WindowsServer2019",
+      "allowedValues": [
+        "WindowsServer2012",
+        "WindowsServer2012R2",
+        "WindowsServer2016",
+        "WindowsServer2019",
+        "WindowsServer2022",
+        "WindowsServer2012R2WithExcel",
+        "WindowsServer2016WithExcel",
+        "WindowsServer2012_Gen2",
+        "WindowsServer2012R2_Gen2",
+        "WindowsServer2016_Gen2",
+        "WindowsServer2019_Gen2",
+        "WindowsServer2022_Gen2",
+        "CustomImage"
+      ],
+      "metadata": {
+        "description": "The VM image of the compute nodes."
+      }
+    },
+    "computeNodeImageResourceId": {
+      "type": "string",
+      "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
+      "metadata": {
+        "description": "Specify only when 'CustomImage' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
+      }
+    },
+    "computeNodeVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_D3_v2",
+      "metadata": {
+        "description": "The VM size of the compute nodes, all available VM sizes in Azure can be found at <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment."
+      }
+    },
+    "computeNodeOsDiskType": {
+      "type": "string",
+      "defaultValue": "Standard_HDD",
+      "allowedValues": [
+        "Standard_HDD",
+        "Standard_SSD",
+        "Premium_SSD"
+      ],
+      "metadata": {
+        "description": "The disk type of compute node VM. Note that Premium_SSD only supports some VM sizes, see <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>"
+      }
+    },
+    "dataDiskCount": {
+      "defaultValue": 0,
+      "allowedValues": [
+        0,
+        1,
+        2,
+        4,
+        8
+      ],
+      "type": "int",
+      "metadata": {
+        "description": "The number of data disk(s) for each compute node."
+      }
+    },
+    "dataDiskSizeInGB": {
+      "defaultValue": 32,
+      "allowedValues": [
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096
+      ],
+      "type": "int",
+      "metadata": {
+        "description": "The size in GB of each data disk that is attached to the VM."
+      }
+    },
+    "dataDiskType": {
+      "defaultValue": "Standard_HDD",
+      "allowedValues": [
+        "Standard_HDD",
+        "Standard_SSD",
+        "Premium_SSD"
+      ],
+      "type": "string",
+      "metadata": {
+        "description": "The data disk type. Note that Premium_SSD only supports some VM sizes, see https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes."
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "The administrator user name, for example 'johnlee'. It must be a domain user account if you want to join the compute nodes to AD domain."
+      }
+    },
+    "adminUserPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The administrator user password."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "The existing virtual network in which all VMs of the HPC cluster will be created."
+      }
+    },
+    "virtualNetworkResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group in which the existing virtual network was created."
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The existing subnet in which all VMs of the HPC cluster will be created."
+      }
+    },
+    "availabilitySetName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The availability set name if you want to create the compute nodes in an availability set, it cannot be specified together with 'availabilityZones'. For RDMA capable VMs, you shall specify this parameter. If you want to create the compute nodes in an existing availabity set, it must be in the same resource group which you selected for this deployment."
+      }
+    },
+    "availabilityZones": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The availability zones if you want to create the compute nodes in availability zones, it cannot be specified together with 'availabilitySetName'. You can specify multiple zones separated with ',', for example: '1,2,3'."
+      }
+    },
+    "enableAcceleratedNetworking": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
+      }
+    },
+    "headNodeList": {
+      "type": "string",
+      "metadata": {
+        "description": "The head node hostname list separated by comma(','), for example, 'myheadnode', or 'myheadnode1,myheadnode2,myheadnode3'. Note, do NOT put any space around the hostname"
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify the fully qualified domain name (FQDN) for the existing domain forest if your HPC cluster is domain joined, for example 'hpc.local'."
+      }
+    },
+    "domainOUPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The organizational unit (OU) in the domain, for example 'OU=testOU,DC=domain,DC=Domain,DC=com', used only when 'domainName' is specified."
+      }
+    },
+    "vaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the KeyVault in which the certificate is stored."
+      }
+    },
+    "vaultResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource Group of the KeyVault in which the certificate is stored."
+      }
+    },
+    "certificateUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Url of the certificate with version in KeyVault e.g. https://testault.vault.azure.net/secrets/testcert/b621es1db241e56a72d037479xab1r7."
+      }
+    },
+    "certThumbprint": {
+      "type": "string",
+      "metadata": {
+        "description": "Thumbprint of the certificate."
+      }
+    },
+    "useVMScaleSet": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Note that it is not recommended to use this feature in production cluster."
+      }
+    },
+    "useSpotInstances": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to use the experimental feature to create compute nodes as <a href='https://azure.microsoft.com/pricing/spot/' target='_blank'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster."
+      }
+    },
+    "autoInstallInfiniBandDriver": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network."
+      }
+    },
+    "dnsServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The DNS server for the compute nodes. If not specified, the DNS setting for the VNet will be applied. You can specify multiple DNS servers in order separated with ','."
+      }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional, specify the resource ID of the user assigned identity to associate with the virtual machines in the form: /subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.ManagedIdentity/userAssignedIdentities/&lt;identityName&gt;"
+      }
+    }
+  },
+  "variables": {
+    "computeNodeNamePrefix": "[trim(parameters('computeNodeNamePrefix'))]",
+    "emptyArray": [],
+    "dnsServers": "[if(empty(trim(parameters('dnsServer'))), variables('emptyArray'), split(trim(parameters('dnsServer')), ','))]",
+    "diskTypes": {
+      "Standard_HDD": "Standard_LRS",
+      "Standard_SSD": "StandardSSD_LRS",
+      "Premium_SSD": "Premium_LRS"
+    },
+    "computeNodeImages": {
+      "WindowsServer2008R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2008-R2-SP1",
+        "version": "latest"
+      },
+      "WindowsServer2012": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2012R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2016": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2019": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2012R2WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2012R2-Excel",
+        "version": "latest"
+      },
+      "WindowsServer2016WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2016-Excel",
+        "version": "latest"
+      },
+      "WindowsServer2012_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2012R2_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-r2-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2016_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2019_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2022_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter-g2",
+        "version": "latest"
+      },
+      "CustomImage": {
+        "id": "[trim(parameters('computeNodeImageResourceId'))]"
+      }
+    },
+    "computeNodeImageRef": "[variables('computeNodeImages')[parameters('computeNodeImage')]]",
+    "availabilitySetName": "[if(empty(trim(parameters('availabilitySetName'))), 'passsyntaxchecking', trim(parameters('availabilitySetName')))]",
+    "availabilityZonesSS": "[if(empty(trim(parameters('availabilityZones'))), variables('emptyArray'), split(trim(parameters('availabilityZones')), ','))]",
+    "availabilityZonesVM": "[if(empty(trim(parameters('availabilityZones'))), createArray(''), split(trim(parameters('availabilityZones')), ','))]",
+    "vnetID": "[resourceId(trim(parameters('virtualNetworkResourceGroupName')), 'Microsoft.Network/virtualNetworks', trim(parameters('virtualNetworkName')))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/', trim(parameters('subnetName')))]",
+    "rdmaASeries": [
+      "Standard_A8",
+      "Standard_A9"
+    ],
+    "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
+    "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
+    "useVmssForCN": "[equals(parameters('useVMScaleSet'), 'Yes')]",
+    "vmPriority": "[if(equals(parameters('useSpotInstances'), 'Yes'), 'Spot', 'Regular')]",
+    "computeVmssName": "[take(replace(variables('computeNodeNamePrefix'), '-', ''), 9)]",
+    "vmssSinglePlacementGroup": "[and(lessOrEquals(length(variables('availabilityZonesSS')), 1), lessOrEquals(parameters('computeNodeNumber'), 100))]",
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/2019u2/HPCPack2019-Update2/shared-resources"
+  },
+  "resources": [
+    {
+      "condition": "[not(or(variables('useVmssForCN'), empty(trim(parameters('availabilitySetName')))))]",
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[variables('availabilitySetName')]",
+      "apiVersion": "2019-03-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Aligned"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
+    },
+    {
+      "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
+      "apiVersion": "2019-05-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('create', variables('computeNodeNamePrefix'), padLeft(string(copyIndex(parameters('computeNodeNameStartIndex'))), 3, '0'))]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
+      ],
+      "copy": {
+        "name": "CN",
+        "count": "[parameters('computeNodeNumber')]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('sharedResxBaseUrl'), '/computenode.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[variables('subnetRef')]"
+          },
+          "vmName": {
+            "value": "[concat(variables('computeNodeNamePrefix'), padLeft(string(copyIndex(parameters('computeNodeNameStartIndex'))), 3, '0'))]"
+          },
+          "vmSize": {
+            "value": "[parameters('computeNodeVMSize')]"
+          },
+          "osDiskType": {
+            "value": "[variables('diskTypes')[parameters('computeNodeOsDiskType')]]"
+          },
+          "dataDiskSizeInGB": {
+            "value": "[parameters('dataDiskSizeInGB')]"
+          },
+          "dataDiskCount": {
+            "value": "[parameters('dataDiskCount')]"
+          },
+          "dataDiskType": {
+            "value": "[variables('diskTypes')[parameters('dataDiskType')]]"
+          },
+          "imageReference": {
+            "value": "[variables('computeNodeImageRef')]"
+          },
+          "imageOsPlatform": {
+            "value": "windows"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminUserPassword')]"
+          },
+          "availabilitySetName": {
+            "value": "[trim(parameters('availabilitySetName'))]"
+          },
+          "availabilityZone": {
+            "value": "[variables('availabilityZonesVM')[mod(copyIndex(), length(variables('availabilityZonesVM')))]]"
+          },
+          "vmPriority": {
+            "value": "[variables('vmPriority')]"
+          },
+          "installRDMADriver": {
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
+          },
+          "enableAcceleratedNetworking": {
+            "value": "[if(equals(parameters('enableAcceleratedNetworking'), 'Yes'), bool('true'), bool('false'))]"
+          },
+          "dnsServers": {
+            "value": "[variables('dnsServers')]"
+          },
+          "secrets": {
+            "value": [
+              {
+                "sourceVault": {
+                  "id": "[resourceId(trim(parameters('vaultResourceGroup')), 'Microsoft.KeyVault/vaults', trim(parameters('vaultName')))]"
+                },
+                "vaultCertificates": [
+                  {
+                    "certificateUrl": "[trim(parameters('certificateUrl'))]",
+                    "certificateStore": "My"
+                  }
+                ]
+              }
+            ]
+          },
+          "certThumbprint": {
+            "value": "[trim(parameters('certThumbprint'))]"
+          },
+          "headNodeList": {
+            "value": "[trim(parameters('headNodeList'))]"
+          },
+          "joinDomain": {
+            "value": "[not(empty(parameters('domainName')))]"
+          },
+          "domainName": {
+            "value": "[trim(parameters('domainName'))]"
+          },
+          "domainOUPath":{
+            "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
+          },
+          "userAssignedIdentity":{
+            "value": "[trim(parameters('userAssignedIdentity'))]"            
+          }
+        }
+      }
+    },
+    {
+      "condition": "[and(greater(parameters('computeNodeNumber'), 0), variables('useVmssForCN'))]",
+      "apiVersion": "2019-05-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('create', variables('computeVmssName'))]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('sharedResxBaseUrl'), '/computevmss.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[variables('subnetRef')]"
+          },
+          "vmssName": {
+            "value": "[variables('computeVmssName')]"
+          },
+          "vmSize": {
+            "value": "[parameters('computeNodeVMSize')]"
+          },
+          "vmNumber": {
+            "value": "[parameters('computeNodeNumber')]"
+          },
+          "osDiskType": {
+            "value": "[variables('diskTypes')[parameters('computeNodeOsDiskType')]]"
+          },
+          "dataDiskSizeInGB": {
+            "value": "[parameters('dataDiskSizeInGB')]"
+          },
+          "dataDiskCount": {
+            "value": "[parameters('dataDiskCount')]"
+          },
+          "dataDiskType": {
+            "value": "[variables('diskTypes')[parameters('dataDiskType')]]"
+          },
+          "imageReference": {
+            "value": "[variables('computeNodeImageRef')]"
+          },
+          "imageOsPlatform": {
+            "value": "windows"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminUserPassword')]"
+          },
+          "singlePlacementGroup": {
+            "value": "[variables('vmssSinglePlacementGroup')]"
+          },
+          "availabilityZones": {
+            "value": "[variables('availabilityZonesSS')]"
+          },
+          "vmPriority": {
+            "value": "[variables('vmPriority')]"
+          },
+          "installRDMADriver": {
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
+          },
+          "enableAcceleratedNetworking": {
+            "value": "[if(equals(parameters('enableAcceleratedNetworking'), 'Yes'), bool('true'), bool('false'))]"
+          },
+          "dnsServers": {
+            "value": "[variables('dnsServers')]"
+          },
+          "secrets": {
+            "value": [
+              {
+                "sourceVault": {
+                  "id": "[resourceId(trim(parameters('vaultResourceGroup')), 'Microsoft.KeyVault/vaults', trim(parameters('vaultName')))]"
+                },
+                "vaultCertificates": [
+                  {
+                    "certificateUrl": "[trim(parameters('certificateUrl'))]",
+                    "certificateStore": "My"
+                  }
+                ]
+              }
+            ]
+          },
+          "certThumbprint": {
+            "value": "[trim(parameters('certThumbprint'))]"
+          },
+          "headNodeList": {
+            "value": "[trim(parameters('headNodeList'))]"
+          },
+          "joinDomain": {
+            "value": "[not(empty(parameters('domainName')))]"
+          },
+          "domainName": {
+            "value": "[trim(parameters('domainName'))]"
+          },
+          "domainOUPath":{
+            "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
+          },
+          "userAssignedIdentity":{
+            "value": "[trim(parameters('userAssignedIdentity'))]"            
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
