@@ -38,16 +38,6 @@
         "CentOS_7.7_HPC",
         "CentOS_7.8_HPC",
         "CentOS_7.9_HPC",
-        "RHEL_7.7",
-        "RHEL_7.8",
-        "RHEL_7.9",
-        "RHEL_8.5",
-        "SLES_12_SP5",
-        "SLES_12_SP5_HPC",
-        "SLES_15_SP3",
-        "SLES_15_SP3_HPC",
-        "Ubuntu_16.04",
-        "Ubuntu_18.04",
         "CentOS_7.6_Gen2",
         "CentOS_7.7_Gen2",
         "CentOS_7.8_Gen2",
@@ -56,16 +46,41 @@
         "CentOS_7.7_HPC_Gen2",
         "CentOS_7.8_HPC_Gen2",
         "CentOS_7.9_HPC_Gen2",
+        "AlmaLinux_8.5",
+        "AlmaLinux_8.5_Gen2",
+        "AlmaLinux_8.5_HPC",
+        "AlmaLinux_8.5_HPC_Gen2",
+        "AlmaLinux_8.6_HPC",
+        "AlmaLinux_8.6_HPC_Gen2",
+        "AlmaLinux_8.7_HPC",
+        "AlmaLinux_8.7_HPC_Gen2",
+        "Rocky Linux 8.6",
+        "Rocky Linux 8.7",
+        "RHEL_7.7",
+        "RHEL_7.8",
+        "RHEL_7.9",
+        "RHEL_8.5",
+        "RHEL_8.6",
+        "RHEL_8.7",
+        "RHEL_8.8",
         "RHEL_7.7_Gen2",
         "RHEL_7.8_Gen2",
         "RHEL_7.9_Gen2",
         "RHEL_8.5_Gen2",
+        "RHEL_8.6_Gen2",
+        "RHEL_8.7_Gen2",
+        "RHEL_8.8_Gen2",
+        "SLES_12_SP5",
+        "SLES_12_SP5_HPC",
         "SLES_12_SP5_Gen2",
         "SLES_12_SP5_HPC_Gen2",
-        "SLES_15_SP3_Gen2",
-        "SLES_15_SP3_HPC_Gen2",
+        "SLES_15_SP3_HPC",
+        "Ubuntu_16.04",
+        "Ubuntu_18.04",
+        "Ubuntu_20.04",
         "Ubuntu_16.04_Gen2",
         "Ubuntu_18.04_Gen2",
+        "Ubuntu_20.04_Gen2",
         "Ubuntu_18.04_HPC_Gen2",
         "CustomImage"
       ],
@@ -296,17 +311,65 @@
       "Premium_SSD": "Premium_LRS"
     },
     "computeNodeImages": {
-      "AlmaLinux_8.5_Gen2": {
+      "AlmaLinux_8.5": {
         "publisher": "almalinux",
         "offer": "almalinux",
         "sku": "8_5",
         "version": "latest"
       },
+      "AlmaLinux_8.5_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux",
+        "sku": "8_5-gen2",
+        "version": "latest"
+      },
+      "AlmaLinux_8.5_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_5-hpc",
+        "version": "latest"
+      },
       "AlmaLinux_8.5_HPC_Gen2": {
         "publisher": "almalinux",
         "offer": "almalinux-hpc",
-        "sku": "8_5",
+        "sku": "8_5-hpc-gen2",
         "version": "latest"
+      },
+      "AlmaLinux_8.6_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_6-hpc",
+        "version": "latest"
+      },
+      "AlmaLinux_8.6_HPC_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_6-hpc-gen2",
+        "version": "latest"
+      },
+      "AlmaLinux_8.7_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_7-hpc-gen1",
+        "version": "latest"
+      },
+      "AlmaLinux_8.7_HPC_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_7-hpc-gen2",
+        "version": "latest"
+      },
+      "Rocky Linux 8.6": {
+        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
+        "offer": "rockylinux",
+        "sku": "free",
+        "version": "8.6.0"
+      },
+      "Rocky Linux 8.7": {
+        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
+        "offer": "rockylinux",
+        "sku": "free",
+        "version": "8.7.0"
       },
       "CentOS_7.6": {
         "publisher": "OpenLogic",
@@ -428,6 +491,24 @@
         "sku": "8_5",
         "version": "latest"
       },
+      "RHEL_8.6": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_6",
+        "version": "latest"
+      },
+      "RHEL_8.7": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_7",
+        "version": "latest"
+      },
+      "RHEL_8.8": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_8",
+        "version": "latest"
+      },
       "RHEL_7.7_Gen2": {
         "publisher": "RedHat",
         "offer": "RHEL",
@@ -452,6 +533,24 @@
         "sku": "85-gen2",
         "version": "latest"
       },
+      "RHEL_8.6_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "86-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.7_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "87-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.8_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "88-gen2",
+        "version": "latest"
+      },
       "SLES_12_SP5": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
@@ -464,22 +563,10 @@
         "sku": "gen1",
         "version": "latest"
       },
-      "SLES_15_SP3": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
       "SLES_12_SP5_Gen2": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
-        "sku": ".04_Gen2",
+        "sku": "gen2",
         "version": "latest"
       },
       "SLES_12_SP5_HPC_Gen2": {
@@ -488,16 +575,10 @@
         "sku": "gen2",
         "version": "latest"
       },
-      "SLES_15_SP3_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC_Gen2": {
+      "SLES_15_SP3_HPC": {
         "publisher": "SUSE",
         "offer": "sles-15-sp3-hpc",
-        "sku": "gen2",
+        "sku": "gen1",
         "version": "latest"
       },
       "Ubuntu_16.04": {
@@ -512,6 +593,12 @@
         "sku": "18.04-LTS",
         "version": "latest"
       },
+      "Ubuntu_20.04": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-focal",
+        "sku": "20_04-lts",
+        "version": "latest"
+      },
       "Ubuntu_16.04_Gen2": {
         "publisher": "Canonical",
         "offer": "UbuntuServer",
@@ -522,6 +609,12 @@
         "publisher": "Canonical",
         "offer": "UbuntuServer",
         "sku": "18_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_20.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-focal",
+        "sku": "20_04-lts-gen2",
         "version": "latest"
       },
       "Ubuntu_18.04_HPC_Gen2": {

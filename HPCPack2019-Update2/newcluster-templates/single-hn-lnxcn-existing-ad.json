@@ -764,7 +764,7 @@
       "SLES_12_SP5_Gen2": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
-        "sku": ".04_Gen2",
+        "sku": "gen2",
         "version": "latest"
       },
       "SLES_12_SP5_HPC_Gen2": {
@@ -805,13 +805,13 @@
       },
       "Ubuntu_18.04_Gen2": {
         "publisher": "Canonical",
-        "offer": "0001-com-ubuntu-server-focal",
+        "offer": "UbuntuServer",
         "sku": "18_04-lts-gen2",
         "version": "latest"
       },
       "Ubuntu_20.04_Gen2": {
         "publisher": "Canonical",
-        "offer": "UbuntuServer",
+        "offer": "0001-com-ubuntu-server-focal",
         "sku": "20_04-lts-gen2",
         "version": "latest"
       },
