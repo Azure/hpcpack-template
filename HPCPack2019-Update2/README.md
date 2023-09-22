@@ -111,7 +111,7 @@ Install [Azure PowerShell module](https://docs.microsoft.com/powershell/azure/in
 Generate a new self-signed Azure Key Vault certificate:
 
 ```powershell
-wget https://raw.githubusercontent.com/Azure/hpcpack-template/master/Scripts/CreateHpcKeyVaultCertificate.ps1
+wget https://raw.githubusercontent.com/Azure/hpcpack-template/2019u2/Scripts/CreateHpcKeyVaultCertificate.ps1
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 Connect-AzAccount
 .\CreateHpcKeyVaultCertificate.ps1 -VaultName <vaultName> -Name <certName> -ResourceGroup <resourceGroupName> -Location <azureLocation> -CommonName "HPC Pack Node Communication"
@@ -120,7 +120,7 @@ Connect-AzAccount
 Import an existing PFX certificate file to Azure Key Vault
 
 ```powershell
-wget https://raw.githubusercontent.com/Azure/hpcpack-template/master/Scripts/CreateHpcKeyVaultCertificate.ps1
+wget https://raw.githubusercontent.com/Azure/hpcpack-template/2019u2/Scripts/CreateHpcKeyVaultCertificate.ps1
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 Connect-AzAccount
 .\CreateHpcKeyVaultCertificate.ps1 -VaultName <vaultName> -Name <certName> -ResourceGroup <resourceGroupName> -Location <azureLocation> -PfxFilePath <filePath>
