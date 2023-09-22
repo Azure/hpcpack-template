@@ -340,7 +340,7 @@
           "properties": {
             "publisher": "Microsoft.HpcPack",
             "type": "HPCComputeNode",
-            "typeHandlerVersion": "2.1",
+            "typeHandlerVersion": "16.2",
             "autoUpgradeMinorVersion": true,
             "settings": {
               "domainName": "[parameters('domainName')]",
@@ -382,7 +382,7 @@
           "properties": {
             "publisher": "Microsoft.HpcPack",
             "type": "LinuxNodeAgent2016U1",
-            "typeHandlerVersion": "6.5",
+            "typeHandlerVersion": "16.2",
             "autoUpgradeMinorVersion": true,
             "settings": {
               "ClusterConnectionString": "[parameters('headNodeList')]",
