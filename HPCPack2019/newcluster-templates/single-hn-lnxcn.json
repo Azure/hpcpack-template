@@ -14,7 +14,7 @@
       "type": "string",
       "defaultValue": "WindowsServer2019",
       "allowedValues": [
-        "WindowsServer2016",
+        "WindowsServer2022",
         "WindowsServer2019",
         "CustomImage"
       ],
@@ -60,16 +60,6 @@
         "CentOS_7.7_HPC",
         "CentOS_7.8_HPC",
         "CentOS_7.9_HPC",
-        "RHEL_7.7",
-        "RHEL_7.8",
-        "RHEL_7.9",
-        "RHEL_8.5",
-        "SLES_12_SP5",
-        "SLES_12_SP5_HPC",
-        "SLES_15_SP3",
-        "SLES_15_SP3_HPC",
-        "Ubuntu_16.04",
-        "Ubuntu_18.04",
         "CentOS_7.6_Gen2",
         "CentOS_7.7_Gen2",
         "CentOS_7.8_Gen2",
@@ -78,16 +68,41 @@
         "CentOS_7.7_HPC_Gen2",
         "CentOS_7.8_HPC_Gen2",
         "CentOS_7.9_HPC_Gen2",
+        "AlmaLinux_8.5",
+        "AlmaLinux_8.5_Gen2",
+        "AlmaLinux_8.5_HPC",
+        "AlmaLinux_8.5_HPC_Gen2",
+        "AlmaLinux_8.6_HPC",
+        "AlmaLinux_8.6_HPC_Gen2",
+        "AlmaLinux_8.7_HPC",
+        "AlmaLinux_8.7_HPC_Gen2",
+        "Rocky Linux 8.6",
+        "Rocky Linux 8.7",
+        "RHEL_7.7",
+        "RHEL_7.8",
+        "RHEL_7.9",
+        "RHEL_8.5",
+        "RHEL_8.6",
+        "RHEL_8.7",
+        "RHEL_8.8",
         "RHEL_7.7_Gen2",
         "RHEL_7.8_Gen2",
         "RHEL_7.9_Gen2",
         "RHEL_8.5_Gen2",
+        "RHEL_8.6_Gen2",
+        "RHEL_8.7_Gen2",
+        "RHEL_8.8_Gen2",
+        "SLES_12_SP5",
+        "SLES_12_SP5_HPC",
         "SLES_12_SP5_Gen2",
         "SLES_12_SP5_HPC_Gen2",
-        "SLES_15_SP3_Gen2",
-        "SLES_15_SP3_HPC_Gen2",
+        "SLES_15_SP3_HPC",
+        "Ubuntu_16.04",
+        "Ubuntu_18.04",
+        "Ubuntu_20.04",
         "Ubuntu_16.04_Gen2",
         "Ubuntu_18.04_Gen2",
+        "Ubuntu_20.04_Gen2",
         "Ubuntu_18.04_HPC_Gen2",
         "CustomImage"
       ],
@@ -444,16 +459,16 @@
       }
     ],
     "headNodeImages": {
-      "WindowsServer2016": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2019hn-ws2016",
-        "version": "latest"
-      },
       "WindowsServer2019": {
         "publisher": "MicrosoftWindowsServerHPCPack",
         "offer": "WindowsServerHPCPack",
         "sku": "2019hn-ws2019",
+        "version": "latest"
+      },
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2019hn-ws2022",
         "version": "latest"
       },
       "CustomImage": {
@@ -461,17 +476,65 @@
       }
     },
     "computeNodeImages": {
-      "AlmaLinux_8.5_Gen2": {
+      "AlmaLinux_8.5": {
         "publisher": "almalinux",
         "offer": "almalinux",
         "sku": "8_5",
         "version": "latest"
       },
+      "AlmaLinux_8.5_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux",
+        "sku": "8_5-gen2",
+        "version": "latest"
+      },
+      "AlmaLinux_8.5_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_5-hpc",
+        "version": "latest"
+      },
       "AlmaLinux_8.5_HPC_Gen2": {
         "publisher": "almalinux",
         "offer": "almalinux-hpc",
-        "sku": "8_5",
+        "sku": "8_5-hpc-gen2",
         "version": "latest"
+      },
+      "AlmaLinux_8.6_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_6-hpc",
+        "version": "latest"
+      },
+      "AlmaLinux_8.6_HPC_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_6-hpc-gen2",
+        "version": "latest"
+      },
+      "AlmaLinux_8.7_HPC": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_7-hpc-gen1",
+        "version": "latest"
+      },
+      "AlmaLinux_8.7_HPC_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8_7-hpc-gen2",
+        "version": "latest"
+      },
+      "Rocky Linux 8.6": {
+        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
+        "offer": "rockylinux",
+        "sku": "free",
+        "version": "8.6.0"
+      },
+      "Rocky Linux 8.7": {
+        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
+        "offer": "rockylinux",
+        "sku": "free",
+        "version": "8.7.0"
       },
       "CentOS_7.6": {
         "publisher": "OpenLogic",
@@ -593,6 +656,24 @@
         "sku": "8_5",
         "version": "latest"
       },
+      "RHEL_8.6": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_6",
+        "version": "latest"
+      },
+      "RHEL_8.7": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_7",
+        "version": "latest"
+      },
+      "RHEL_8.8": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_8",
+        "version": "latest"
+      },
       "RHEL_7.7_Gen2": {
         "publisher": "RedHat",
         "offer": "RHEL",
@@ -617,6 +698,24 @@
         "sku": "85-gen2",
         "version": "latest"
       },
+      "RHEL_8.6_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "86-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.7_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "87-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.8_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "88-gen2",
+        "version": "latest"
+      },
       "SLES_12_SP5": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
@@ -629,22 +728,10 @@
         "sku": "gen1",
         "version": "latest"
       },
-      "SLES_15_SP3": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
       "SLES_12_SP5_Gen2": {
         "publisher": "SUSE",
         "offer": "sles-12-sp5",
-        "sku": ".04_Gen2",
+        "sku": "gen2",
         "version": "latest"
       },
       "SLES_12_SP5_HPC_Gen2": {
@@ -653,16 +740,10 @@
         "sku": "gen2",
         "version": "latest"
       },
-      "SLES_15_SP3_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC_Gen2": {
+      "SLES_15_SP3_HPC": {
         "publisher": "SUSE",
         "offer": "sles-15-sp3-hpc",
-        "sku": "gen2",
+        "sku": "gen1",
         "version": "latest"
       },
       "Ubuntu_16.04": {
@@ -677,6 +758,12 @@
         "sku": "18.04-LTS",
         "version": "latest"
       },
+      "Ubuntu_20.04": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-focal",
+        "sku": "20_04-lts",
+        "version": "latest"
+      },
       "Ubuntu_16.04_Gen2": {
         "publisher": "Canonical",
         "offer": "UbuntuServer",
@@ -687,6 +774,12 @@
         "publisher": "Canonical",
         "offer": "UbuntuServer",
         "sku": "18_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_20.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-focal",
+        "sku": "20_04-lts-gen2",
         "version": "latest"
       },
       "Ubuntu_18.04_HPC_Gen2": {
@@ -708,7 +801,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-01-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Standard_LRS"
@@ -717,7 +810,7 @@
       "properties": {}
     },
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
@@ -739,7 +832,7 @@
     },
     {
       "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPName')]",
       "location": "[resourceGroup().location]",
@@ -757,7 +850,7 @@
       "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('nsgName')]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "location": "[resourceGroup().location]",
       "properties": {
         "securityRules": [
@@ -849,7 +942,7 @@
       }
     },
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicNameHN')]",
       "location": "[resourceGroup().location]",
@@ -880,7 +973,7 @@
       "condition": "[or(variables('createHNInAVSet'), variables('createCNInAVSet'))]",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('availabilitySetName')]",
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Aligned"
@@ -891,7 +984,7 @@
       }
     },
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('clusterName')]",
       "location": "[resourceGroup().location]",
@@ -939,7 +1032,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "type": "Microsoft.Authorization/roleAssignments",
       "name": "[guid(resourceGroup().id, variables('clusterName'))]",
-      "apiVersion": "2017-09-01",
+      "apiVersion": "2022-04-01",
       "properties": {
         "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]",
@@ -951,7 +1044,7 @@
     },
     {
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "msiKeyVaultRoleAssignment",
       "resourceGroup": "[variables('vaultResourceGroup')]",
@@ -967,7 +1060,7 @@
             {
               "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
               "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('vaultName'), variables('vnetID'), variables('clusterName')))]",
-              "apiVersion": "2017-09-01",
+              "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395",
                 "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
@@ -981,7 +1074,7 @@
       "condition": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'),'/installInfiniBandDriver')]",
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -996,7 +1089,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'),'/installSingleHeadNode')]",
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]",
@@ -1042,7 +1135,7 @@
     },
     {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]",
       "dependsOn": [
@@ -1128,7 +1221,7 @@
     },
     {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), variables('useVmssForCN'))]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeVmssName'))]",
       "dependsOn": [

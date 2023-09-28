@@ -21,7 +21,7 @@
       "type": "string",
       "defaultValue": "WindowsServer2019",
       "allowedValues": [
-        "WindowsServer2016",
+        "WindowsServer2022",
         "WindowsServer2019",
         "CustomImage"
       ],
@@ -406,16 +406,16 @@
       }
     ],
     "headNodeImages": {
-      "WindowsServer2016": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2019hn-ws2016",
-        "version": "latest"
-      },
       "WindowsServer2019": {
         "publisher": "MicrosoftWindowsServerHPCPack",
         "offer": "WindowsServerHPCPack",
         "sku": "2019hn-ws2019",
+        "version": "latest"
+      },
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2019hn-ws2022",
         "version": "latest"
       },
       "CustomImage": {
@@ -513,7 +513,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-01-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Standard_LRS"
@@ -522,7 +522,7 @@
       "properties": {}
     },
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
@@ -544,7 +544,7 @@
     },
     {
       "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPName')]",
       "location": "[resourceGroup().location]",
@@ -562,7 +562,7 @@
       "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('nsgName')]",
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "location": "[resourceGroup().location]",
       "properties": {
         "securityRules": [
@@ -654,7 +654,7 @@
       }
     },
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2023-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicNameHN')]",
       "location": "[resourceGroup().location]",
@@ -685,7 +685,7 @@
       "condition": "[or(variables('createHNInAVSet'), variables('createCNInAVSet'))]",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('availabilitySetName')]",
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Aligned"
@@ -696,7 +696,7 @@
       }
     },
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('clusterName')]",
       "location": "[resourceGroup().location]",
@@ -744,7 +744,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "type": "Microsoft.Authorization/roleAssignments",
       "name": "[guid(resourceGroup().id, variables('clusterName'))]",
-      "apiVersion": "2017-09-01",
+      "apiVersion": "2022-04-01",
       "properties": {
         "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]",
@@ -756,7 +756,7 @@
     },
     {
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "msiKeyVaultRoleAssignment",
       "resourceGroup": "[variables('vaultResourceGroup')]",
@@ -772,7 +772,7 @@
             {
               "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
               "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('vaultName'), variables('vnetID'), variables('clusterName')))]",
-              "apiVersion": "2017-09-01",
+              "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395",
                 "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
@@ -783,7 +783,7 @@
       }
     },
     {
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'),'/setupHpcHeadNode')]",
       "location": "[resourceGroup().location]",
@@ -816,7 +816,7 @@
       }
     },
     {
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "getVNetName",
       "properties": {
@@ -836,7 +836,7 @@
       }
     },
     {
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "updateVNetDNS",
       "dependsOn": [
@@ -850,7 +850,7 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "apiVersion": "2019-04-01",
+              "apiVersion": "2023-04-01",
               "name": "[reference('getVNetName').outputs.virtualNetworkName.value]",
               "type": "Microsoft.Network/virtualNetworks",
               "location": "[resourceGroup().location]",
@@ -884,7 +884,7 @@
       "condition": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'),'/installInfiniBandDriver')]",
-      "apiVersion": "2019-03-01",
+      "apiVersion": "2023-03-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "updateVNetDNS"
@@ -897,7 +897,7 @@
       }
     },
     {
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "getHeadNodeExtensionName",
       "properties": {
@@ -917,7 +917,7 @@
       }
     },
     {
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "installHpcHeadNode",
       "dependsOn": [
@@ -934,7 +934,7 @@
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
               "name": "[concat(variables('clusterName'),'/', reference('getHeadNodeExtensionName').outputs.extensionName.value)]",
-              "apiVersion": "2019-03-01",
+              "apiVersion": "2023-03-01",
               "location": "[resourceGroup().location]",
               "properties": {
                 "publisher": "Microsoft.Powershell",
@@ -979,7 +979,7 @@
     },
     {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]",
       "dependsOn": [
@@ -1062,7 +1062,7 @@
     },
     {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), variables('useVmssForCN'))]",
-      "apiVersion": "2019-05-01",
+      "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeVmssName'))]",
       "dependsOn": [

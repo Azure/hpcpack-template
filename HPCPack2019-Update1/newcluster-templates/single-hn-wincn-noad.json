@@ -7,46 +7,15 @@
       "minLength": 3,
       "maxLength": 15,
       "metadata": {
-        "description": "The name of the HPC cluster. It must be unique in the domain forest; It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter."
-      }
-    },
-    "virtualNetworkName": {
-      "type": "string",
-      "metadata": {
-        "description": "The existing virtual network in which all VMs of the HPC cluster will be created."
-      }
-    },
-    "virtualNetworkResourceGroupName": {
-      "type": "string",
-      "metadata": {
-        "description": "The resource group in which the existing virtual network was created."
-      }
-    },
-    "subnetName": {
-      "type": "string",
-      "metadata": {
-        "description": "The existing subnet in which all VMs of the HPC cluster will be created."
-      }
-    },
-    "domainName": {
-      "type": "string",
-      "metadata": {
-        "description": "The fully qualified domain name (FQDN) for the existing domain forest in which the HPC cluster will join, for example 'hpc.local'."
-      }
-    },
-    "domainOUPath": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional, the organizational unit (OU) in the domain, for example 'OU=testOU,DC=domain,DC=Domain,DC=com'. The default value is the default OU for machine objects in the domain."
+        "description": "The name of the HPC cluster, also used as the head node name. It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter."
       }
     },
     "headNodeOS": {
       "type": "string",
       "defaultValue": "WindowsServer2019",
       "allowedValues": [
+        "WindowsServer2016",
         "WindowsServer2019",
-        "WindowsServer2022",
         "CustomImage"
       ],
       "metadata": {
@@ -79,78 +48,9 @@
         "description": "The VM size of the head node, all available VM sizes in Azure can be found at <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment."
       }
     },
-    "computeNodeImage": {
-      "type": "string",
-      "defaultValue": "CentOS_7.9",
-      "allowedValues": [
-        "CentOS_7.6",
-        "CentOS_7.7",
-        "CentOS_7.8",
-        "CentOS_7.9",
-        "CentOS_7.6_HPC",
-        "CentOS_7.7_HPC",
-        "CentOS_7.8_HPC",
-        "CentOS_7.9_HPC",
-        "CentOS_7.6_Gen2",
-        "CentOS_7.7_Gen2",
-        "CentOS_7.8_Gen2",
-        "CentOS_7.9_Gen2",
-        "CentOS_7.6_HPC_Gen2",
-        "CentOS_7.7_HPC_Gen2",
-        "CentOS_7.8_HPC_Gen2",
-        "CentOS_7.9_HPC_Gen2",
-        "AlmaLinux_8.5",
-        "AlmaLinux_8.5_Gen2",
-        "AlmaLinux_8.5_HPC",
-        "AlmaLinux_8.5_HPC_Gen2",
-        "AlmaLinux_8.6_HPC",
-        "AlmaLinux_8.6_HPC_Gen2",
-        "AlmaLinux_8.7_HPC",
-        "AlmaLinux_8.7_HPC_Gen2",
-        "Rocky Linux 8.6",
-        "Rocky Linux 8.7",
-        "RHEL_7.7",
-        "RHEL_7.8",
-        "RHEL_7.9",
-        "RHEL_8.5",
-        "RHEL_8.6",
-        "RHEL_8.7",
-        "RHEL_8.8",
-        "RHEL_7.7_Gen2",
-        "RHEL_7.8_Gen2",
-        "RHEL_7.9_Gen2",
-        "RHEL_8.5_Gen2",
-        "RHEL_8.6_Gen2",
-        "RHEL_8.7_Gen2",
-        "RHEL_8.8_Gen2",
-        "SLES_12_SP5",
-        "SLES_12_SP5_HPC",
-        "SLES_12_SP5_Gen2",
-        "SLES_12_SP5_HPC_Gen2",
-        "SLES_15_SP3_HPC",
-        "Ubuntu_16.04",
-        "Ubuntu_18.04",
-        "Ubuntu_20.04",
-        "Ubuntu_16.04_Gen2",
-        "Ubuntu_18.04_Gen2",
-        "Ubuntu_20.04_Gen2",
-        "Ubuntu_18.04_HPC_Gen2",
-        "CustomImage"
-      ],
-      "metadata": {
-        "description": "The Linux VM image of the compute nodes"
-      }
-    },
-    "computeNodeImageResourceId": {
-      "type": "string",
-      "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
-      "metadata": {
-        "description": "Specify only when 'CustomImage' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
-      }
-    },
     "computeNodeNamePrefix": {
       "type": "string",
-      "defaultValue": "IaaSLnxCN",
+      "defaultValue": "IaaSCN",
       "minLength": 1,
       "maxLength": 12,
       "metadata": {
@@ -164,6 +64,35 @@
       "maxValue": 500,
       "metadata": {
         "description": "The number of the compute nodes."
+      }
+    },
+    "computeNodeImage": {
+      "type": "string",
+      "defaultValue": "WindowsServer2019",
+      "allowedValues": [
+        "WindowsServer2012",
+        "WindowsServer2012R2",
+        "WindowsServer2016",
+        "WindowsServer2019",
+        "WindowsServer2022",
+        "WindowsServer2012R2WithExcel",
+        "WindowsServer2016WithExcel",
+        "WindowsServer2012_Gen2",
+        "WindowsServer2012R2_Gen2",
+        "WindowsServer2016_Gen2",
+        "WindowsServer2019_Gen2",
+        "WindowsServer2022_Gen2",
+        "CustomImage"
+      ],
+      "metadata": {
+        "description": "The VM image of the compute nodes."
+      }
+    },
+    "computeNodeImageResourceId": {
+      "type": "string",
+      "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
+      "metadata": {
+        "description": "Specify only when 'CustomImage' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
       }
     },
     "computeNodeOsDiskType": {
@@ -202,20 +131,13 @@
       "type": "string",
       "defaultValue": "hpcadmin",
       "metadata": {
-        "description": "Administrator user name for the virtual machines and the Active Directory domain."
+        "description": "Administrator user name for the virtual machines."
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Administrator password for the virtual machines and the Active Directory domain. Password must meet complexity requirements, see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements"
-      }
-    },
-    "sshPublicKey": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Specify the SSH public key for the Linux nodes if you want to use SSH Key pair to authenticate. If not specified, you can use the adminPassword to authenticate."
+        "description": "Administrator password for the virtual machines.Password must meet complexity requirements, see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements"
       }
     },
     "vaultName": {
@@ -272,7 +194,7 @@
         "No"
       ],
       "metadata": {
-        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes and Linux distributions. If you specify it as 'Yes', you must specify accelerated networking supported VM sizes and operating systems for all the VMs in the cluster. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
+        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes. If you specify it as 'Yes', you must specify accelerated networking supported VM sizes for all the VMs in the cluster. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
       }
     },
     "headNodeDataDiskCount": {
@@ -397,11 +319,6 @@
   },
   "variables": {
     "clusterName": "[trim(parameters('clusterName'))]",
-    "virtualNetworkName": "[trim(parameters('virtualNetworkName'))]",
-    "virtualNetworkResourceGroupName": "[trim(parameters('virtualNetworkResourceGroupName'))]",
-    "subnetName": "[trim(parameters('subnetName'))]",
-    "domainName": "[trim(parameters('domainName'))]",
-    "domainOUPath": "[trim(parameters('domainOUPath'))]",
     "vaultName": "[trim(parameters('vaultName'))]",
     "vaultResourceGroup": "[trim(parameters('vaultResourceGroup'))]",
     "certThumbprint": "[trim(parameters('certThumbprint'))]",
@@ -433,9 +350,12 @@
     },
     "storageAccountName": "[concat('hpc', uniqueString(resourceGroup().id, variables('clusterName')))]",
     "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts',variables('storageAccountName'))]",
-    "vnetID": "[resourceId(variables('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/', variables('subnetName'))]",
-    "privateClusterFQDN": "[concat(toLower(variables('clusterName')), '.', variables('domainName'))]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnet1Name": "Subnet-1",
+    "subnet1Prefix": "10.0.0.0/22",
+    "virtualNetworkName": "[concat(variables('clusterName'),'vnet')]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
     "publicIPName": "[concat(variables('clusterName'),'publicip')]",
     "publicIPDNSNameLabel": "[concat(toLower(variables('clusterName')), uniqueString(resourceGroup().id))]",
     "publicIPAddressType": "Dynamic",
@@ -466,7 +386,7 @@
     "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(variables('computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
-    "winCertSecrets": [
+    "certSecrets": [
       {
         "sourceVault": {
           "id": "[resourceId(variables('vaultResourceGroup'), 'Microsoft.KeyVault/vaults', variables('vaultName'))]"
@@ -479,346 +399,100 @@
         ]
       }
     ],
-    "lnxCertSecrets": [
-      {
-        "sourceVault": {
-          "id": "[resourceId(variables('vaultResourceGroup'), 'Microsoft.KeyVault/vaults', variables('vaultName'))]"
-        },
-        "vaultCertificates": [
-          {
-            "certificateUrl": "[parameters('certificateUrl')]"
-          }
-        ]
-      }
-    ],
     "headNodeImages": {
+      "WindowsServer2016": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2019hn-ws2016",
+        "version": "latest"
+      },
       "WindowsServer2019": {
         "publisher": "MicrosoftWindowsServerHPCPack",
         "offer": "WindowsServerHPCPack",
         "sku": "2019hn-ws2019",
-        "version": "latest"
-      },
-      "WindowsServer2022": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2019hn-ws2022",
-        "version": "latest"
+        "version": "6.0.7531"
       },
       "CustomImage": {
         "id": "[trim(parameters('headNodeImageResourceId'))]"
       }
     },
     "computeNodeImages": {
-      "AlmaLinux_8.5": {
-        "publisher": "almalinux",
-        "offer": "almalinux",
-        "sku": "8_5",
+      "WindowsServer2008R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2008-R2-SP1",
         "version": "latest"
       },
-      "AlmaLinux_8.5_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux",
-        "sku": "8_5-gen2",
+      "WindowsServer2012": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.5_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_5-hpc",
+      "WindowsServer2012R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.5_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_5-hpc-gen2",
+      "WindowsServer2016": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.6_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_6-hpc",
+      "WindowsServer2019": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.6_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_6-hpc-gen2",
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.7_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_7-hpc-gen1",
+      "WindowsServer2012R2WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2012R2-Excel",
         "version": "latest"
       },
-      "AlmaLinux_8.7_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_7-hpc-gen2",
+      "WindowsServer2016WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2016-Excel",
         "version": "latest"
       },
-      "Rocky Linux 8.6": {
-        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
-        "offer": "rockylinux",
-        "sku": "free",
-        "version": "8.6.0"
-      },
-      "Rocky Linux 8.7": {
-        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
-        "offer": "rockylinux",
-        "sku": "free",
-        "version": "8.7.0"
-      },
-      "CentOS_7.6": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.6",
+      "WindowsServer2012_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.7": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.7",
+      "WindowsServer2012R2_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-r2-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.8": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_8",
+      "WindowsServer2016_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.9": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_9",
+      "WindowsServer2019_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.6_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.6",
-        "version": "latest"
-      },
-      "CentOS_7.7_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.7",
-        "version": "latest"
-      },
-      "CentOS_7.8_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_8",
-        "version": "latest"
-      },
-      "CentOS_7.9_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_9",
-        "version": "latest"
-      },
-      "CentOS_7.6_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_6-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.7_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_7-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.8_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_8-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.9_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_9-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.6_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_6gen2",
-        "version": "latest"
-      },
-      "CentOS_7.7_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_7-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.8_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_8-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.9_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_9-gen2",
-        "version": "latest"
-      },
-      "RHEL_7.7": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.7",
-        "version": "latest"
-      },
-      "RHEL_7.8": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.8",
-        "version": "latest"
-      },
-      "RHEL_7.9": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7_9",
-        "version": "latest"
-      },
-      "RHEL_8.5": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_5",
-        "version": "latest"
-      },
-      "RHEL_8.6": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_6",
-        "version": "latest"
-      },
-      "RHEL_8.7": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_7",
-        "version": "latest"
-      },
-      "RHEL_8.8": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_8",
-        "version": "latest"
-      },
-      "RHEL_7.7_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "77-gen2",
-        "version": "latest"
-      },
-      "RHEL_7.8_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "78-gen2",
-        "version": "latest"
-      },
-      "RHEL_7.9_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "79-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.5_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "85-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.6_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "86-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.7_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "87-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.8_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "88-gen2",
-        "version": "latest"
-      },
-      "SLES_12_SP5": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_12_SP5_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_12_SP5_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_12_SP5_HPC_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5-hpc",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "Ubuntu_16.04": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "16.04-LTS",
-        "version": "latest"
-      },
-      "Ubuntu_18.04": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "18.04-LTS",
-        "version": "latest"
-      },
-      "Ubuntu_20.04": {
-        "publisher": "Canonical",
-        "offer": "0001-com-ubuntu-server-focal",
-        "sku": "20_04-lts",
-        "version": "latest"
-      },
-      "Ubuntu_16.04_Gen2": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "16_04-lts-gen2",
-        "version": "latest"
-      },
-      "Ubuntu_18.04_Gen2": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "18_04-lts-gen2",
-        "version": "latest"
-      },
-      "Ubuntu_20.04_Gen2": {
-        "publisher": "Canonical",
-        "offer": "0001-com-ubuntu-server-focal",
-        "sku": "20_04-lts-gen2",
-        "version": "latest"
-      },
-      "Ubuntu_18.04_HPC_Gen2": {
-        "publisher": "Microsoft-DSVM",
-        "offer": "Ubuntu-HPC",
-        "sku": "1804",
+      "WindowsServer2022_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter-g2",
         "version": "latest"
       },
       "CustomImage": {
@@ -827,14 +501,13 @@
     },
     "headNodeImageRef": "[variables('headNodeImages')[parameters('headNodeOS')]]",
     "computeNodeImageRef": "[variables('computeNodeImages')[parameters('computeNodeImage')]]",
-    "rdmaDriverSupportedCNImage": "[and(or(contains(parameters('computeNodeImage'), 'CentOS_7'), contains(parameters('computeNodeImage'), 'RHEL_7')), not(contains(parameters('computeNodeImage'), '_HPC')))]",
     "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/HPCPack2019/shared-resources"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "apiVersion": "2023-01-01",
+      "apiVersion": "2019-04-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Standard_LRS"
@@ -843,8 +516,29 @@
       "properties": {}
     },
     {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet1Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
       "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
-      "apiVersion": "2023-04-01",
+      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPName')]",
       "location": "[resourceGroup().location]",
@@ -862,7 +556,7 @@
       "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('nsgName')]",
-      "apiVersion": "2023-04-01",
+      "apiVersion": "2019-04-01",
       "location": "[resourceGroup().location]",
       "properties": {
         "securityRules": [
@@ -954,11 +648,12 @@
       }
     },
     {
-      "apiVersion": "2023-04-01",
+      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicNameHN')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]",
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPName'))]"
       ],
@@ -967,7 +662,8 @@
           {
             "name": "IPConfig",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.0.0.4",
               "publicIPAddress": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'Yes'), variables('publicIpAddressId') , json('null'))]",
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -983,7 +679,7 @@
       "condition": "[or(variables('createHNInAVSet'), variables('createCNInAVSet'))]",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('availabilitySetName')]",
-      "apiVersion": "2023-03-01",
+      "apiVersion": "2019-03-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Aligned"
@@ -994,7 +690,7 @@
       }
     },
     {
-      "apiVersion": "2023-03-01",
+      "apiVersion": "2019-03-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('clusterName')]",
       "location": "[resourceGroup().location]",
@@ -1015,7 +711,7 @@
           "windowsConfiguration": {
             "enableAutomaticUpdates": false
           },
-          "secrets": "[variables('winCertSecrets')]"
+          "secrets": "[variables('certSecrets')]"
         },
         "storageProfile": {
           "imageReference": "[variables('headNodeImageRef')]",
@@ -1042,7 +738,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "type": "Microsoft.Authorization/roleAssignments",
       "name": "[guid(resourceGroup().id, variables('clusterName'))]",
-      "apiVersion": "2022-04-01",
+      "apiVersion": "2017-09-01",
       "properties": {
         "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]",
@@ -1054,35 +750,7 @@
     },
     {
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
-      "apiVersion": "2022-09-01",
-      "type": "Microsoft.Resources/deployments",
-      "name": "msiVNetRoleAssignment",
-      "resourceGroup": "[variables('virtualNetworkResourceGroupName')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "resources": [
-            {
-              "type": "Microsoft.Network/virtualNetworks/providers/roleAssignments",
-              "name": "[concat(variables('virtualNetworkName'), '/Microsoft.Authorization/', guid(variables('vnetID'), variables('clusterName')))]",
-              "apiVersion": "2022-04-01",
-              "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
-                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "msiKeyVaultRoleAssignment",
       "resourceGroup": "[variables('vaultResourceGroup')]",
@@ -1098,7 +766,7 @@
             {
               "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
               "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('vaultName'), variables('vnetID'), variables('clusterName')))]",
-              "apiVersion": "2022-04-01",
+              "apiVersion": "2017-09-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395",
                 "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
@@ -1112,7 +780,7 @@
       "condition": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'),'/installInfiniBandDriver')]",
-      "apiVersion": "2023-03-01",
+      "apiVersion": "2019-03-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -1126,40 +794,13 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('clusterName'), '/JoinADDomain')]",
-      "apiVersion": "2023-03-01",
+      "name": "[concat(variables('clusterName'),'/installSingleHeadNode')]",
+      "apiVersion": "2019-03-01",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'), '/extensions/installInfiniBandDriver')]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Compute",
-        "type": "JsonADDomainExtension",
-        "typeHandlerVersion": "1.3",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "Name": "[variables('domainName')]",
-          "OUPath": "[variables('domainOUPath')]",
-          "User": "[concat(variables('domainName'), '\\', parameters('adminUsername'))]",
-          "NumberOfRetries": "50",
-          "RetryIntervalInMilliseconds": "10000",
-          "Restart": "true",
-          "Options": "3"
-        },
-        "protectedSettings": {
-          "Password": "[parameters('adminPassword')]"
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('clusterName'),'/setupHpcHeadNode')]",
-      "apiVersion": "2023-03-01",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'), '/extensions/JoinADDomain')]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
@@ -1178,9 +819,9 @@
             "CNSize": "[parameters('computeNodeVMSize')]",
             "SubscriptionId": "[subscription().subscriptionId]",
             "VNet": "[variables('virtualNetworkName')]",
-            "Subnet": "[variables('subnetName')]",
+            "Subnet": "[variables('subnet1Name')]",
             "Location": "[resourceGroup().location]",
-            "ResourceGroup": "[variables('virtualNetworkResourceGroupName')]",
+            "ResourceGroup": "[resourceGroup().name]",
             "VaultResourceGroup": "[variables('vaultResourceGroup')]",
             "CertificateUrl": "[parameters('CertificateUrl')]",
             "CNNamePrefix": "[variables('computeNodeNamePrefix')]",
@@ -1190,7 +831,7 @@
         "protectedSettings": {
           "configurationArguments": {
             "SetupUserCredential": {
-              "UserName": "[concat(variables('domainName'), '\\', parameters('adminUsername'))]",
+              "UserName": "[parameters('adminUsername')]",
               "Password": "[parameters('adminPassword')]"
             },
             "AzureStorageConnString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value)]"
@@ -1200,11 +841,12 @@
     },
     {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), not(variables('useVmssForCN')))]",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'))]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicNameHN'))]"
       ],
       "copy": {
         "name": "CN",
@@ -1213,7 +855,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('sharedResxBaseUrl'),'/computenode.json')]",
+          "uri": "[concat(variables('sharedResxBaseUrl'), '/computenode.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -1242,16 +884,13 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "linux"
+            "value": "windows"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
-          },
-          "sshPublicKey": {
-            "value": "[parameters('sshPublicKey')]"
           },
           "availabilitySetName": {
             "value": "[if(variables('createCNInAVSet'), variables('availabilitySetName'), '')]"
@@ -1260,32 +899,32 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'), variables('rdmaDriverSupportedCNImage'))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
           },
           "secrets": {
-            "value": "[variables('lnxCertSecrets')]"
+            "value": "[variables('certSecrets')]"
           },
           "certThumbprint": {
             "value": "[variables('certThumbprint')]"
           },
           "headNodeList": {
-            "value": "[concat(variables('clusterName'), '.', variables('domainName'))]"
+            "value": "[variables('clusterName')]"
           },
           "joinDomain": {
             "value": false
           },
           "domainName": {
-            "value": "[variables('domainName')]"
+            "value": ""
           }
         }
       }
     },
     {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), variables('useVmssForCN'))]",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2019-05-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[concat('create', variables('computeVmssName'))]",
       "dependsOn": [
@@ -1326,16 +965,13 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "linux"
+            "value": "windows"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
-          },
-          "sshPublicKey": {
-            "value": "[parameters('sshPublicKey')]"
           },
           "singlePlacementGroup": {
             "value": "[variables('vmssSinglePlacementGroup')]"
@@ -1344,25 +980,25 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'), variables('rdmaDriverSupportedCNImage'))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
           },
           "secrets": {
-            "value": "[variables('lnxCertSecrets')]"
+            "value": "[variables('certSecrets')]"
           },
           "certThumbprint": {
             "value": "[variables('certThumbprint')]"
           },
           "headNodeList": {
-            "value": "[concat(variables('clusterName'), '.', variables('domainName'))]"
+            "value": "[variables('clusterName')]"
           },
           "joinDomain": {
             "value": false
           },
           "domainName": {
-            "value": "[variables('domainName')]"
+            "value": ""
           }
         }
       }
@@ -1371,7 +1007,7 @@
   "outputs": {
     "clusterDNSName": {
       "type": "string",
-      "value": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'No'), variables('privateClusterFQDN'), reference(variables('publicIpAddressId').id, '2019-04-01').dnsSettings.fqdn)]"
+      "value": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'No'), '', reference(variables('publicIpAddressId').id, '2019-04-01').dnsSettings.fqdn)]"
     }
   }
 }

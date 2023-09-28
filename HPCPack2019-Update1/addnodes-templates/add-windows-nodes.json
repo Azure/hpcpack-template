@@ -28,64 +28,24 @@
     },
     "computeNodeImage": {
       "type": "string",
-      "defaultValue": "CentOS_7.9",
+      "defaultValue": "WindowsServer2019",
       "allowedValues": [
-        "CentOS_7.6",
-        "CentOS_7.7",
-        "CentOS_7.8",
-        "CentOS_7.9",
-        "CentOS_7.6_HPC",
-        "CentOS_7.7_HPC",
-        "CentOS_7.8_HPC",
-        "CentOS_7.9_HPC",
-        "CentOS_7.6_Gen2",
-        "CentOS_7.7_Gen2",
-        "CentOS_7.8_Gen2",
-        "CentOS_7.9_Gen2",
-        "CentOS_7.6_HPC_Gen2",
-        "CentOS_7.7_HPC_Gen2",
-        "CentOS_7.8_HPC_Gen2",
-        "CentOS_7.9_HPC_Gen2",
-        "AlmaLinux_8.5",
-        "AlmaLinux_8.5_Gen2",
-        "AlmaLinux_8.5_HPC",
-        "AlmaLinux_8.5_HPC_Gen2",
-        "AlmaLinux_8.6_HPC",
-        "AlmaLinux_8.6_HPC_Gen2",
-        "AlmaLinux_8.7_HPC",
-        "AlmaLinux_8.7_HPC_Gen2",
-        "Rocky Linux 8.6",
-        "Rocky Linux 8.7",
-        "RHEL_7.7",
-        "RHEL_7.8",
-        "RHEL_7.9",
-        "RHEL_8.5",
-        "RHEL_8.6",
-        "RHEL_8.7",
-        "RHEL_8.8",
-        "RHEL_7.7_Gen2",
-        "RHEL_7.8_Gen2",
-        "RHEL_7.9_Gen2",
-        "RHEL_8.5_Gen2",
-        "RHEL_8.6_Gen2",
-        "RHEL_8.7_Gen2",
-        "RHEL_8.8_Gen2",
-        "SLES_12_SP5",
-        "SLES_12_SP5_HPC",
-        "SLES_12_SP5_Gen2",
-        "SLES_12_SP5_HPC_Gen2",
-        "SLES_15_SP3_HPC",
-        "Ubuntu_16.04",
-        "Ubuntu_18.04",
-        "Ubuntu_20.04",
-        "Ubuntu_16.04_Gen2",
-        "Ubuntu_18.04_Gen2",
-        "Ubuntu_20.04_Gen2",
-        "Ubuntu_18.04_HPC_Gen2",
+        "WindowsServer2012",
+        "WindowsServer2012R2",
+        "WindowsServer2016",
+        "WindowsServer2019",
+        "WindowsServer2022",
+        "WindowsServer2012R2WithExcel",
+        "WindowsServer2016WithExcel",
+        "WindowsServer2012_Gen2",
+        "WindowsServer2012R2_Gen2",
+        "WindowsServer2016_Gen2",
+        "WindowsServer2019_Gen2",
+        "WindowsServer2022_Gen2",
         "CustomImage"
       ],
       "metadata": {
-        "description": "The Linux VM image of the compute nodes"
+        "description": "The VM image of the compute nodes."
       }
     },
     "computeNodeImageResourceId": {
@@ -160,24 +120,13 @@
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "The administrator user name, for example 'johnlee'."
+        "description": "The administrator user name, for example 'johnlee'. It must be a domain user account if you want to join the compute nodes to AD domain."
       }
     },
-    "authenticationType": {
-      "type": "string",
-      "defaultValue": "sshPublicKey",
-      "allowedValues": [
-          "sshPublicKey",
-          "password"
-      ],
-      "metadata": {
-          "description": "Type of authentication to use on the Linux Virtual Machine."
-      }
-    },    
-    "adminPasswordOrKey": {
+    "adminUserPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "SSH Key or password for the administrator."
+        "description": "The administrator user password."
       }
     },
     "virtualNetworkName": {
@@ -220,13 +169,27 @@
         "No"
       ],
       "metadata": {
-        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes and Linux distributions. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
+        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
       }
     },
-    "clusterConnectionString": {
+    "headNodeList": {
       "type": "string",
       "metadata": {
-        "description": "The cluster connection string is the list of head nodes separated by comma(','). for example 'myhn', 'myhn1,myhn2,myhn3' if the head node(s) is not domain joined, or 'myhn.hpc.local', 'myhn1.hpc.local,myhn2.hpc.local,myhn3.hpc.local' if the head node(s) is domain joined. "
+        "description": "The head node hostname list separated by comma(','), for example, 'myheadnode', or 'myheadnode1,myheadnode2,myheadnode3'. Note, do NOT put any space around the hostname"
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify the fully qualified domain name (FQDN) for the existing domain forest if your HPC cluster is domain joined, for example 'hpc.local'."
+      }
+    },
+    "domainOUPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The organizational unit (OU) in the domain, for example 'OU=testOU,DC=domain,DC=Domain,DC=com', used only when 'domainName' is specified."
       }
     },
     "vaultName": {
@@ -311,316 +274,82 @@
       "Premium_SSD": "Premium_LRS"
     },
     "computeNodeImages": {
-      "AlmaLinux_8.5": {
-        "publisher": "almalinux",
-        "offer": "almalinux",
-        "sku": "8_5",
+      "WindowsServer2008R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2008-R2-SP1",
         "version": "latest"
       },
-      "AlmaLinux_8.5_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux",
-        "sku": "8_5-gen2",
+      "WindowsServer2012": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.5_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_5-hpc",
+      "WindowsServer2012R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.5_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_5-hpc-gen2",
+      "WindowsServer2016": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.6_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_6-hpc",
+      "WindowsServer2019": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-Datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.6_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_6-hpc-gen2",
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter",
         "version": "latest"
       },
-      "AlmaLinux_8.7_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_7-hpc-gen1",
+      "WindowsServer2012R2WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2012R2-Excel",
         "version": "latest"
       },
-      "AlmaLinux_8.7_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_7-hpc-gen2",
+      "WindowsServer2016WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2016-Excel",
         "version": "latest"
       },
-      "Rocky Linux 8.6": {
-        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
-        "offer": "rockylinux",
-        "sku": "free",
-        "version": "8.6.0"
-      },
-      "Rocky Linux 8.7": {
-        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
-        "offer": "rockylinux",
-        "sku": "free",
-        "version": "8.7.0"
-      },
-      "CentOS_7.6": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.6",
+      "WindowsServer2012_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.7": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.7",
+      "WindowsServer2012R2_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-r2-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.8": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_8",
+      "WindowsServer2016_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.9": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_9",
+      "WindowsServer2019_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-datacenter-gensecond",
         "version": "latest"
       },
-      "CentOS_7.6_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.6",
-        "version": "latest"
-      },
-      "CentOS_7.7_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.7",
-        "version": "latest"
-      },
-      "CentOS_7.8_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_8",
-        "version": "latest"
-      },
-      "CentOS_7.9_HPC": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_9",
-        "version": "latest"
-      },
-      "CentOS_7.6_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_6-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.7_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_7-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.8_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_8-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.9_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7_9-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.6_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_6gen2",
-        "version": "latest"
-      },
-      "CentOS_7.7_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_7-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.8_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_8-gen2",
-        "version": "latest"
-      },
-      "CentOS_7.9_HPC_Gen2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7_9-gen2",
-        "version": "latest"
-      },
-      "RHEL_7.7": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.7",
-        "version": "latest"
-      },
-      "RHEL_7.8": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.8",
-        "version": "latest"
-      },
-      "RHEL_7.9": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7_9",
-        "version": "latest"
-      },
-      "RHEL_8.5": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_5",
-        "version": "latest"
-      },
-      "RHEL_8.6": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_6",
-        "version": "latest"
-      },
-      "RHEL_8.7": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_7",
-        "version": "latest"
-      },
-      "RHEL_8.8": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "8_8",
-        "version": "latest"
-      },
-      "RHEL_7.7_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "77-gen2",
-        "version": "latest"
-      },
-      "RHEL_7.8_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "78-gen2",
-        "version": "latest"
-      },
-      "RHEL_7.9_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "79-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.5_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "85-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.6_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "86-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.7_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "87-gen2",
-        "version": "latest"
-      },
-      "RHEL_8.8_Gen2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "88-gen2",
-        "version": "latest"
-      },
-      "SLES_12_SP5": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_12_SP5_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "SLES_12_SP5_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_12_SP5_HPC_Gen2": {
-        "publisher": "SUSE",
-        "offer": "sles-12-sp5-hpc",
-        "sku": "gen2",
-        "version": "latest"
-      },
-      "SLES_15_SP3_HPC": {
-        "publisher": "SUSE",
-        "offer": "sles-15-sp3-hpc",
-        "sku": "gen1",
-        "version": "latest"
-      },
-      "Ubuntu_16.04": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "16.04-LTS",
-        "version": "latest"
-      },
-      "Ubuntu_18.04": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "18.04-LTS",
-        "version": "latest"
-      },
-      "Ubuntu_20.04": {
-        "publisher": "Canonical",
-        "offer": "0001-com-ubuntu-server-focal",
-        "sku": "20_04-lts",
-        "version": "latest"
-      },
-      "Ubuntu_16.04_Gen2": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "16_04-lts-gen2",
-        "version": "latest"
-      },
-      "Ubuntu_18.04_Gen2": {
-        "publisher": "Canonical",
-        "offer": "UbuntuServer",
-        "sku": "18_04-lts-gen2",
-        "version": "latest"
-      },
-      "Ubuntu_20.04_Gen2": {
-        "publisher": "Canonical",
-        "offer": "0001-com-ubuntu-server-focal",
-        "sku": "20_04-lts-gen2",
-        "version": "latest"
-      },
-      "Ubuntu_18.04_HPC_Gen2": {
-        "publisher": "Microsoft-DSVM",
-        "offer": "Ubuntu-HPC",
-        "sku": "1804",
+      "WindowsServer2022_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter-g2",
         "version": "latest"
       },
       "CustomImage": {
@@ -637,7 +366,6 @@
       "Standard_A8",
       "Standard_A9"
     ],
-    "rdmaDriverSupportedCNImage": "[and(or(contains(parameters('computeNodeImage'), 'CentOS_7'), contains(parameters('computeNodeImage'), 'RHEL_7')), not(contains(parameters('computeNodeImage'), '_HPC')))]",
     "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
     "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
     "useVmssForCN": "[equals(parameters('useVMScaleSet'), 'Yes')]",
@@ -705,16 +433,13 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "linux"
+            "value": "windows"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminPasswordOrKey')]"
-          },
-          "sshPublicKey": {
-            "value": "[if(equals(parameters('authenticationType'), 'sshPublicKey'), parameters('adminPasswordOrKey'), '')]"
+            "value": "[parameters('adminUserPassword')]"
           },
           "availabilitySetName": {
             "value": "[trim(parameters('availabilitySetName'))]"
@@ -726,7 +451,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'), variables('rdmaDriverSupportedCNImage'))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[if(equals(parameters('enableAcceleratedNetworking'), 'Yes'), bool('true'), bool('false'))]"
@@ -742,7 +467,8 @@
                 },
                 "vaultCertificates": [
                   {
-                    "certificateUrl": "[trim(parameters('certificateUrl'))]"
+                    "certificateUrl": "[trim(parameters('certificateUrl'))]",
+                    "certificateStore": "My"
                   }
                 ]
               }
@@ -752,13 +478,16 @@
             "value": "[trim(parameters('certThumbprint'))]"
           },
           "headNodeList": {
-            "value": "[trim(parameters('clusterConnectionString'))]"
+            "value": "[trim(parameters('headNodeList'))]"
           },
           "joinDomain": {
-            "value": false
+            "value": "[not(empty(parameters('domainName')))]"
           },
           "domainName": {
-            "value": ""
+            "value": "[trim(parameters('domainName'))]"
+          },
+          "domainOUPath":{
+            "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
           },
           "userAssignedIdentity":{
             "value": "[trim(parameters('userAssignedIdentity'))]"            
@@ -806,16 +535,13 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "linux"
+            "value": "windows"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminPasswordOrKey')]"
-          },
-          "sshPublicKey": {
-            "value": "[if(equals(parameters('authenticationType'), 'sshPublicKey'), parameters('adminPasswordOrKey'), '')]"
+            "value": "[parameters('adminUserPassword')]"
           },
           "singlePlacementGroup": {
             "value": "[variables('vmssSinglePlacementGroup')]"
@@ -827,7 +553,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'), variables('rdmaDriverSupportedCNImage'))]"
+            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[if(equals(parameters('enableAcceleratedNetworking'), 'Yes'), bool('true'), bool('false'))]"
@@ -843,7 +569,8 @@
                 },
                 "vaultCertificates": [
                   {
-                    "certificateUrl": "[trim(parameters('certificateUrl'))]"
+                    "certificateUrl": "[trim(parameters('certificateUrl'))]",
+                    "certificateStore": "My"
                   }
                 ]
               }
@@ -853,13 +580,16 @@
             "value": "[trim(parameters('certThumbprint'))]"
           },
           "headNodeList": {
-            "value": "[trim(parameters('clusterConnectionString'))]"
+            "value": "[trim(parameters('headNodeList'))]"
           },
           "joinDomain": {
-            "value": false
+            "value": "[not(empty(parameters('domainName')))]"
           },
           "domainName": {
-            "value": ""
+            "value": "[trim(parameters('domainName'))]"
+          },
+          "domainOUPath":{
+            "value": "[if(empty(parameters('domainName')), '', parameters('domainOUPath'))]"            
           },
           "userAssignedIdentity":{
             "value": "[trim(parameters('userAssignedIdentity'))]"            
