@@ -12,9 +12,9 @@
     },
     "domainName": {
       "type": "string",
-      "defaultValue": "hpc.local",
+      "defaultValue": "hpc.cluster",
       "metadata": {
-        "description": "The fully qualified domain name (FQDN) for the private domain forest which will be created by this template, for example 'hpc.local'."
+        "description": "The fully qualified domain name (FQDN) for the private domain forest which will be created by this template, for example 'hpc.cluster'."
       }
     },
     "domainControllerVMSize": {

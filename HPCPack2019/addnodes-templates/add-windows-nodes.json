@@ -182,7 +182,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Specify the fully qualified domain name (FQDN) for the existing domain forest if your HPC cluster is domain joined, for example 'hpc.local'."
+        "description": "Specify the fully qualified domain name (FQDN) for the existing domain forest if your HPC cluster is domain joined, for example 'hpc.cluster'."
       }
     },
     "domainOUPath": {
