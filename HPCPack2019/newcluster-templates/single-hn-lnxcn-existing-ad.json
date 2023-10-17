@@ -31,7 +31,7 @@
     "domainName": {
       "type": "string",
       "metadata": {
-        "description": "The fully qualified domain name (FQDN) for the existing domain forest in which the HPC cluster will join, for example 'hpc.local'."
+        "description": "The fully qualified domain name (FQDN) for the existing domain forest in which the HPC cluster will join, for example 'hpc.cluster'."
       }
     },
     "domainOUPath": {
