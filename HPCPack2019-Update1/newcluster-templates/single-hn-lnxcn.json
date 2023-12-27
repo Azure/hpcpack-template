@@ -89,6 +89,7 @@
         "Ubuntu_16.04_Gen2",
         "Ubuntu_18.04_Gen2",
         "Ubuntu_18.04_HPC_Gen2",
+        "Ubuntu_20.04_HPC_Gen2",
         "CustomImage"
       ],
       "metadata": {
@@ -693,6 +694,12 @@
         "publisher": "Microsoft-DSVM",
         "offer": "Ubuntu-HPC",
         "sku": "1804",
+        "version": "latest"
+      },
+      "Ubuntu_20.04_HPC_Gen2": {
+        "publisher": "Microsoft-DSVM",
+        "offer": "Ubuntu-HPC",
+        "sku": "2004",
         "version": "latest"
       },
       "CustomImage": {
