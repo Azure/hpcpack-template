@@ -183,7 +183,14 @@
       "metadata": {
         "description": "The DNS servers in order, if not configured, the DNS servers configured in the virtual network will be used."
       }
-    }
+    },
+    "licenseType": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the license type for the virtual machines. Use 'Windows_Server' for Azure Hybrid Benefit."
+      }
+  }
   },
   "variables": {
     "userAssignedIdentityObject": {
@@ -286,6 +293,7 @@
           "windowsConfiguration": "[if(variables('isWindowsOS'), variables('windowsConfiguration'), json('null'))]",
           "secrets": "[parameters('secrets')]"
         },
+        "licenseType": "[if(equals(parameters('licenseType'),''), json('null'), parameters('licenseType'))]",
         "storageProfile": {
           "imageReference": "[parameters('imageReference')]",
           "osDisk": {
