@@ -330,6 +330,7 @@
     }
   },
   "variables": {
+    "dcSize": "[trim(parameters('domainControllerVMSize'))]",
     "clusterName": "[trim(parameters('clusterName'))]",
     "domainName": "[trim(parameters('domainName'))]",
     "vaultName": "[trim(parameters('vaultName'))]",
@@ -723,7 +724,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('domainControllerVMSize')]"
+          "vmSize": "[variables('dcSize')]"
         },
         "osProfile": {
           "computerName": "[variables('dcVMName')]",
