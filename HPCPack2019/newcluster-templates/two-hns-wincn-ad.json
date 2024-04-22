@@ -840,15 +840,12 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('domainControllerVMSize')]"
+          "vmSize": "Standard_D2_v3"
         },
         "osProfile": {
           "computerName": "[variables('dcVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]",
-          "windowsConfiguration": {
-            "enableAutomaticUpdates": false
-          }
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
