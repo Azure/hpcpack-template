@@ -991,6 +991,9 @@
           "name": "[concat(variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'), '/Microsoft.Azure.Geneva.GenevaMonitoring')]",
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', concat('create', variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0')))]"
+          ],
           "apiVersion": "2019-03-01",
           "properties": {
             "publisher": "Microsoft.Azure.Geneva",
