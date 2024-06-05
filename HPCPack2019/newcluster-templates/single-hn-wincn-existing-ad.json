@@ -989,7 +989,7 @@
       "resources": [
         {
           "name": "[concat(variables('computeNodeNamePrefix'), padLeft(string(copyIndex()), 3, '0'), '/Microsoft.Azure.Geneva.GenevaMonitoring')]",
-          "type": "extensions",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
           "location": "[resourceGroup().location]",
           "apiVersion": "2019-03-01",
           "properties": {
