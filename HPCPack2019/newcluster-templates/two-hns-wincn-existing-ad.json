@@ -1085,7 +1085,7 @@
           "imageReference": {
             "value": {
               "publisher": "MicrosoftSQLServer",
-              "offer": "SQL2016SP2-WS2016",
+              "offer": "sql2019-ws2022",
               "sku": "Standard",
               "version": "latest"
             }
