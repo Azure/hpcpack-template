@@ -199,7 +199,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2019-03-01' = {
   zones: (empty(trim(availabilityZone)) ? emptyArray : availabilityZones)
 }
 
-resource installInfiniBandDriverWindows 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if (isWindowsOS && installRDMADriver) {
+resource windowsIBDriver 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if (isWindowsOS && installRDMADriver) {
   parent: vm
   name: 'installInfiniBandDriverWindows'
   location: resourceGroup().location
@@ -211,7 +211,7 @@ resource installInfiniBandDriverWindows 'Microsoft.Compute/virtualMachines/exten
   }
 }
 
-resource configHpcComputeNode 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if (isWindowsOS) {
+resource windowsNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if (isWindowsOS) {
   parent: vm
   name: 'configHpcComputeNode'
   location: resourceGroup().location
@@ -231,11 +231,11 @@ resource configHpcComputeNode 'Microsoft.Compute/virtualMachines/extensions@2019
     protectedSettings: (joinDomain ? protectedSettings : null)
   }
   dependsOn: [
-    installInfiniBandDriverWindows
+    windowsIBDriver
   ]
 }
 
-resource installInfiniBandDriverLinux 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if ((!isWindowsOS) && installRDMADriver) {
+resource linuxIBDriver 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if ((!isWindowsOS) && installRDMADriver) {
   parent: vm
   name: 'installInfiniBandDriverLinux'
   location: resourceGroup().location
@@ -247,7 +247,7 @@ resource installInfiniBandDriverLinux 'Microsoft.Compute/virtualMachines/extensi
   }
 }
 
-resource installHPCNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if (!isWindowsOS) {
+resource linuxNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01' = if (!isWindowsOS) {
   parent: vm
   name: 'installHPCNodeAgent'
   location: resourceGroup().location
@@ -263,6 +263,6 @@ resource installHPCNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-
     }
   }
   dependsOn: [
-    installInfiniBandDriverLinux
+    linuxIBDriver
   ]
 }
