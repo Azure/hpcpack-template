@@ -14,7 +14,7 @@ resource updateVNetDNS 'Microsoft.Network/virtualNetworks@2023-04-01' = {
     }
     dhcpOptions: {
       dnsServers: [
-        '10.0.0.4'
+        '10.0.0.4' //This is the static IP of DC. TODO: Make a parameter for it.
         '8.8.8.8'
       ]
     }

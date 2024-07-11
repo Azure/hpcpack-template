@@ -896,7 +896,7 @@ resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   ]
 }
 
-resource roleAssignmentOnRg 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentityOnHeadNode == 'Yes') {
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentityOnHeadNode == 'Yes') {
   name: guid(resourceGroup().id, _clusterName)
   scope: resourceGroup()
   properties: {
@@ -914,7 +914,7 @@ module roleAssigmentOnKeyVault 'shared/access-to-key-vault.bicep' = if (enableMa
   }
 }
 
-resource installInfiniBandDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (hnRDMACapable && autoEnableInfiniBand) {
+resource installIBDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (hnRDMACapable && autoEnableInfiniBand) {
   parent: headNode
   name: 'installInfiniBandDriver'
   location: resourceGroup().location
@@ -926,7 +926,7 @@ resource installInfiniBandDriver 'Microsoft.Compute/virtualMachines/extensions@2
   }
 }
 
-resource installSingleHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
+resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   parent: headNode
   name: 'installSingleHeadNode'
   location: resourceGroup().location
@@ -967,7 +967,7 @@ resource installSingleHeadNode 'Microsoft.Compute/virtualMachines/extensions@202
     }
   }
   dependsOn: [
-    installInfiniBandDriver
+    installIBDriver
   ]
 }
 

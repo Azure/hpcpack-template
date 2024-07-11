@@ -739,7 +739,7 @@ module roleAssigmentOnKeyVault 'shared/access-to-key-vault.bicep' = if (enableMa
   }
 }
 
-resource installInfiniBandDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (hnRDMACapable && autoEnableInfiniBand) {
+resource installIBDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (hnRDMACapable && autoEnableInfiniBand) {
   parent: headNode
   name: 'installInfiniBandDriver'
   location: resourceGroup().location
@@ -773,7 +773,7 @@ resource joinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' 
     }
   }
   dependsOn: [
-    installInfiniBandDriver
+    installIBDriver
   ]
 }
 
