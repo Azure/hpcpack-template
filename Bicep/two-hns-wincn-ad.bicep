@@ -419,6 +419,7 @@ var headNodeImageRef = headNodeImages[headNodeOS]
 var computeNodeImageRef = computeNodeImages[computeNodeImage]
 var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/master/HPCPack2019/shared-resources'
 
+//TODO: Move it inside to the sql-server module?
 var SqlDscExtName = 'configSQLServer'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
@@ -855,42 +856,6 @@ resource installIBDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-0
   }
 ]
 
-module sqlServerVM 'shared/windows-vm-dsc.bicep' = {
-  name: 'createDBServer${_sqlServerVMName}'
-  params: {
-    subnetId: subnetRef
-    vmName: _sqlServerVMName
-    vmSize: sqlServerVMSize
-    osDiskType: diskTypes[sqlServerDiskType]
-    imageReference: {
-      publisher: 'MicrosoftSQLServer'
-      offer: 'sql2019-ws2022'
-      sku: 'Standard'
-      version: 'latest'
-    }
-    adminUsername: adminUsername
-    adminPassword: adminPassword
-    availabilitySetName: _availabilitySetNameHN
-    dataDiskCount: 1
-    dataDiskSizeInGB: 200
-    dataDiskType: diskTypes[sqlServerDiskType]
-    enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-    dscExtensionName: SqlDscExtName
-    dscSettings: {
-      configuration: {
-        url: '${sharedResxBaseUrl}/ConfigSQLServer.ps1.zip'
-        script: 'ConfigSQLServer.ps1'
-        function: 'ConfigSQLServer'
-      }
-    }
-    dscProtectedSettings: {}
-  }
-  dependsOn: [
-    hnAvSet
-    updateVNetDNS
-  ]
-}
-
 resource hnJoinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = [
   for (item, i) in _hnNames: {
     parent: headNodes[i]
@@ -921,34 +886,23 @@ resource hnJoinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01
   }
 ]
 
-resource sqlVM 'Microsoft.Compute/virtualMachines@2024-03-01' existing = {
-  name: _sqlServerVMName
-}
-
-resource sqlVmJoinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: sqlVM
-  name: 'JoinADDomain'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'JsonADDomainExtension'
-    typeHandlerVersion: '1.3'
-    autoUpgradeMinorVersion: true
-    settings: {
-      Name: _domainName
-      User: '${_domainName}\\${adminUsername}'
-      NumberOfRetries: '50'
-      RetryIntervalInMilliseconds: '10000'
-      Restart: 'true'
-      Options: '3'
-    }
-    protectedSettings: {
-      Password: adminPassword
-    }
+module sqlServer 'shared/sql-server.bicep' = {
+  name: 'sqlServer'
+  params: {
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    availabilitySetName: _availabilitySetNameHN
+    diskType: diskTypes[sqlServerDiskType]
+    domainName: _domainName
+    enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
+    SqlDscExtName: SqlDscExtName
+    subnetId: subnetRef
+    vmName: _sqlServerVMName
+    vmSize: sqlServerVMSize
   }
   dependsOn: [
-    //'Microsoft.Resources/deployments/createDBServer${_sqlServerVMName}'
-    sqlServerVM
+    hnAvSet
+    updateVNetDNS
   ]
 }
 
@@ -980,7 +934,7 @@ module configDBPermissions 'shared/dsc-extension.bicep' = {
   }
   dependsOn: [
     hnJoinADDomain
-    sqlVmJoinADDomain
+    sqlServer
   ]
 }
 
