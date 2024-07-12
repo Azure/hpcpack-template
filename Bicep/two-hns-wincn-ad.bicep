@@ -653,6 +653,7 @@ resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = if (createPublicIPAdd
   ]
 }
 
+//TODO: Fix the "existing" resource!
 resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' existing = {
   name: _nicNameDC
 }

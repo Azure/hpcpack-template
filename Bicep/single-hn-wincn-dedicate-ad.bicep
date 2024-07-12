@@ -527,6 +527,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = if (createPu
   }
 }
 
+//TODO: Fix the "existing" resource!
 resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' existing = {
   name: dcNICName
 }

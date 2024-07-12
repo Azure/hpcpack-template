@@ -44,13 +44,8 @@ module sqlServer 'windows-vm-dsc.bicep' = {
   }
 }
 
-resource sqlVM 'Microsoft.Compute/virtualMachines@2024-03-01' existing = {
-  name: vmName
-}
-
 resource joinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: sqlVM
-  name: 'JoinADDomain'
+  name: '${vmName}/JoinADDomain'
   location: resourceGroup().location
   properties: {
     publisher: 'Microsoft.Compute'
