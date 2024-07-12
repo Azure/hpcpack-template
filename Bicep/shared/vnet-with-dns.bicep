@@ -2,6 +2,7 @@ param vNetName string
 param addressPrefix string
 param subnetName string
 param subnetPrefix string
+param dnsSeverIp string = '10.0.0.4'
 
 resource updateVNetDNS 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: vNetName
@@ -14,7 +15,7 @@ resource updateVNetDNS 'Microsoft.Network/virtualNetworks@2023-04-01' = {
     }
     dhcpOptions: {
       dnsServers: [
-        '10.0.0.4' //This is the static IP of DC. TODO: Make a parameter for it.
+        dnsSeverIp
         '8.8.8.8'
       ]
     }

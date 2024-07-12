@@ -652,103 +652,20 @@ resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = if (createPublicIPAdd
   ]
 }
 
-resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = {
+resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' existing = {
   name: _nicNameDC
-  location: resourceGroup().location
-  properties: {
-    ipConfigurations: [
-      {
-        name: 'IPConfig'
-        properties: {
-          privateIPAllocationMethod: 'Static'
-          privateIPAddress: '10.0.0.4'
-          subnet: {
-            id: subnetRef
-          }
-        }
-      }
-    ]
-  }
 }
 
-//TODO: Make a module for dcVM, dcNIC, etc.
-resource dcVM 'Microsoft.Compute/virtualMachines@2023-03-01' = {
-  name: dcVMName
-  location: resourceGroup().location
-  properties: {
-    hardwareProfile: {
-      vmSize: dcSize
-    }
-    osProfile: {
-      computerName: dcVMName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
-    }
-    storageProfile: {
-      imageReference: {
-        publisher: 'MicrosoftWindowsServer'
-        offer: 'WindowsServer'
-        sku: '2019-Datacenter'
-        version: 'latest'
-      }
-      osDisk: {
-        name: '${dcVMName}-osdisk'
-        caching: 'ReadOnly'
-        createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: 'Standard_LRS'
-        }
-      }
-      dataDisks: [
-        {
-          name: '${dcVMName}-datadisk'
-          caching: 'None'
-          createOption: 'Empty'
-          managedDisk: {
-            storageAccountType: 'Standard_LRS'
-          }
-          diskSizeGB: 200
-          lun: 0
-        }
-      ]
-    }
-    networkProfile: {
-      networkInterfaces: [
-        {
-          id: dcNIC.id
-        }
-      ]
-    }
-  }
-}
-
-resource promoteDC 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: dcVM
-  name: 'promoteDomainController'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.Powershell'
-    type: 'DSC'
-    typeHandlerVersion: '2.80'
-    autoUpgradeMinorVersion: true
-    settings: {
-      configuration: {
-        url: '${sharedResxBaseUrl}/CreateADPDC.ps1.zip'
-        script: 'CreateADPDC.ps1'
-        function: 'CreateADPDC'
-      }
-      configurationArguments: {
-        DomainName: _domainName
-      }
-    }
-    protectedSettings: {
-      configurationArguments: {
-        AdminCreds: {
-          UserName: adminUsername
-          Password: adminPassword
-        }
-      }
-    }
+module dc 'shared/domain-controller.bicep' = {
+  name: 'dc'
+  params: {
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    domainName: _domainName
+    nicName: _nicNameDC
+    subnetID: subnetRef
+    vmName: dcVMName
+    vmSize: dcSize
   }
 }
 
@@ -757,7 +674,7 @@ module updateVNetDNS 'shared/vnet-with-dns.bicep' = {
   scope: resourceGroup()
   dependsOn: [
     vnet
-    promoteDC
+    dc
   ]
   params: {
     vNetName: virtualNetworkName
