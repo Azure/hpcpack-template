@@ -653,11 +653,6 @@ resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = if (createPublicIPAdd
   ]
 }
 
-//TODO: Fix the "existing" resource!
-resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' existing = {
-  name: _nicNameDC
-}
-
 module dc 'shared/domain-controller.bicep' = {
   name: 'dc'
   params: {
@@ -721,7 +716,7 @@ resource hnNICs 'Microsoft.Network/networkInterfaces@2023-04-01' = [
       enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
     }
     dependsOn: [
-      dcNIC
+      dc
       lb
       //TODO: Make dependency on a single IP instead of the collection hnPublicIps
       //'Microsoft.Network/publicIPAddresses/${item}PublicIp'
@@ -749,7 +744,7 @@ resource hnNICsNoPublicIP 'Microsoft.Network/networkInterfaces@2023-04-01' = [
       enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
     }
     dependsOn: [
-      dcNIC
+      dc
     ]
   }
 ]
