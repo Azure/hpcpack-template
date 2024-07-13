@@ -244,15 +244,15 @@ var diskTypes = {
   Premium_SSD: 'Premium_LRS'
 }
 var hnDataDisks = [
-    for j in range(0, ((headNodeDataDiskCount == 0) ? 1 : headNodeDataDiskCount)): {
-      lun: j
-      createOption: 'Empty'
-      diskSizeGB: headNodeDataDiskSize
-      managedDisk: {
-        storageAccountType: diskTypes[headNodeDataDiskType]
-      }
+  for j in range(0, ((headNodeDataDiskCount == 0) ? 1 : headNodeDataDiskCount)): {
+    lun: j
+    createOption: 'Empty'
+    diskSizeGB: headNodeDataDiskSize
+    managedDisk: {
+      storageAccountType: diskTypes[headNodeDataDiskType]
     }
-  ]
+  }
+]
 
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var storageAccountId = storageAccount.id
@@ -275,7 +275,7 @@ var publicIPName = '${_clusterName}publicip'
 var publicIPDNSNameLabel = '${toLower(_clusterName)}${publicIPSuffix}'
 var publicIPAddressType = 'Dynamic'
 var publicIpAddressId = {
-  id: publicIP.id
+  id: lbPublicIP.id
 }
 var _availabilitySetNameHN = '${_clusterName}-avset'
 var cnAvailabilitySetName = '${_computeNodeNamePrefix}avset'
@@ -452,7 +452,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   }
 }
 
-resource publicIP 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
+resource lbPublicIP 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
   name: publicIPName
   location: resourceGroup().location
   sku: {
