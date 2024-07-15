@@ -1,3 +1,5 @@
+import { HeadNodeImage, headNodeImages, WindowsComputeNodeImage, windowsComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl } from 'shared/types-and-vars.bicep'
+
 @description('The name of the HPC cluster, also used as the host name prefix of the domain controller. It must contain between 3 and 12 characters with lowercase letters and numbers, and must start with a letter.')
 @minLength(3)
 @maxLength(12)
@@ -15,12 +17,7 @@ param domainControllerVMSize string = 'Standard_D2_v3'
 param sqlServerVMName string
 
 @description('The disk type of SQL server VM. Note that Premium_SSD only supports some VM sizes, see <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>')
-@allowed([
-  'Standard_HDD'
-  'Standard_SSD'
-  'Premium_SSD'
-])
-param sqlServerDiskType string = 'Premium_SSD'
+param sqlServerDiskType DiskType = 'Premium_SSD'
 
 @description('The VM size for the SQL Server VM, all available VM sizes in Azure can be found at https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes')
 param sqlServerVMSize string = 'Standard_DS4_v2'
@@ -31,23 +28,13 @@ param sqlServerVMSize string = 'Standard_DS4_v2'
 param headNodeList string = 'HPCHN01,HPCHN02'
 
 @description('The operating system of the head nodes.')
-@allowed([
-  'WindowsServer2022'
-  'WindowsServer2019'
-  'CustomImage'
-])
-param headNodeOS string = 'WindowsServer2019'
+param headNodeOS HeadNodeImage = 'WindowsServer2019'
 
 @description('Specify only when \'CustomImage\' selected for headNodeOS. The resource Id of the head node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param headNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
 
 @description('The disk type of head node VM. Note that Premium_SSD only supports some VM sizes, see <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>')
-@allowed([
-  'Standard_HDD'
-  'Standard_SSD'
-  'Premium_SSD'
-])
-param headNodeOsDiskType string = 'Premium_SSD'
+param headNodeOsDiskType DiskType = 'Premium_SSD'
 
 @description('The VM size of the head node, all available VM sizes in Azure can be found at <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment.')
 param headNodeVMSize string = 'Standard_DS4_v2'
@@ -63,44 +50,20 @@ param computeNodeNamePrefix string = 'IaaSCN'
 param computeNodeNumber int = 10
 
 @description('The VM image of the compute nodes.')
-@allowed([
-  'WindowsServer2012'
-  'WindowsServer2012R2'
-  'WindowsServer2016'
-  'WindowsServer2019'
-  'WindowsServer2022'
-  'WindowsServer2012R2WithExcel'
-  'WindowsServer2016WithExcel'
-  'WindowsServer2012_Gen2'
-  'WindowsServer2012R2_Gen2'
-  'WindowsServer2016_Gen2'
-  'WindowsServer2019_Gen2'
-  'WindowsServer2022_Gen2'
-  'CustomImage'
-])
-param computeNodeImage string = 'WindowsServer2019'
+param computeNodeImage WindowsComputeNodeImage = 'WindowsServer2019'
 
 @description('Specify only when \'CustomImage\' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param computeNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
 
 @description('The disk type of compute node VM. Note that Premium_SSD only supports some VM sizes, see <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>')
-@allowed([
-  'Standard_HDD'
-  'Standard_SSD'
-  'Premium_SSD'
-])
-param computeNodeOsDiskType string = 'Standard_HDD'
+param computeNodeOsDiskType DiskType = 'Standard_HDD'
 
+//TODO: Make a type for VM size
 @description('The VM size of the compute nodes, all available VM sizes in Azure can be found at <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment.')
 param computeNodeVMSize string = 'Standard_D3_v2'
 
 @description('Specify whether you want to create the compute nodes in Azure availability set, if \'Auto\' is specified, compute nodes are created in availability set only when the VM size is RDMA capable.')
-@allowed([
-  'Yes'
-  'No'
-  'Auto'
-])
-param computeNodeInAVSet string = 'Auto'
+param computeNodeInAVSet YesOrNoOrAuto = 'Auto'
 
 @description('Administrator user name for the virtual machines and the Active Directory domain.')
 param adminUsername string = 'hpcadmin'
@@ -122,108 +85,40 @@ param certificateUrl string
 param certThumbprint string
 
 @description('Specify whether to enable system-assigned managed identity on the head node, and use it to manage the Azure IaaS compute nodes.')
-@allowed([
-  'Yes'
-  'No'
-])
-param enableManagedIdentityOnHeadNode string = 'Yes'
+param enableManagedIdentityOnHeadNode YesOrNo = 'Yes'
 
 @description('Indicates whether to create a public IP address for head nodes.')
-@allowed([
-  'Yes'
-  'No'
-])
-param createPublicIPAddressForHeadNode string = 'Yes'
+param createPublicIPAddressForHeadNode YesOrNo = 'Yes'
 
 @description('Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes. If you specify it as \'Yes\', you must specify accelerated networking supported VM sizes for all the VMs in the cluster. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell.')
-@allowed([
-  'Yes'
-  'No'
-])
-param enableAcceleratedNetworking string = 'No'
+param enableAcceleratedNetworking YesOrNo = 'No'
 
 @description('The number of data disks attached to the head node VM.')
-@allowed([
-  0
-  1
-  2
-  4
-  8
-])
-param headNodeDataDiskCount int = 0
+param headNodeDataDiskCount DiskCount = 0
 
 @description('The size in GB of each data disk that is attached to the head node VM.')
-@allowed([
-  32
-  64
-  128
-  256
-  512
-  1024
-  2048
-  4096
-])
-param headNodeDataDiskSize int = 128
+param headNodeDataDiskSize DiskSizeInGB = 128
 
 @description('Head node data disk type. Note that Premium_SSD only supports some VM sizes, see <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>')
-@allowed([
-  'Standard_HDD'
-  'Standard_SSD'
-  'Premium_SSD'
-])
-param headNodeDataDiskType string = 'Standard_HDD'
+param headNodeDataDiskType DiskType = 'Standard_HDD'
 
 @description('The number of data disks attached to the compute node VM.')
-@allowed([
-  0
-  1
-  2
-  4
-  8
-])
-param computeNodeDataDiskCount int = 0
+param computeNodeDataDiskCount DiskCount = 0
 
 @description('The size in GB of each data disk that is attached to the compute node VM.')
-@allowed([
-  32
-  64
-  128
-  256
-  512
-  1024
-  2048
-  4096
-])
-param computeNodeDataDiskSize int = 128
+param computeNodeDataDiskSize DiskSizeInGB = 128
 
 @description('Compute node data disk type. Note that Premium_SSD only supports some VM sizes, see <a href=\'https://azure.microsoft.com/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>')
-@allowed([
-  'Standard_HDD'
-  'Standard_SSD'
-  'Premium_SSD'
-])
-param computeNodeDataDiskType string = 'Standard_HDD'
+param computeNodeDataDiskType DiskType = 'Standard_HDD'
 
 @description('Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Note that it is not recommended to use this feature in production cluster.')
-@allowed([
-  'Yes'
-  'No'
-])
-param useVmssForComputeNodes string = 'No'
+param useVmssForComputeNodes YesOrNo = 'No'
 
 @description('Specify whether you want to use the experimental feature to create compute nodes as <a href=\'https://azure.microsoft.com/pricing/spot/\' target=\'_blank\'>Azure Spot instances</a>. Note that it is not recommended to use this feature in production cluster.')
-@allowed([
-  'Yes'
-  'No'
-])
-param useSpotInstanceForComputeNodes string = 'No'
+param useSpotInstanceForComputeNodes YesOrNo = 'No'
 
 @description('Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network.')
-@allowed([
-  'Yes'
-  'No'
-])
-param autoInstallInfiniBandDriver string = 'Yes'
+param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
 var dcSize = trim(domainControllerVMSize)
 var _clusterName = trim(clusterName)
@@ -234,11 +129,7 @@ var _certThumbprint = trim(certThumbprint)
 var _headNodeList = trim(headNodeList)
 var _sqlServerVMName = trim(sqlServerVMName)
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
-var diskTypes = {
-  Standard_HDD: 'Standard_LRS'
-  Standard_SSD: 'StandardSSD_LRS'
-  Premium_SSD: 'Premium_LRS'
-}
+
 
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var storageAccountId = storageAccount.id
@@ -299,109 +190,18 @@ var certSecrets = [
     ]
   }
 ]
-var headNodeImages = {
-  WindowsServer2019: {
-    publisher: 'MicrosoftWindowsServerHPCPack'
-    offer: 'WindowsServerHPCPack'
-    sku: '2019hn-ws2019'
-    version: 'latest'
-  }
-  WindowsServer2022: {
-    publisher: 'MicrosoftWindowsServerHPCPack'
-    offer: 'WindowsServerHPCPack'
-    sku: '2019hn-ws2022'
-    version: 'latest'
-  }
+var _headNodeImages = union(headNodeImages, {
   CustomImage: {
     id: trim(headNodeImageResourceId)
   }
-}
-var computeNodeImages = {
-  WindowsServer2008R2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2008-R2-SP1'
-    version: 'latest'
-  }
-  WindowsServer2012: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2012-Datacenter'
-    version: 'latest'
-  }
-  WindowsServer2012R2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2012-R2-Datacenter'
-    version: 'latest'
-  }
-  WindowsServer2016: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2016-Datacenter'
-    version: 'latest'
-  }
-  WindowsServer2019: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2019-Datacenter'
-    version: 'latest'
-  }
-  WindowsServer2022: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2022-datacenter'
-    version: 'latest'
-  }
-  WindowsServer2012R2WithExcel: {
-    publisher: 'MicrosoftWindowsServerHPCPack'
-    offer: 'WindowsServerHPCPack'
-    sku: '2016U2CN-WS2012R2-Excel'
-    version: 'latest'
-  }
-  WindowsServer2016WithExcel: {
-    publisher: 'MicrosoftWindowsServerHPCPack'
-    offer: 'WindowsServerHPCPack'
-    sku: '2016U2CN-WS2016-Excel'
-    version: 'latest'
-  }
-  WindowsServer2012_Gen2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2012-datacenter-gensecond'
-    version: 'latest'
-  }
-  WindowsServer2012R2_Gen2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2012-r2-datacenter-gensecond'
-    version: 'latest'
-  }
-  WindowsServer2016_Gen2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2016-datacenter-gensecond'
-    version: 'latest'
-  }
-  WindowsServer2019_Gen2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2019-datacenter-gensecond'
-    version: 'latest'
-  }
-  WindowsServer2022_Gen2: {
-    publisher: 'MicrosoftWindowsServer'
-    offer: 'WindowsServer'
-    sku: '2022-datacenter-g2'
-    version: 'latest'
-  }
+})
+var _computeNodeImages = union(windowsComputeNodeImages, {
   CustomImage: {
     id: trim(computeNodeImageResourceId)
   }
-}
-var headNodeImageRef = headNodeImages[headNodeOS]
-var computeNodeImageRef = computeNodeImages[computeNodeImage]
-var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/master/HPCPack2019/shared-resources'
+})
+var headNodeImageRef = _headNodeImages[headNodeOS]
+var computeNodeImageRef = _computeNodeImages[computeNodeImage]
 
 //TODO: Move it inside to the sql-server module?
 var SqlDscExtName = 'configSQLServer'
