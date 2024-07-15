@@ -234,32 +234,19 @@ var _certThumbprint = trim(certThumbprint)
 var _headNodeList = trim(headNodeList)
 var _sqlServerVMName = trim(sqlServerVMName)
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
-var managedIdentity = {
-  type: 'SystemAssigned'
-}
-var emptyArray = []
 var diskTypes = {
   Standard_HDD: 'Standard_LRS'
   Standard_SSD: 'StandardSSD_LRS'
   Premium_SSD: 'Premium_LRS'
 }
-var hnDataDisks = [
-  for j in range(0, ((headNodeDataDiskCount == 0) ? 1 : headNodeDataDiskCount)): {
-    lun: j
-    createOption: 'Empty'
-    diskSizeGB: headNodeDataDiskSize
-    managedDisk: {
-      storageAccountType: diskTypes[headNodeDataDiskType]
-    }
-  }
-]
 
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var storageAccountId = storageAccount.id
 var lbName = '${_clusterName}-lb'
 var lbID = resourceId('Microsoft.Network/loadBalancers', lbName)
 var lbFrontEndIPConfigID = '${lbID}/frontendIPConfigurations/LoadBalancerFrontEnd'
-var lbPoolID = '${lbID}/backendAddressPools/BackendPool1'
+var lbPoolName = 'BackendPool1'
+var lbPoolID = '${lbID}/backendAddressPools/${lbPoolName}'
 var lbProbeID = '${lbID}/probes/tcpProbe'
 var addressPrefix = '10.0.0.0/16'
 var subnet1Name = 'Subnet-1'
@@ -274,9 +261,6 @@ var publicIPSuffix = uniqueString(resourceGroup().id)
 var publicIPName = '${_clusterName}publicip'
 var publicIPDNSNameLabel = '${toLower(_clusterName)}${publicIPSuffix}'
 var publicIPAddressType = 'Dynamic'
-var publicIpAddressId = {
-  id: lbPublicIP.id
-}
 var _availabilitySetNameHN = '${_clusterName}-avset'
 var cnAvailabilitySetName = '${_computeNodeNamePrefix}avset'
 var nbrVMPerAvailabilitySet = 200
@@ -559,19 +543,6 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = if (createPu
   }
 }
 
-resource hnPublicIps 'Microsoft.Network/publicIPAddresses@2023-04-01' = [
-  for item in _hnNames: if (createPublicIPAddressForHeadNode == 'Yes') {
-    name: '${item}PublicIp'
-    location: resourceGroup().location
-    properties: {
-      publicIPAllocationMethod: 'Dynamic'
-      dnsSettings: {
-        domainNameLabel: toLower('${item}${publicIPSuffix}')
-      }
-    }
-  }
-]
-
 resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
   name: lbName
   location: resourceGroup().location
@@ -580,7 +551,9 @@ resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = if (createPublicIPAdd
       {
         name: 'LoadBalancerFrontEnd'
         properties: {
-          publicIPAddress: publicIpAddressId
+          publicIPAddress: {
+            id: lbPublicIP.id
+          }
         }
       }
     ]
@@ -681,74 +654,6 @@ module updateVNetDNS 'shared/vnet-with-dns.bicep' = {
   }
 }
 
-resource hnNICs 'Microsoft.Network/networkInterfaces@2023-04-01' = [
-  for item in _hnNames: if (createPublicIPAddressForHeadNode == 'Yes') {
-    name: '${item}${uniquePubNicSuffix}'
-    location: resourceGroup().location
-    properties: {
-      ipConfigurations: [
-        {
-          name: 'IPConfig'
-          properties: {
-            privateIPAllocationMethod: 'Dynamic'
-            subnet: {
-              id: subnetRef
-            }
-            loadBalancerBackendAddressPools: [
-              {
-                id: lbPoolID
-              }
-            ]
-            loadBalancerInboundNatRules: [
-              {
-                id: '${lbID}/inboundNatRules/RDP-${item}'
-              }
-            ]
-            publicIPAddress: {
-              id: resourceId('Microsoft.Network/publicIPAddresses', '${item}PublicIp')
-            }
-          }
-        }
-      ]
-      networkSecurityGroup: {
-        id: nsg.id
-      }
-      enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-    }
-    dependsOn: [
-      dc
-      lb
-      //TODO: Make dependency on a single IP instead of the collection hnPublicIps
-      //'Microsoft.Network/publicIPAddresses/${item}PublicIp'
-      hnPublicIps
-    ]
-  }
-]
-
-resource hnNICsNoPublicIP 'Microsoft.Network/networkInterfaces@2023-04-01' = [
-  for item in _hnNames: if (createPublicIPAddressForHeadNode != 'Yes') {
-    name: '${item}${uniqueNicSuffix}'
-    location: resourceGroup().location
-    properties: {
-      ipConfigurations: [
-        {
-          name: 'IPConfig'
-          properties: {
-            privateIPAllocationMethod: 'Dynamic'
-            subnet: {
-              id: subnetRef
-            }
-          }
-        }
-      ]
-      enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-    }
-    dependsOn: [
-      dc
-    ]
-  }
-]
-
 resource hnAvSet 'Microsoft.Compute/availabilitySets@2023-03-01' = {
   name: _availabilitySetNameHN
   sku: {
@@ -761,123 +666,39 @@ resource hnAvSet 'Microsoft.Compute/availabilitySets@2023-03-01' = {
   location: resourceGroup().location
 }
 
-resource headNodes 'Microsoft.Compute/virtualMachines@2023-03-01' = [
-  for item in _hnNames: {
-    name: item
-    location: resourceGroup().location
-    identity: ((enableManagedIdentityOnHeadNode == 'Yes') ? managedIdentity : null)
-    properties: {
-      availabilitySet: {
-        id: hnAvSet.id
-      }
-      hardwareProfile: {
-        vmSize: headNodeVMSize
-      }
-      osProfile: {
-        computerName: item
-        adminUsername: adminUsername
-        adminPassword: adminPassword
-        windowsConfiguration: {
-          enableAutomaticUpdates: false
-        }
-        secrets: certSecrets
-      }
-      storageProfile: {
-        imageReference: headNodeImageRef
-        osDisk: {
-          name: '${item}-osdisk'
-          caching: 'ReadOnly'
-          createOption: 'FromImage'
-          managedDisk: {
-            storageAccountType: diskTypes[headNodeOsDiskType]
-          }
-        }
-        dataDisks: ((headNodeDataDiskCount == 0) ? emptyArray : hnDataDisks)
-      }
-      networkProfile: {
-        networkInterfaces: [
-          {
-            id: resourceId(
-              'Microsoft.Network/networkInterfaces',
-              '${item}${((createPublicIPAddressForHeadNode == 'Yes') ? uniquePubNicSuffix : uniqueNicSuffix)}'
-            )
-          }
-        ]
-      }
-    }
-    dependsOn: [
-      //TODO: Depend on one of the following two instead of both
-      //'Microsoft.Network/networkInterfaces/${item}${uniqueNicSuffix}'
-      //'Microsoft.Network/networkInterfaces/${item}${uniquePubNicSuffix}'
-      hnNICs
-      hnNICsNoPublicIP
-      updateVNetDNS
-    ]
-  }
-]
-
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
-  for (name, i) in _hnNames: if (enableManagedIdentityOnHeadNode == 'Yes') {
-    name: guid(resourceGroup().id, _clusterName, name)
-    scope: resourceGroup()
-    properties: {
-      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
-      principalId: headNodes[i].identity.principalId
-    }
-  }
-]
-
-module roleAssigmentOnKeyVault 'shared/access-to-key-vault.bicep' = [
-  for (_, i) in _hnNames:  if (enableManagedIdentityOnHeadNode == 'Yes') {
-    name: 'msiKeyVaultRoleAssignment${i}'
-    scope: resourceGroup(_vaultResourceGroup)
+module headNodes 'shared/head-node.bicep' = [
+  for name in _hnNames: {
+    name: name
     params: {
-      keyVaultName: _vaultName
-      principalId: headNodes[i].identity.principalId
-    }
-  }
-]
-
-resource installIBDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = [
-  for (name, i) in _hnNames: if (hnRDMACapable && autoEnableInfiniBand) {
-    parent: headNodes[i]
-    name: 'installInfiniBandDriver'
-    location: resourceGroup().location
-    properties: {
-      publisher: 'Microsoft.HpcCompute'
-      type: 'InfiniBandDriverWindows'
-      typeHandlerVersion: '1.2'
-      autoUpgradeMinorVersion: true
-    }
-  }
-]
-
-resource hnJoinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = [
-  for (item, i) in _hnNames: {
-    parent: headNodes[i]
-    name: 'JoinADDomain'
-    location: resourceGroup().location
-    properties: {
-      publisher: 'Microsoft.Compute'
-      type: 'JsonADDomainExtension'
-      typeHandlerVersion: '1.3'
-      autoUpgradeMinorVersion: true
-      settings: {
-        Name: _domainName
-        User: '${_domainName}\\${adminUsername}'
-        NumberOfRetries: '50'
-        RetryIntervalInMilliseconds: '10000'
-        Restart: 'true'
-        Options: '3'
-      }
-      protectedSettings: {
-        Password: adminPassword
-      }
+      adminPassword: adminPassword
+      adminUsername: adminUsername
+      certSecrets: certSecrets
+      clusterName: _clusterName
+      createPublicIp: (createPublicIPAddressForHeadNode == 'Yes')
+      domainName: _domainName
+      enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
+      enableManagedIdentity: (enableManagedIdentityOnHeadNode == 'Yes')
+      hnAvSetName: hnAvSet.name
+      hnDataDiskCount: headNodeDataDiskCount
+      hnDataDiskSize: headNodeDataDiskSize
+      hnDataDiskType: headNodeDataDiskType
+      hnImageRef: headNodeImageRef
+      hnName: name
+      hnOsDiskType: headNodeOsDiskType
+      hnVMSize: headNodeVMSize
+      installIBDriver: hnRDMACapable && autoEnableInfiniBand
+      lbName: lb.name
+      lbPoolName: lbPoolName
+      nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsg.name : null
+      privateNicSuffix: uniqueNicSuffix
+      publicIPSuffix: publicIPSuffix
+      publicNicSuffix: uniquePubNicSuffix
+      subnetId: subnetRef
+      vaultName: _vaultName
+      vaultResourceGroup: _vaultResourceGroup
     }
     dependsOn: [
-      //TODO: Depend on single element not both from installIBDriver
-      //'Microsoft.Compute/virtualMachines/${item}/extensions/installInfiniBandDriver'
-      installIBDriver
+      updateVNetDNS
     ]
   }
 ]
@@ -929,14 +750,13 @@ module configDBPermissions 'shared/dsc-extension.bicep' = {
     }
   }
   dependsOn: [
-    hnJoinADDomain
     sqlServer
+    headNodes
   ]
 }
 
 resource setupPrimaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: headNodes[0]
-  name: 'setupPrimaryHeadNode'
+  name: '${_hnNames[0]}/setupPrimaryHeadNode'
   location: resourceGroup().location
   properties: {
     publisher: 'Microsoft.Powershell'
@@ -977,13 +797,13 @@ resource setupPrimaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023
     }
   }
   dependsOn: [
+    headNodes
     configDBPermissions
   ]
 }
 
 resource setupSecondaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: headNodes[1]
-  name: 'setupSecondaryHeadNode'
+  name: '${_hnNames[1]}/setupSecondaryHeadNode'
   location: resourceGroup().location
   properties: {
     publisher: 'Microsoft.Powershell'
@@ -1012,6 +832,7 @@ resource setupSecondaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@20
     }
   }
   dependsOn: [
+    headNodes
     setupPrimaryHeadNode
   ]
 }
@@ -1097,6 +918,6 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
   ]
 }
 
-output clusterDNSName string = ((createPublicIPAddressForHeadNode == 'No')
+output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No')
   ? privateClusterFQDN
-  : reference(publicIpAddressId.id, '2019-04-01').dnsSettings.fqdn)
+  : lbPublicIP.properties.dnsSettings.fqdn
