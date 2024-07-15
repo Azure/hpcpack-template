@@ -210,25 +210,11 @@ var _vaultName = trim(vaultName)
 var _vaultResourceGroup = trim(vaultResourceGroup)
 var _certThumbprint = trim(certThumbprint)
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
-var managedIdentity = {
-  type: 'SystemAssigned'
-}
-var emptyArray = []
 var diskTypes = {
   Standard_HDD: 'Standard_LRS'
   Standard_SSD: 'StandardSSD_LRS'
   Premium_SSD: 'Premium_LRS'
 }
-var hnDataDisks = [
-  for j in range(0, ((headNodeDataDiskCount == 0) ? 1 : headNodeDataDiskCount)): {
-    lun: j
-    createOption: 'Empty'
-    diskSizeGB: headNodeDataDiskSize
-    managedDisk: {
-      storageAccountType: diskTypes[headNodeDataDiskType]
-    }
-  }
-]
 
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var addressPrefix = '10.0.0.0/16'
@@ -238,25 +224,13 @@ var virtualNetworkName = '${_clusterName}vnet'
 var vnetID = vnet.id
 var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
-var publicIPName = '${_clusterName}publicip'
-var publicIPDNSNameLabel = '${toLower(_clusterName)}${uniqueString(resourceGroup().id)}'
-var publicIPAddressType = 'Dynamic'
-var publicIpAddressId = {
-  id: publicIP.id
-}
+var publicIPSuffix = uniqueString(resourceGroup().id)
 var availabilitySetName = '${_clusterName}-avset'
-var _availabilitySet = {
-  id: availabilitySet.id
-}
 var uniqueSuffix = uniqueString(subnetRef)
 var uniqueNicSuffix = '-nic-${uniqueSuffix}'
 var dcVMName = '${_clusterName}dc'
 var dcNICName = '${dcVMName}${uniqueNicSuffix}'
-var hnNICName = '${_clusterName}${uniqueNicSuffix}'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id,subnetRef)}'
-var networkSecurityGroupId = {
-  id: nsg.id
-}
 var rdmaASeries = [
   'Standard_A8'
   'Standard_A9'
@@ -420,20 +394,6 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   }
 }
 
-resource publicIP 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
-  name: publicIPName
-  location: resourceGroup().location
-  sku: {
-    name: 'Basic'
-  }
-  properties: {
-    publicIPAllocationMethod: publicIPAddressType
-    dnsSettings: {
-      domainNameLabel: publicIPDNSNameLabel
-    }
-  }
-}
-
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
   name: nsgName
   location: resourceGroup().location
@@ -527,30 +487,6 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = if (createPu
   }
 }
 
-resource hnNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = {
-  name: hnNICName
-  location: resourceGroup().location
-  properties: {
-    ipConfigurations: [
-      {
-        name: 'IPConfig'
-        properties: {
-          privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: ((createPublicIPAddressForHeadNode == 'Yes') ? publicIpAddressId : null)
-          subnet: {
-            id: subnetRef
-          }
-        }
-      }
-    ]
-    networkSecurityGroup: ((createPublicIPAddressForHeadNode == 'Yes') ? networkSecurityGroupId : null)
-    enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-  }
-  dependsOn: [
-    dc
-  ]
-}
-
 module dc 'shared/domain-controller.bicep' = {
   name: 'dc'
   params: {
@@ -591,109 +527,39 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (c
   }
 }
 
-resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
+module headNode 'shared/head-node.bicep' = {
   name: _clusterName
-  location: resourceGroup().location
-  identity: ((enableManagedIdentityOnHeadNode == 'Yes') ? managedIdentity : null)
-  properties: {
-    availabilitySet: (createHNInAVSet ? _availabilitySet : null)
-    hardwareProfile: {
-      vmSize: headNodeVMSize
-    }
-    osProfile: {
-      computerName: _clusterName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
-      windowsConfiguration: {
-        enableAutomaticUpdates: false
-      }
-      secrets: certSecrets
-    }
-    storageProfile: {
-      imageReference: headNodeImageRef
-      osDisk: {
-        name: '${_clusterName}-osdisk'
-        caching: 'ReadOnly'
-        createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: diskTypes[headNodeOsDiskType]
-        }
-      }
-      dataDisks: ((headNodeDataDiskCount == 0) ? emptyArray : hnDataDisks)
-    }
-    networkProfile: {
-      networkInterfaces: [
-        {
-          id: resourceId('Microsoft.Network/networkInterfaces', '${_clusterName}${uniqueNicSuffix}')
-        }
-      ]
-    }
+  params: {
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    certSecrets: certSecrets
+    clusterName: _clusterName
+    createPublicIp: createPublicIPAddressForHeadNode == 'Yes'
+    domainName: _domainName
+    enableAcceleratedNetworking: enableAcceleratedNetworking == 'Yes'
+    enableManagedIdentity: enableManagedIdentityOnHeadNode == 'Yes'
+    hnAvSetName: createHNInAVSet ? availabilitySet.name : null
+    hnDataDiskCount: headNodeDataDiskCount
+    hnDataDiskSize: headNodeDataDiskSize
+    hnDataDiskType: headNodeDataDiskType
+    hnImageRef: headNodeImageRef
+    hnName: _clusterName
+    hnOsDiskType: headNodeOsDiskType
+    hnVMSize: headNodeVMSize
+    installIBDriver:hnRDMACapable && autoEnableInfiniBand
+    nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsg.name : null
+    publicIPSuffix: publicIPSuffix
+    subnetId: subnetRef
+    vaultName: _vaultName
+    vaultResourceGroup: _vaultResourceGroup
   }
   dependsOn: [
-    hnNIC
     updateVNetDNS
   ]
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentityOnHeadNode == 'Yes') {
-  name: guid(resourceGroup().id, _clusterName)
-  scope: resourceGroup()
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
-    principalId: headNode.identity.principalId
-  }
-}
-
-module roleAssigmentOnKeyVault 'shared/access-to-key-vault.bicep' = if (enableManagedIdentityOnHeadNode == 'Yes') {
-  name: 'msiKeyVaultRoleAssignment'
-  scope: resourceGroup(_vaultResourceGroup)
-  params: {
-    keyVaultName: _vaultName
-    principalId: headNode.identity.principalId
-  }
-}
-
-resource installIBDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (hnRDMACapable && autoEnableInfiniBand) {
-  parent: headNode
-  name: 'installInfiniBandDriver'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.HpcCompute'
-    type: 'InfiniBandDriverWindows'
-    typeHandlerVersion: '1.2'
-    autoUpgradeMinorVersion: true
-  }
-}
-
-resource joinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: headNode
-  name: 'JoinADDomain'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'JsonADDomainExtension'
-    typeHandlerVersion: '1.3'
-    autoUpgradeMinorVersion: true
-    settings: {
-      Name: _domainName
-      User: '${_domainName}\\${adminUsername}'
-      NumberOfRetries: '50'
-      RetryIntervalInMilliseconds: '10000'
-      Restart: 'true'
-      Options: '3'
-    }
-    protectedSettings: {
-      Password: adminPassword
-    }
-  }
-  dependsOn: [
-    installIBDriver
-  ]
-}
-
 resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: headNode
-  name: 'setupHpcHeadNode'
+  name: '${_clusterName}/setupHpcHeadNode'
   location: resourceGroup().location
   properties: {
     publisher: 'Microsoft.Powershell'
@@ -732,7 +598,7 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
     }
   }
   dependsOn: [
-    joinADDomain
+    headNode
   ]
 }
 
@@ -798,6 +664,4 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
   ]
 }
 
-output clusterDNSName string = ((createPublicIPAddressForHeadNode == 'No')
-  ? privateClusterFQDN
-  : reference(publicIpAddressId.id, '2019-04-01').dnsSettings.fqdn)
+output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No') ? privateClusterFQDN : headNode.outputs.dnsName
