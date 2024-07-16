@@ -312,7 +312,7 @@
   },
   "variables": {
     "headNodeImageResourceGroup": "[trim(parameters('headNodeImageResourceGroup'))]", 
-    "headNodeImageName": "[trim(paramaters('headNodeImageName'))]",
+    "headNodeImageName": "[trim(parameters('headNodeImageName'))]",
     "clusterName": "[trim(parameters('clusterName'))]",
     "vaultName": "[trim(parameters('vaultName'))]",
     "vaultResourceGroup": "[trim(parameters('vaultResourceGroup'))]",
