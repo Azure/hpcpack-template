@@ -6,8 +6,9 @@ param clusterName string
 @description('The fully qualified domain name (FQDN) for the private domain forest which will be created by this template, for example \'hpc.cluster\'.')
 param domainName string = 'hpc.cluster'
 
+//NOTE: Change the default size Standard_D2_v3 may cause VM extension "promoteDC" failure. The reason is unknown.
 @description('The VM size for the domain controller, all available VM sizes in Azure can be found at https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes')
-param domainControllerVMSize string = 'Standard_DS2_v3'
+param domainControllerVMSize string = 'Standard_D2_v3'
 
 @description('The operating system of the head node.')
 @allowed([
