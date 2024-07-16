@@ -120,8 +120,8 @@ var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var addressPrefix = '10.0.0.0/16'
 var subnet1Name = 'Subnet-1'
 var subnet1Prefix = '10.0.0.0/22'
-var virtualNetworkName = '${_clusterName}vnet'
-var vnetID = vnet.id
+var vNetName = '${_clusterName}vnet'
+var vnetID = vnet.outputs.vNetId
 var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
 var publicIPSuffix = uniqueString(resourceGroup().id)
@@ -130,7 +130,7 @@ var uniqueSuffix = uniqueString(subnetRef)
 var uniqueNicSuffix = '-nic-${uniqueSuffix}'
 var dcVMName = '${_clusterName}dc'
 var dcNICName = '${dcVMName}${uniqueNicSuffix}'
-var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id,subnetRef)}'
+var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 var rdmaASeries = [
   'Standard_A8'
   'Standard_A9'
@@ -183,23 +183,14 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {}
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
-  name: virtualNetworkName
-  location: resourceGroup().location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        addressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: subnet1Name
-        properties: {
-          addressPrefix: subnet1Prefix
-        }
-      }
-    ]
+module vnet 'shared/vnet.bicep' = {
+  name: 'createVNet'
+  scope: resourceGroup()
+  params: {
+    vNetName: vNetName
+    addressPrefix: addressPrefix
+    subnetName: subnet1Name
+    subnetPrefix: subnet1Prefix
   }
 }
 
@@ -309,19 +300,19 @@ module dc 'shared/domain-controller.bicep' = {
   }
 }
 
-module updateVNetDNS 'shared/vnet-with-dns.bicep' = {
+module updateVNetDNS 'shared/vnet.bicep' = {
   name: 'updateVNetDNS'
-  scope: resourceGroup()
+  params: {
+    vNetName: vNetName
+    addressPrefix: addressPrefix
+    subnetName: subnet1Name
+    subnetPrefix: subnet1Prefix
+    dnsSeverIp: '10.0.0.4'
+  }
   dependsOn: [
     vnet
     dc
   ]
-  params: {
-    vNetName: virtualNetworkName
-    addressPrefix: addressPrefix
-    subnetName: subnet1Name
-    subnetPrefix: subnet1Prefix
-  }
 }
 
 resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (createHNInAVSet || createCNInAVSet) {
@@ -386,7 +377,7 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
         SSLThumbprint: _certThumbprint
         CNSize: computeNodeVMSize
         SubscriptionId: subscription().subscriptionId
-        VNet: virtualNetworkName
+        VNet: vNetName
         Subnet: subnet1Name
         Location: resourceGroup().location
         ResourceGroup: resourceGroup().name

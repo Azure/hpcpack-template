@@ -2,9 +2,16 @@ param vNetName string
 param addressPrefix string
 param subnetName string
 param subnetPrefix string
-param dnsSeverIp string = '10.0.0.4'
+param dnsSeverIp string?
 
-resource updateVNetDNS 'Microsoft.Network/virtualNetworks@2023-04-01' = {
+var dhcpOpts = empty(dnsSeverIp) ? null : {
+  dnsServers: [
+    dnsSeverIp!
+    '8.8.8.8'
+  ]
+}
+
+resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: vNetName
   location: resourceGroup().location
   properties: {
@@ -13,12 +20,7 @@ resource updateVNetDNS 'Microsoft.Network/virtualNetworks@2023-04-01' = {
         addressPrefix
       ]
     }
-    dhcpOptions: {
-      dnsServers: [
-        dnsSeverIp
-        '8.8.8.8'
-      ]
-    }
+    dhcpOptions: dhcpOpts
     subnets: [
       {
         name: subnetName
@@ -29,3 +31,5 @@ resource updateVNetDNS 'Microsoft.Network/virtualNetworks@2023-04-01' = {
     ]
   }
 }
+
+output vNetId string = vnet.id
