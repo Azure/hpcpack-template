@@ -60,23 +60,16 @@
         "description": "The list of two head node names separated by comma without any surrounding whitespace, for example 'HPCHN01,HPCHN02'. The head node names must be unique in the domain forest."
       }
     },
-    "headNodeOS": {
+    "headNodeImageResourceGroup": {
       "type": "string",
-      "defaultValue": "WindowsServer2019",
-      "allowedValues": [
-        "WindowsServer2022",
-        "WindowsServer2019",
-        "CustomImage"
-      ],
       "metadata": {
-        "description": "The operating system of the head nodes."
+        "description": "Resource Group of the custom HPC Pack 2019 image."
       }
     },
-    "headNodeImageResourceId": {
+    "headNodeImageName": {
       "type": "string",
-      "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
       "metadata": {
-        "description": "Specify only when 'CustomImage' selected for headNodeOS. The resource Id of the head node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
+        "description": "Name of the custom HPC Pack 2019 image."
       }
     },
     "headNodeOsDiskType": {
@@ -367,6 +360,8 @@
     }
   },
   "variables": {
+    "headNodeImageResourceGroup": "[trim(parameters('headNodeImageResourceGroup'))]", 
+    "headNodeImageName": "[trim(paramaters('headNodeImageName'))]",
     "dcSize": "[trim(parameters('domainControllerVMSize'))]",
     "clusterName": "[trim(parameters('clusterName'))]",
     "domainName": "[trim(parameters('domainName'))]",
@@ -460,21 +455,7 @@
       }
     ],
     "headNodeImages": {
-      "WindowsServer2019": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2019hn-ws2019",
-        "version": "latest"
-      },
-      "WindowsServer2022": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2019hn-ws2022",
-        "version": "latest"
-      },
-      "CustomImage": {
-        "id": "[trim(parameters('headNodeImageResourceId'))]"
-      }
+      "id": "[format('/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourceGroups/{0}/providers/Microsoft.Compute/images/{1}', variables('headNodeImageResourceGroup'), variables('headNodeImageName'))]"
     },
     "computeNodeImages": {
       "WindowsServer2008R2": {
@@ -559,7 +540,7 @@
         "id": "[trim(parameters('computeNodeImageResourceId'))]"
       }
     },
-    "headNodeImageRef": "[variables('headNodeImages')[parameters('headNodeOS')]]",
+    "headNodeImageRef": "[variables('headNodeImages')]",
     "computeNodeImageRef": "[variables('computeNodeImages')[parameters('computeNodeImage')]]",
     "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/HPCPack2019/shared-resources"
   },
