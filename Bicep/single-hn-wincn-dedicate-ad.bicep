@@ -126,10 +126,7 @@ var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
 var publicIPSuffix = uniqueString(resourceGroup().id)
 var availabilitySetName = '${_clusterName}-avset'
-var uniqueSuffix = uniqueString(subnetRef)
-var uniqueNicSuffix = '-nic-${uniqueSuffix}'
 var dcVMName = '${_clusterName}dc'
-var dcNICName = '${dcVMName}${uniqueNicSuffix}'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 var rdmaASeries = [
   'Standard_A8'
@@ -207,8 +204,7 @@ module dc 'shared/domain-controller.bicep' = {
     adminPassword: adminPassword
     adminUsername: adminUsername
     domainName: _domainName
-    nicName: dcNICName
-    subnetID: subnetRef
+    subnetId: subnetRef
     vmName: dcVMName
     vmSize: dcSize
   }

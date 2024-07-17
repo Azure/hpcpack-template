@@ -1,7 +1,6 @@
 import { sharedResxBaseUrl } from 'types-and-vars.bicep'
 
-param nicName string
-param subnetID string
+param subnetId string
 param ip string = '10.0.0.4'
 param vmName string
 param vmSize string
@@ -9,6 +8,8 @@ param adminUsername string
 @secure()
 param adminPassword string
 param domainName string
+
+var nicName = '${vmName}-nic-${uniqueString(subnetId)}'
 
 resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   name: nicName
@@ -21,7 +22,7 @@ resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = {
           privateIPAllocationMethod: 'Static'
           privateIPAddress: ip
           subnet: {
-            id: subnetID
+            id: subnetId
           }
         }
       }

@@ -160,7 +160,6 @@ var uniqueSuffix = uniqueString(subnetRef)
 var uniqueNicSuffix = '-nic-${uniqueSuffix}'
 var uniquePubNicSuffix = '-pubnic-${uniqueSuffix}'
 var dcVMName = '${_clusterName}dc'
-var _nicNameDC = '${dcVMName}${uniqueNicSuffix}'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 var rdmaASeries = [
   'Standard_A8'
@@ -337,8 +336,7 @@ module dc 'shared/domain-controller.bicep' = {
     adminPassword: adminPassword
     adminUsername: adminUsername
     domainName: _domainName
-    nicName: _nicNameDC
-    subnetID: subnetRef
+    subnetId: subnetRef
     vmName: dcVMName
     vmSize: dcSize
   }
