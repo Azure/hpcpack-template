@@ -130,6 +130,9 @@ var windowsComputeNodeImages = {
 }
 
 @export()
+type LinuxComputeNodeImage = 'CentOS_7.6' | 'CentOS_7.7' | 'CentOS_7.8' | 'CentOS_7.9' | 'CentOS_7.6_HPC' | 'CentOS_7.7_HPC' | 'CentOS_7.8_HPC' | 'CentOS_7.9_HPC' | 'CentOS_7.6_Gen2' | 'CentOS_7.7_Gen2' | 'CentOS_7.8_Gen2' | 'CentOS_7.9_Gen2' | 'CentOS_7.6_HPC_Gen2' | 'CentOS_7.7_HPC_Gen2' | 'CentOS_7.8_HPC_Gen2' | 'CentOS_7.9_HPC_Gen2' | 'AlmaLinux_8.5' | 'AlmaLinux_8.5_Gen2' | 'AlmaLinux_8.5_HPC' | 'AlmaLinux_8.5_HPC_Gen2' | 'AlmaLinux_8.6_HPC' | 'AlmaLinux_8.6_HPC_Gen2' | 'AlmaLinux_8.7_HPC' | 'AlmaLinux_8.7_HPC_Gen2' | 'Rocky Linux 8.6' | 'Rocky Linux 8.7' | 'RHEL_7.7' | 'RHEL_7.8' | 'RHEL_7.9' | 'RHEL_8.5' | 'RHEL_8.6' | 'RHEL_8.7' | 'RHEL_8.8' | 'RHEL_7.7_Gen2' | 'RHEL_7.8_Gen2' | 'RHEL_7.9_Gen2' | 'RHEL_8.5_Gen2' | 'RHEL_8.6_Gen2' | 'RHEL_8.7_Gen2' | 'RHEL_8.8_Gen2' | 'SLES_12_SP5' | 'SLES_12_SP5_HPC' | 'SLES_12_SP5_Gen2' | 'SLES_12_SP5_HPC_Gen2' | 'SLES_15_SP3_HPC' | 'Ubuntu_16.04' | 'Ubuntu_18.04' | 'Ubuntu_20.04' | 'Ubuntu_16.04_Gen2' | 'Ubuntu_18.04_Gen2' | 'Ubuntu_20.04_Gen2' | 'Ubuntu_18.04_HPC_Gen2' | 'Ubuntu_20.04_HPC_Gen2' | 'CustomImage'
+
+@export()
 var linuxComputeNodeImages = {
   'AlmaLinux_8.5': {
     publisher: 'almalinux'
@@ -449,4 +452,5 @@ var linuxComputeNodeImages = {
     sku: '2004'
     version: 'latest'
   }
+  CustomImage: {}
 }
