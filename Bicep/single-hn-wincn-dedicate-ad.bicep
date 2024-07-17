@@ -261,13 +261,14 @@ module headNode 'shared/head-node.bicep' = {
     hnOsDiskType: headNodeOsDiskType
     hnVMSize: headNodeVMSize
     installIBDriver:hnRDMACapable && autoEnableInfiniBand
-    nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsg.name : null
+    nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     publicIPSuffix: publicIPSuffix
     subnetId: subnetRef
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup
   }
   dependsOn: [
+    nsg
     updateVNetDNS
   ]
 }
