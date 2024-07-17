@@ -8,6 +8,7 @@ param publicIPSuffix string
 param lbName string?
 param lbPoolName string?
 param nsgName string?
+param privateIp string?
 
 //VM settings
 param enableManagedIdentity bool
@@ -32,8 +33,7 @@ param vaultName string
 param installIBDriver bool
 param domainName string?
 
-var uniqueSuffix = uniqueString(subnetId)
-var nicSuffix = '-nic-${uniqueSuffix}'
+var nicSuffix = '-nic-${uniqueString(subnetId)}'
 
 var managedIdentity = {
   type: 'SystemAssigned'
@@ -90,7 +90,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2023-04-01' =  {
           subnet: {
             id: subnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: empty(privateIp) ? 'Dynamic' : 'Static'
+          privateIPAddress: privateIp
           publicIPAddress: !createPublicIp ? null : {
             id: publicIp.id
           }
