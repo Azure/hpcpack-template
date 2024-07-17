@@ -375,4 +375,4 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
   ]
 }
 
-output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No') ? privateClusterFQDN : headNode.outputs.dnsName
+output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No') ? privateClusterFQDN : headNode.outputs.fqdn

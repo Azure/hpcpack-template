@@ -232,4 +232,4 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
   ]
 }
 
-output dnsName string = createPublicIp ? publicIp.properties.dnsSettings.fqdn : ''
+output fqdn string = createPublicIp ? publicIp.properties.dnsSettings.fqdn : ''
