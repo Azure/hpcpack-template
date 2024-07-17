@@ -5,8 +5,6 @@ param subnetId string
 param enableAcceleratedNetworking bool
 param createPublicIp bool
 param publicIPSuffix string
-param publicNicSuffix string?
-param privateNicSuffix string?
 param lbName string?
 param lbPoolName string?
 param nsgName string?
@@ -33,6 +31,10 @@ param vaultName string
 //VM extension settings
 param installIBDriver bool
 param domainName string?
+
+var uniqueSuffix = uniqueString(subnetId)
+var publicNicSuffix = '-pubnic-${uniqueSuffix}'
+var privateNicSuffix = '-nic-${uniqueSuffix}'
 
 var managedIdentity = {
   type: 'SystemAssigned'

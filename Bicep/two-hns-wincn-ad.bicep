@@ -156,9 +156,6 @@ var _availabilitySetNameHN = '${_clusterName}-avset'
 var cnAvailabilitySetName = '${_computeNodeNamePrefix}avset'
 var nbrVMPerAvailabilitySet = 200
 var cnAvailabilitySetNumber = ((computeNodeNumber / nbrVMPerAvailabilitySet) + 1)
-var uniqueSuffix = uniqueString(subnetRef)
-var uniqueNicSuffix = '-nic-${uniqueSuffix}'
-var uniquePubNicSuffix = '-pubnic-${uniqueSuffix}'
 var dcVMName = '${_clusterName}dc'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 var rdmaASeries = [
@@ -202,7 +199,6 @@ var _computeNodeImages = union(windowsComputeNodeImages, {
 var headNodeImageRef = _headNodeImages[headNodeOS]
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
 
-//TODO: Move it inside to the sql-server module?
 var SqlDscExtName = 'configSQLServer'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
@@ -394,9 +390,7 @@ module headNodes 'shared/head-node.bicep' = [
       lbName: lb.name
       lbPoolName: lbPoolName
       nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
-      privateNicSuffix: uniqueNicSuffix
       publicIPSuffix: publicIPSuffix
-      publicNicSuffix: uniquePubNicSuffix
       subnetId: subnetRef
       vaultName: _vaultName
       vaultResourceGroup: _vaultResourceGroup
