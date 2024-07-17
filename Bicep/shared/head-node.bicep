@@ -33,8 +33,7 @@ param installIBDriver bool
 param domainName string?
 
 var uniqueSuffix = uniqueString(subnetId)
-var publicNicSuffix = '-pubnic-${uniqueSuffix}'
-var privateNicSuffix = '-nic-${uniqueSuffix}'
+var nicSuffix = '-nic-${uniqueSuffix}'
 
 var managedIdentity = {
   type: 'SystemAssigned'
@@ -80,8 +79,8 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createP
   }
 }
 
-resource publicNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = if (createPublicIp) {
-  name: '${hnName}${publicNicSuffix}'
+resource nic 'Microsoft.Network/networkInterfaces@2023-04-01' =  {
+  name: '${hnName}${nicSuffix}'
   location: resourceGroup().location
   properties: {
     ipConfigurations: [
@@ -92,7 +91,7 @@ resource publicNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = if (create
             id: subnetId
           }
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
+          publicIPAddress: !createPublicIp ? null : {
             id: publicIp.id
           }
           loadBalancerBackendAddressPools: empty(lbName) ? null : [
@@ -111,25 +110,6 @@ resource publicNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = if (create
     networkSecurityGroup: empty(nsgName) ? null : {
       id: nsg.id
     }
-    enableAcceleratedNetworking: enableAcceleratedNetworking
-  }
-}
-
-resource privateNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = if (!createPublicIp) {
-  name: '${hnName}${privateNicSuffix}'
-  location: resourceGroup().location
-  properties: {
-    ipConfigurations: [
-      {
-        name: 'IPConfig'
-        properties: {
-          subnet: {
-            id: subnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-        }
-      }
-    ]
     enableAcceleratedNetworking: enableAcceleratedNetworking
   }
 }
@@ -169,7 +149,7 @@ resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: createPublicIp ? publicNIC.id : privateNIC.id
+          id: nic.id
         }
       ]
     }
