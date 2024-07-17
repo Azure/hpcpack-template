@@ -144,8 +144,8 @@ var subnet1Name = 'Subnet-1'
 var subnet1Prefix = '10.0.0.0/22'
 var _hnNames = split(_headNodeList, ',')
 
-var virtualNetworkName = '${_clusterName}vnet'
-var vnetID = vnet.id
+var vNetName = '${_clusterName}vnet'
+var vnetID = vnet.outputs.vNetId
 var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
 var publicIPSuffix = uniqueString(resourceGroup().id)
@@ -161,7 +161,7 @@ var uniqueNicSuffix = '-nic-${uniqueSuffix}'
 var uniquePubNicSuffix = '-pubnic-${uniqueSuffix}'
 var dcVMName = '${_clusterName}dc'
 var _nicNameDC = '${dcVMName}${uniqueNicSuffix}'
-var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id,subnetRef)}'
+var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 var rdmaASeries = [
   'Standard_A8'
   'Standard_A9'
@@ -216,23 +216,14 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {}
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
-  name: virtualNetworkName
-  location: resourceGroup().location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        addressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: subnet1Name
-        properties: {
-          addressPrefix: subnet1Prefix
-        }
-      }
-    ]
+module vnet 'shared/vnet.bicep' = {
+  name: 'createVNet'
+  scope: resourceGroup()
+  params: {
+    vNetName: vNetName
+    addressPrefix: addressPrefix
+    subnetName: subnet1Name
+    subnetPrefix: subnet1Prefix
   }
 }
 
@@ -250,96 +241,10 @@ resource lbPublicIP 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (creat
   }
 }
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
-  name: nsgName
-  location: resourceGroup().location
-  properties: {
-    securityRules: [
-      {
-        name: 'allow-HTTPS'
-        properties: {
-          description: 'Allow Https'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1000
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'allow-RDP'
-        properties: {
-          description: 'Allow RDP'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '3389'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1010
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'allow-HPCSession'
-        properties: {
-          description: 'Allow HPC Session service'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '9090'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1020
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'allow-HPCBroker'
-        properties: {
-          description: 'Allow HPC Broker service'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '9087'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1030
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'allow-HPCBrokerWorker'
-        properties: {
-          description: 'Allow HPC Broker worker'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '9091'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1040
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'allow-HPCDataService'
-        properties: {
-          description: 'Allow HPC Data service'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '9094 '
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1050
-          direction: 'Inbound'
-        }
-      }
-    ]
+module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
+  name: 'nsg'
+  params: {
+    name: nsgName
   }
 }
 
@@ -439,7 +344,7 @@ module dc 'shared/domain-controller.bicep' = {
   }
 }
 
-module updateVNetDNS 'shared/vnet-with-dns.bicep' = {
+module updateVNetDNS 'shared/vnet.bicep' = {
   name: 'updateVNetDNS'
   scope: resourceGroup()
   dependsOn: [
@@ -447,10 +352,11 @@ module updateVNetDNS 'shared/vnet-with-dns.bicep' = {
     dc
   ]
   params: {
-    vNetName: virtualNetworkName
+    vNetName: vNetName
     addressPrefix: addressPrefix
     subnetName: subnet1Name
     subnetPrefix: subnet1Prefix
+    dnsSeverIp: '10.0.0.4'
   }
 }
 
@@ -489,7 +395,7 @@ module headNodes 'shared/head-node.bicep' = [
       installIBDriver: hnRDMACapable && autoEnableInfiniBand
       lbName: lb.name
       lbPoolName: lbPoolName
-      nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsg.name : null
+      nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
       privateNicSuffix: uniqueNicSuffix
       publicIPSuffix: publicIPSuffix
       publicNicSuffix: uniquePubNicSuffix
@@ -498,6 +404,7 @@ module headNodes 'shared/head-node.bicep' = [
       vaultResourceGroup: _vaultResourceGroup
     }
     dependsOn: [
+      nsg
       updateVNetDNS
     ]
   }
@@ -576,7 +483,7 @@ resource setupPrimaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023
         EnableBuiltinHA: true
         CNSize: computeNodeVMSize
         SubscriptionId: subscription().subscriptionId
-        VNet: virtualNetworkName
+        VNet: vNetName
         Subnet: subnet1Name
         Location: resourceGroup().location
         ResourceGroup: resourceGroup().name
