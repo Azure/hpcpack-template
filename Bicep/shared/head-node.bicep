@@ -53,16 +53,18 @@ var hnDataDisks = [
   }
 ]
 
+//NOTE: Even if lbName is null, we have to provide a valid string for the resource name.
+//This seems stupid but it's required by ARM! The same rule applies to the following resources nsg and avSet.
 resource lb 'Microsoft.Network/loadBalancers@2023-11-01' existing = if (!empty(lbName)) {
-  name: lbName!
+  name: empty(lbName) ? 'lbName' : lbName!
 }
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' existing = if (!empty(nsgName)) {
-  name: nsgName!
+  name: empty(nsgName) ? 'nsgName' : nsgName!
 }
 
 resource avSet 'Microsoft.Compute/availabilitySets@2024-03-01' existing = if (!empty(hnAvSetName)) {
-  name: hnAvSetName!
+  name: empty(hnAvSetName) ? 'hnAvSetName' : hnAvSetName!
 }
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createPublicIp) {
@@ -135,8 +137,8 @@ resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   location: resourceGroup().location
   identity: (enableManagedIdentity ? managedIdentity : null)
   properties: {
-    availabilitySet: {
-      id: !empty(hnAvSetName) ? avSet.id : null
+    availabilitySet: empty(hnAvSetName) ? null : {
+      id: avSet.id
     }
     hardwareProfile: {
       vmSize: hnVMSize
