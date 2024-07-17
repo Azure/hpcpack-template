@@ -134,11 +134,7 @@ var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var storageAccountId = storageAccount.id
 var lbName = '${_clusterName}-lb'
-var lbID = resourceId('Microsoft.Network/loadBalancers', lbName)
-var lbFrontEndIPConfigID = '${lbID}/frontendIPConfigurations/LoadBalancerFrontEnd'
 var lbPoolName = 'BackendPool1'
-var lbPoolID = '${lbID}/backendAddressPools/${lbPoolName}'
-var lbProbeID = '${lbID}/probes/tcpProbe'
 var addressPrefix = '10.0.0.0/16'
 var subnet1Name = 'Subnet-1'
 var subnet1Prefix = '10.0.0.0/22'
@@ -151,7 +147,6 @@ var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
 var publicIPSuffix = uniqueString(resourceGroup().id)
 var publicIPName = '${_clusterName}publicip'
 var publicIPDNSNameLabel = '${toLower(_clusterName)}${publicIPSuffix}'
-var publicIPAddressType = 'Dynamic'
 var _availabilitySetNameHN = '${_clusterName}-avset'
 var cnAvailabilitySetName = '${_computeNodeNamePrefix}avset'
 var nbrVMPerAvailabilitySet = 200
@@ -222,17 +217,14 @@ module vnet 'shared/vnet.bicep' = {
   }
 }
 
-resource lbPublicIP 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
-  name: publicIPName
-  location: resourceGroup().location
-  sku: {
-    name: 'Basic'
-  }
-  properties: {
-    publicIPAllocationMethod: publicIPAddressType
-    dnsSettings: {
-      domainNameLabel: publicIPDNSNameLabel
-    }
+module lb 'shared/load-balancer.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
+  name: 'createLB'
+  params: {
+    hnNames: _hnNames
+    lbName: lbName
+    lbPoolName: lbPoolName
+    publicIpDnsNameLabel: publicIPDNSNameLabel
+    publicIpName: publicIPName
   }
 }
 
@@ -241,89 +233,6 @@ module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
   params: {
     name: nsgName
   }
-}
-
-resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = if (createPublicIPAddressForHeadNode == 'Yes') {
-  name: lbName
-  location: resourceGroup().location
-  properties: {
-    frontendIPConfigurations: [
-      {
-        name: 'LoadBalancerFrontEnd'
-        properties: {
-          publicIPAddress: {
-            id: lbPublicIP.id
-          }
-        }
-      }
-    ]
-    backendAddressPools: [
-      {
-        name: 'BackendPool1'
-      }
-    ]
-    inboundNatRules: [
-      {
-        name: 'RDP-${_hnNames[0]}'
-        properties: {
-          frontendIPConfiguration: {
-            id: lbFrontEndIPConfigID
-          }
-          protocol: 'Tcp'
-          frontendPort: 50001
-          backendPort: 3389
-          enableFloatingIP: false
-        }
-      }
-      {
-        name: 'RDP-${_hnNames[1]}'
-        properties: {
-          frontendIPConfiguration: {
-            id: lbFrontEndIPConfigID
-          }
-          protocol: 'Tcp'
-          frontendPort: 50002
-          backendPort: 3389
-          enableFloatingIP: false
-        }
-      }
-    ]
-    loadBalancingRules: [
-      {
-        name: 'LBRule'
-        properties: {
-          frontendIPConfiguration: {
-            id: lbFrontEndIPConfigID
-          }
-          backendAddressPool: {
-            id: lbPoolID
-          }
-          protocol: 'Tcp'
-          frontendPort: 443
-          backendPort: 443
-          enableFloatingIP: false
-          idleTimeoutInMinutes: 5
-          probe: {
-            id: lbProbeID
-          }
-        }
-      }
-    ]
-    probes: [
-      {
-        name: 'tcpProbe'
-        properties: {
-          protocol: 'Tcp'
-          port: 5802
-          intervalInSeconds: 5
-          numberOfProbes: 2
-        }
-      }
-    ]
-  }
-  dependsOn: [
-    vnet
-  ]
 }
 
 module dc 'shared/domain-controller.bicep' = {
@@ -387,7 +296,7 @@ module headNodes 'shared/head-node.bicep' = [
       hnOsDiskType: headNodeOsDiskType
       hnVMSize: headNodeVMSize
       installIBDriver: hnRDMACapable && autoEnableInfiniBand
-      lbName: lb.name
+      lbName: lbName
       lbPoolName: lbPoolName
       nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
       publicIPSuffix: publicIPSuffix
@@ -396,6 +305,7 @@ module headNodes 'shared/head-node.bicep' = [
       vaultResourceGroup: _vaultResourceGroup
     }
     dependsOn: [
+      lb
       nsg
       updateVNetDNS
     ]
@@ -603,4 +513,4 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
 
 output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No')
   ? privateClusterFQDN
-  : lbPublicIP.properties.dnsSettings.fqdn
+  : lb.outputs.fqdn
