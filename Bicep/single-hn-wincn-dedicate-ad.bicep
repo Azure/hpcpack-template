@@ -124,7 +124,6 @@ var vNetName = '${_clusterName}vnet'
 var vnetID = vnet.outputs.vNetId
 var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
-var publicIPSuffix = uniqueString(resourceGroup().id)
 var availabilitySetName = '${_clusterName}-avset'
 var dcVMName = '${_clusterName}dc'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
@@ -258,7 +257,6 @@ module headNode 'shared/head-node.bicep' = {
     hnVMSize: headNodeVMSize
     installIBDriver:hnRDMACapable && autoEnableInfiniBand
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
-    publicIPSuffix: publicIPSuffix
     subnetId: subnetRef
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup

@@ -4,7 +4,6 @@ param hnName string
 param subnetId string
 param enableAcceleratedNetworking bool
 param createPublicIp bool
-param publicIPSuffix string
 param lbName string?
 param lbPoolName string?
 param nsgName string?
@@ -33,6 +32,7 @@ param vaultName string
 param installIBDriver bool
 param domainName string?
 
+var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
 
 var managedIdentity = {
@@ -74,7 +74,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (createP
   properties: {
     publicIPAllocationMethod: 'Dynamic'
     dnsSettings: {
-      domainNameLabel: toLower('${hnName}${publicIPSuffix}')
+      domainNameLabel: toLower('${hnName}${publicIpSuffix}')
     }
   }
 }

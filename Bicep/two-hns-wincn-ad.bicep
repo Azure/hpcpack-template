@@ -299,7 +299,6 @@ module headNodes 'shared/head-node.bicep' = [
       lbName: lbName
       lbPoolName: lbPoolName
       nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
-      publicIPSuffix: publicIPSuffix
       subnetId: subnetRef
       vaultName: _vaultName
       vaultResourceGroup: _vaultResourceGroup
