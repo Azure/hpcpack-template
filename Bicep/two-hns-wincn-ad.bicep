@@ -422,31 +422,15 @@ module sqlServer 'shared/sql-server.bicep' = {
   ]
 }
 
-//TODO: use the DSC extesion directly without the module.
-module configDBPermissions 'shared/dsc-extension.bicep' = {
+module configDBPermissions 'shared/sql-server-config.bicep' = {
   name: 'configDBPermissions'
   params: {
-    vmName: _sqlServerVMName
-    dscExtensionName: SqlDscExtName
-    dscSettings: {
-      configuration: {
-        url: '${sharedResxBaseUrl}/ConfigDBPermissions.ps1.zip'
-        script: 'ConfigDBPermissions.ps1'
-        function: 'ConfigDBPermissions'
-      }
-      configurationArguments: {
-        DomainName: _domainName
-        HeadNodeList: _headNodeList
-      }
-    }
-    dscProtectedSettings: {
-      configurationArguments: {
-        AdminCreds: {
-          UserName: adminUsername
-          Password: adminPassword
-        }
-      }
-    }
+    SqlVmExtName: SqlDscExtName
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    domainName: _domainName
+    headNodeList: _headNodeList
+    sqlVmName: _sqlServerVMName
   }
   dependsOn: [
     sqlServer
