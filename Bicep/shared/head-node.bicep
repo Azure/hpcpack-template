@@ -31,13 +31,32 @@ param vaultName string
 //VM extension settings
 param installIBDriver bool
 param domainName string?
+param userMiForAzureMonitor string?
 
 var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
 
-var managedIdentity = {
+var sysMi = {
   type: 'SystemAssigned'
 }
+var userMi = {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userMiForAzureMonitor}': {}
+  }
+}
+var bothMi = {
+  type: 'SystemAssigned, UserAssigned'
+  userAssignedIdentities: {
+    '${userMiForAzureMonitor}': {}
+  }
+}
+var identity = (!enableManagedIdentity && empty(userMiForAzureMonitor))
+  ? null
+  : (enableManagedIdentity && !empty(userMiForAzureMonitor))
+    ? bothMi
+    : (enableManagedIdentity ? sysMi : userMi)
+
 var diskTypes = {
   Standard_HDD: 'Standard_LRS'
   Standard_SSD: 'StandardSSD_LRS'
@@ -118,7 +137,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2023-04-01' =  {
 resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   name: hnName
   location: resourceGroup().location
-  identity: (enableManagedIdentity ? managedIdentity : null)
+  identity: identity
   properties: {
     availabilitySet: empty(hnAvSetName) ? null : {
       id: avSet.id
@@ -211,6 +230,14 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
   dependsOn: [
     ibDriver
   ]
+}
+
+module monitorAgents 'windows-monitor-agents.bicep' = if (!empty(userMiForAzureMonitor)) {
+  name: '${hnName}MonitorAgents'
+  params: {
+    userAssignedManagedIdentity: userMiForAzureMonitor!
+    vmName: headNode.name
+  }
 }
 
 output fqdn string = createPublicIp ? publicIp.properties.dnsSettings.fqdn : ''

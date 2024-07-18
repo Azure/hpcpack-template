@@ -120,6 +120,9 @@ param useSpotInstanceForComputeNodes YesOrNo = 'No'
 @description('Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network.')
 param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
+@description('Monitor the HPC Pack cluster in Azure Monitor.')
+param enableAzureMonitor YesOrNo = 'Yes'
+
 var dcSize = trim(domainControllerVMSize)
 var _clusterName = trim(clusterName)
 var _domainName = trim(domainName)
@@ -195,6 +198,14 @@ var headNodeImageRef = _headNodeImages[headNodeOS]
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
 
 var SqlDscExtName = 'configSQLServer'
+var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
+
+module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
+  name: 'createAzureMonitor'
+  params: {
+    name: _clusterName
+  }
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -300,6 +311,7 @@ module headNodes 'shared/head-node.bicep' = [
       lbPoolName: lbPoolName
       nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
       subnetId: subnetRef
+      userMiForAzureMonitor: _enableAzureMonitor ? monitor.outputs.userMiId : null
       vaultName: _vaultName
       vaultResourceGroup: _vaultResourceGroup
     }
@@ -472,8 +484,10 @@ module computeNodes 'shared/compute-node.bicep' = [
       headNodeList: _headNodeList
       joinDomain: true
       domainName: _domainName
+      userMiForAzureMonitor: _enableAzureMonitor ? monitor.outputs.userMiId : null
     }
     dependsOn: [
+      monitor
       updateVNetDNS
       cnAvSet
     ]
@@ -513,3 +527,5 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
 output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No')
   ? privateClusterFQDN
   : lb.outputs.fqdn
+
+output workSpaceId string = _enableAzureMonitor ? monitor.outputs.workSpaceId : ''

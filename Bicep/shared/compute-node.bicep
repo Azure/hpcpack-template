@@ -85,12 +85,27 @@ param dnsServers array = []
 @description('Specifies the license type for the virtual machines. Use \'Windows_Server\' for Azure Hybrid Benefit.')
 param licenseType string = ''
 
-var userAssignedIdentityObject = {
+param userMiForAzureMonitor string?
+
+var oneMi = {
   type: 'UserAssigned'
   userAssignedIdentities: {
     '${userAssignedIdentity}': {}
   }
 }
+var oneMiForMa = {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userMiForAzureMonitor}': {}
+  }
+}
+var twoMis = union(oneMi, oneMiForMa)
+var identity = empty(userAssignedIdentity) && empty(userMiForAzureMonitor)
+  ? null
+  : (!empty(userAssignedIdentity) && !empty(userMiForAzureMonitor))
+    ? twoMis
+    : (!empty(userAssignedIdentity) ? oneMi : oneMiForMa)
+
 var nicName = '${vmName}-nic-${uniqueString(subnetId)}'
 var isWindowsOS = (toLower(imageOsPlatform) == 'windows')
 var trimmedSSHPublicKey = trim(sshPublicKey)
@@ -158,7 +173,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2019-04-01' = {
 resource vm 'Microsoft.Compute/virtualMachines@2019-03-01' = {
   name: vmName
   location: resourceGroup().location
-  identity: (empty(trim(userAssignedIdentity)) ? null : userAssignedIdentityObject)
+  identity: identity
   properties: {
     availabilitySet: (empty(trim(availabilitySetName)) ? null : availabilitySet)
     hardwareProfile: {
@@ -265,4 +280,20 @@ resource linuxNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01
   dependsOn: [
     linuxIBDriver
   ]
+}
+
+module windowsMA 'windows-monitor-agents.bicep' = if (!empty(userMiForAzureMonitor) && isWindowsOS) {
+  name: '${vm.name}WindowsMA'
+  params: {
+    userAssignedManagedIdentity: userMiForAzureMonitor!
+    vmName: vm.name
+  }
+}
+
+module linuxMA 'linux-monitor-agents.bicep' = if (!empty(userMiForAzureMonitor) && !isWindowsOS) {
+  name: '${vm.name}LinuxMA'
+  params: {
+    userAssignedManagedIdentity: userMiForAzureMonitor!
+    vmName: vm.name
+  }
 }
