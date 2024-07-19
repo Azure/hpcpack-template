@@ -106,6 +106,10 @@ param useSpotInstanceForComputeNodes YesOrNo = 'No'
 @description('Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network.')
 param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
+@description('Monitor the HPC Pack cluster in Azure Monitor.')
+param enableAzureMonitor YesOrNo = 'Yes'
+
+var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
 var _clusterName = trim(clusterName)
 var _vaultName = trim(vaultName)
 var _vaultResourceGroup = trim(vaultResourceGroup)
@@ -179,6 +183,13 @@ var rdmaDriverSupportedCNImage = ((contains(computeNodeImage, 'CentOS_7') || con
   '_HPC'
 )))
 
+module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
+  name: 'AzureMonitor'
+  params: {
+    name: _clusterName
+  }
+}
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
   location: resourceGroup().location
@@ -245,6 +256,7 @@ module headNode 'shared/head-node.bicep' = {
     vaultResourceGroup: _vaultResourceGroup
   }
   dependsOn: [
+    monitor
     nsg
   ]
 }
@@ -320,6 +332,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       domainName: ''
     }
     dependsOn: [
+      monitor
       availabilitySet
       headNode
     ]
