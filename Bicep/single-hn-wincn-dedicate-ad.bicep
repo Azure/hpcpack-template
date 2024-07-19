@@ -108,6 +108,9 @@ param useSpotInstanceForComputeNodes YesOrNo = 'No'
 @description('Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network.')
 param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
+@description('Monitor the HPC Pack cluster in Azure Monitor.')
+param enableAzureMonitor YesOrNo = 'Yes'
+
 var dcSize = trim(domainControllerVMSize)
 var _clusterName = trim(clusterName)
 var _domainName = trim(domainName)
@@ -168,6 +171,15 @@ var _computeNodeImages = union(windowsComputeNodeImages, {
 })
 var headNodeImageRef = _headNodeImages[headNodeOS]
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
+
+var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
+
+module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
+  name: 'createAzureMonitor'
+  params: {
+    name: _clusterName
+  }
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -258,6 +270,7 @@ module headNode 'shared/head-node.bicep' = {
     installIBDriver:hnRDMACapable && autoEnableInfiniBand
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
+    userMiForAzureMonitor: _enableAzureMonitor ? monitor.outputs.userMiId : null
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup
   }
@@ -267,6 +280,7 @@ module headNode 'shared/head-node.bicep' = {
   ]
 }
 
+//TODO: Make a module for it
 resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   name: '${_clusterName}/setupHpcHeadNode'
   location: resourceGroup().location
@@ -335,6 +349,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       headNodeList: _clusterName
       joinDomain: true
       domainName: _domainName
+      userMiForAzureMonitor: _enableAzureMonitor ? monitor.outputs.userMiId : null
     }
     dependsOn: [
       availabilitySet
@@ -374,3 +389,5 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
 }
 
 output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No') ? privateClusterFQDN : headNode.outputs.fqdn
+
+output workSpaceId string = _enableAzureMonitor ? monitor.outputs.workSpaceId : ''
