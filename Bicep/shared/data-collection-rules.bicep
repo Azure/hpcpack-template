@@ -66,3 +66,5 @@ resource MSVMI_PerfandDa_userGivenDcr 'Microsoft.Insights/dataCollectionRules@20
     ]
   }
 }
+
+output dcrId string = MSVMI_PerfandDa_userGivenDcr.id

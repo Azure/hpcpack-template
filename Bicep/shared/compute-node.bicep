@@ -86,6 +86,9 @@ param dnsServers array = []
 param licenseType string = ''
 
 param userMiForAzureMonitor string?
+param dataCollectionRuleId string?
+
+var enableMa = !empty(userMiForAzureMonitor) && !empty(dataCollectionRuleId)
 
 var oneMi = {
   type: 'UserAssigned'
@@ -282,18 +285,20 @@ resource linuxNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01
   ]
 }
 
-module windowsMA 'windows-monitor-agents.bicep' = if (!empty(userMiForAzureMonitor) && isWindowsOS) {
+module windowsMA 'windows-monitor-agents.bicep' = if (enableMa && isWindowsOS) {
   name: '${vm.name}WindowsMA'
   params: {
-    userAssignedManagedIdentity: userMiForAzureMonitor!
     vmName: vm.name
+    userAssignedManagedIdentity: userMiForAzureMonitor!
+    dataCollectionRuleId: dataCollectionRuleId!
   }
 }
 
-module linuxMA 'linux-monitor-agents.bicep' = if (!empty(userMiForAzureMonitor) && !isWindowsOS) {
+module linuxMA 'linux-monitor-agents.bicep' = if (enableMa && !isWindowsOS) {
   name: '${vm.name}LinuxMA'
   params: {
-    userAssignedManagedIdentity: userMiForAzureMonitor!
     vmName: vm.name
+    userAssignedManagedIdentity: userMiForAzureMonitor!
+    dataCollectionRuleId: dataCollectionRuleId!
   }
 }

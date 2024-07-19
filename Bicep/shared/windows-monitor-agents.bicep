@@ -1,9 +1,24 @@
 param vmName string
 param location string = resourceGroup().location
 param userAssignedManagedIdentity string
+param dataCollectionRuleId string
+
+resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' existing = {
+  name: vmName
+}
+
+resource dcrAssociation 'Microsoft.Insights/dataCollectionRuleAssociations@2019-11-01-preview' = {
+  scope: vm
+  name: '${vmName}-Dcr-Association'
+  properties: {
+    description: 'Association of data collection rule for VM Insights.'
+    dataCollectionRuleId: dataCollectionRuleId
+  }
+}
 
 resource ma 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
-  name: '${vmName}/AzureMonitorWindowsAgent'
+  parent: vm
+  name: 'AzureMonitorWindowsAgent'
   location: location
   properties: {
     publisher: 'Microsoft.Azure.Monitor'
@@ -20,10 +35,14 @@ resource ma 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
       }
     }
   }
+  dependsOn: [
+    dcrAssociation
+  ]
 }
 
 resource da 'Microsoft.Compute/virtualMachines/extensions@2024-03-01' = {
-  name: '${vmName}/DAExtension'
+  parent: vm
+  name: 'DAExtension'
   location: location
   properties: {
     publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'

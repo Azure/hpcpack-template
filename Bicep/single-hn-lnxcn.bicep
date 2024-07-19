@@ -254,6 +254,7 @@ module headNode 'shared/head-node.bicep' = {
     privateIp: '10.0.0.4'
     subnetId: subnetRef
     userMiForAzureMonitor: _enableAzureMonitor ? monitor.outputs.userMiId : null
+    dataCollectionRuleId: _enableAzureMonitor ? monitor.outputs.dcrId : null
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup
   }
@@ -332,6 +333,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       joinDomain: false
       domainName: ''
       userMiForAzureMonitor: _enableAzureMonitor ? monitor.outputs.userMiId : null
+      dataCollectionRuleId: _enableAzureMonitor ? monitor.outputs.dcrId : null
     }
     dependsOn: [
       availabilitySet

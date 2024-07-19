@@ -32,6 +32,9 @@ param vaultName string
 param installIBDriver bool
 param domainName string?
 param userMiForAzureMonitor string?
+param dataCollectionRuleId string?
+
+var enableMa = !empty(userMiForAzureMonitor) && !empty(dataCollectionRuleId)
 
 var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
@@ -232,11 +235,12 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
   ]
 }
 
-module monitorAgents 'windows-monitor-agents.bicep' = if (!empty(userMiForAzureMonitor)) {
+module monitorAgents 'windows-monitor-agents.bicep' = if (enableMa) {
   name: '${hnName}MonitorAgents'
   params: {
-    userAssignedManagedIdentity: userMiForAzureMonitor!
     vmName: headNode.name
+    userAssignedManagedIdentity: userMiForAzureMonitor!
+    dataCollectionRuleId: dataCollectionRuleId!
   }
 }
 

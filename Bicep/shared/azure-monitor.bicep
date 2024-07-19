@@ -24,3 +24,4 @@ resource userMi 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = 
 
 output userMiId string = userMi.id
 output workSpaceId string = workSpace.id
+output dcrId string = dcr.outputs.dcrId
