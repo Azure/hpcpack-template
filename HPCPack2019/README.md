@@ -89,7 +89,7 @@ This template deploys an HPC Pack cluster with one **single** head node and a co
 An Azure Key Vault Certificate is required to deploy Microsoft HPC Pack 2019 cluster in Azure, it must be created in the **same Azure location** where the HPC Pack cluster will be deployed. The certificate will be installed on all the HPC nodes during the deployment, it is used to secure the communication between the HPC nodes. The certificate must meet the following requirements:
 
 * It must have a private key capable of **key exchange**
-* Key usage includes **Digital Signature** and **Key Encipherment**
+* Key usage includes **Digital Signature**, **Key Encipherment**, **Key Agreement** and **Certificate Signing**
 * Enhanced key usage includes **Client Authentication** and **Server Authentication**
 
 If you don't have an existing Azure Key Vault certificate which meets the above requirements, you shall either import a PFX certificate file to Azure Key Vault or directly generate a new Azure Key Vault certificate. 
