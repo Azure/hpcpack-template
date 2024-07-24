@@ -829,6 +829,29 @@
       }
     },
     {
+      "name": "[concat(variables('clusterName'),'/setHpcHeadNodeRegistry')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ],
+      "apiVersion": "2021-03-01",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.10",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "https://raw.githubusercontent.com/Azure/hpcpack-template/bvt-template/Scripts/Set-Registry.ps1"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File Set-Registry.ps1"
+        }
+      }
+    },
+    {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('clusterName'), '/JoinADDomain')]",
       "apiVersion": "2023-03-01",
@@ -899,29 +922,6 @@
             },
             "AzureStorageConnString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value)]"
           }
-        }
-      }
-    },
-    {
-      "name": "[concat(variables('clusterName'),'/setHpcHeadNodeRegistry')]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
-      ],
-      "apiVersion": "2021-03-01",
-      "properties": {
-        "publisher": "Microsoft.Compute",
-        "type": "CustomScriptExtension",
-        "typeHandlerVersion": "1.10",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "fileUris": [
-            "https://raw.githubusercontent.com/Azure/hpcpack-template/bvt-template/Scripts/Set-Registry.ps1"
-          ]
-        },
-        "protectedSettings": {
-          "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File Set-Registry.ps1"
         }
       }
     },
