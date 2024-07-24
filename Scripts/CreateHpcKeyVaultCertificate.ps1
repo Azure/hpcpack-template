@@ -153,7 +153,7 @@ else
         $subjectName = "CN=$CommonName"
     }
     Write-Host "Create a self-signed certificate '$Name' in the Azure Key Vault '$VaultName' with subject name '$subjectName'." -ForegroundColor Green
-    $certPolicy = New-AzKeyVaultCertificatePolicy -SecretContentType "application/x-pkcs12" -SubjectName $subjectName -IssuerName "Self" -ValidityInMonths 60 -ReuseKeyOnRenewal -KeyUsage DigitalSignature, KeyAgreement, KeyEncipherment -Ekus "1.3.6.1.5.5.7.3.1", "1.3.6.1.5.5.7.3.2"
+    $certPolicy = New-AzKeyVaultCertificatePolicy -SecretContentType "application/x-pkcs12" -SubjectName $subjectName -IssuerName "Self" -ValidityInMonths 60 -ReuseKeyOnRenewal -KeyUsage DigitalSignature, KeyAgreement, KeyEncipherment, KeyCertSign -Ekus "1.3.6.1.5.5.7.3.1", "1.3.6.1.5.5.7.3.2"
     $null = Add-AzKeyVaultCertificate -VaultName $VaultName -Name $Name -CertificatePolicy $certPolicy -ErrorAction Stop
     Write-Host "Waiting for the certificate to be ready..." -ForegroundColor Green
     Start-Sleep -Seconds 5
