@@ -8,7 +8,7 @@ param WorkspaceLocation string
 @metadata({ displayName: 'Name of the Data Collection Rule(DCR)' })
 param userGivenDcrName string = 'ama-vmi-default-perfAndda-dcr'
 
-resource MSVMI_PerfandDa_userGivenDcr 'Microsoft.Insights/dataCollectionRules@2021-04-01' = {
+resource PerfDataDcr 'Microsoft.Insights/dataCollectionRules@2021-04-01' = {
   name: 'MSVMI-PerfandDa-${userGivenDcrName}'
   location: WorkspaceLocation
   properties: {
@@ -67,4 +67,4 @@ resource MSVMI_PerfandDa_userGivenDcr 'Microsoft.Insights/dataCollectionRules@20
   }
 }
 
-output dataCollectionRuleId string = MSVMI_PerfandDa_userGivenDcr.id
+output dataCollectionRuleId string = PerfDataDcr.id
