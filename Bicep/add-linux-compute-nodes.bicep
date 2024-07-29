@@ -134,9 +134,8 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2019-03-01' = if (!
   }
 }
 
-//FIXME: Only when !useVmssForCN
 module computeNodes 'shared/compute-node.bicep' = [
-  for i in range(0, computeNodeNumber): {
+  for i in range(0, computeNodeNumber): if (!useVmssForCN) {
     name: 'create${_computeNodeNamePrefix}${padLeft(string((i+computeNodeNameStartIndex)),3,'0')}'
     params: {
       subnetId: subnetRef
