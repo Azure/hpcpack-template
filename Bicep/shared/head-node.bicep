@@ -23,6 +23,10 @@ param hnDataDiskSize int
 param hnOsDiskType string
 param hnDataDiskType string
 
+//For Azure Monitor Log
+param tags object = {}
+param userMiResIdForLog string?
+
 //Role assignment settings
 param clusterName string
 param vaultResourceGroup string
@@ -35,14 +39,32 @@ param domainName string?
 var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
 
-var managedIdentity = {
+var systemIdentity = {
   type: 'SystemAssigned'
 }
+var userIdentity = {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userMiResIdForLog}': {}
+  }
+}
+var systemAndUserIdentities = {
+  type: 'SystemAssigned, UserAssigned'
+  userAssignedIdentities: {
+    '${userMiResIdForLog}': {}
+  }
+}
+var identity = !enableManagedIdentity && empty(userMiResIdForLog)
+  ? null
+  : (enableManagedIdentity && !empty(userMiResIdForLog) ? systemAndUserIdentities : (enableManagedIdentity ? systemIdentity : userIdentity))
+
+//TODO: Import this from the types-and-vars.bicep
 var diskTypes = {
   Standard_HDD: 'Standard_LRS'
   Standard_SSD: 'StandardSSD_LRS'
   Premium_SSD: 'Premium_LRS'
 }
+
 var hnDataDisks = [
   for j in range(0, ((hnDataDiskCount == 0) ? 1 : hnDataDiskCount)): {
     lun: j
@@ -118,7 +140,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2023-04-01' =  {
 resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   name: hnName
   location: resourceGroup().location
-  identity: (enableManagedIdentity ? managedIdentity : null)
+  identity: identity
+  tags: tags
   properties: {
     availabilitySet: empty(hnAvSetName) ? null : {
       id: avSet.id

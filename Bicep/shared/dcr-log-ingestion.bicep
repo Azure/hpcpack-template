@@ -4,6 +4,8 @@ param workspaceResId string
 param dataCollectionEndpointId string?
 param userMiPrincipalIds string[] = []
 
+var dcrStreamName = 'Custom-TraceListener'
+
 resource logIngestionDcr 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
   name: dataCollectionRuleName
   location: location
@@ -11,26 +13,34 @@ resource logIngestionDcr 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
   properties: {
     dataCollectionEndpointId: dataCollectionEndpointId
     streamDeclarations: {
-      'Custom-HPCPack': {
+      '${dcrStreamName}': {
         columns: [
           {
-            name: 'TimeGenerated'
+            name: 'Time'
             type: 'datetime'
           }
           {
-            name: 'Computer'
+            name: 'ComputerName'
             type: 'string'
           }
           {
-            name: 'Service'
+            name: 'ProcessName'
             type: 'string'
           }
           {
-            name: 'Process'
+            name: 'ProcessId'
             type: 'int'
           }
           {
-            name: 'Level'
+            name: 'EventType'
+            type: 'string'
+          }
+          {
+            name: 'Id'
+            type: 'int'
+          }
+          {
+            name: 'Source'
             type: 'string'
           }
           {
@@ -51,12 +61,13 @@ resource logIngestionDcr 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
     dataFlows: [
       {
         streams: [
-          'Custom-HPCPack'
+          dcrStreamName
         ]
         destinations: [
           'myworkspace'
         ]
-        outputStream: 'Custom-HPCPack_CL'
+        transformKql: 'source | project TimeGenerated = Time, ComputerName, ProcessName, ProcessId, EventType, EventId = Id, Source, Content'
+        outputStream: 'Custom-TraceListener_CL'  //NOTE: The table name must match the name defined in the ps1 script.
       }
     ]
   }
@@ -75,3 +86,4 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
 
 output dcrResId string = logIngestionDcr.id
 output dcrRunId string = logIngestionDcr.properties.immutableId
+output dcrStreamName string = dcrStreamName

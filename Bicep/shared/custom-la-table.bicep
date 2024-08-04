@@ -1,16 +1,13 @@
-param name string
+param prefix string
 param workSpaceName string
 param location string = resourceGroup().location
-
-var uniqStr = uniqueString(resourceGroup().id)
-var prefix = '${name}${uniqStr}'
 
 resource workSpace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: workSpaceName
 }
 
 resource userMiForScript 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${prefix}-userMiForScript'
+  name: '${prefix}userMiForScript'
   location: location
 }
 
@@ -25,9 +22,9 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-//NOTE: The Deployment Script depends on an internally-created storage account and the sahred-key-based access. Mind the Azure Policy against it!
+//NOTE: The Deployment Script depends on an internally-created storage account and the shared-key-based access.
 resource createTable 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: '${prefix}-createTable'
+  name: '${prefix}createTable'
   location: location
   kind: 'AzurePowerShell'
   identity: {

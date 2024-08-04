@@ -85,12 +85,38 @@ param dnsServers array = []
 @description('Specifies the license type for the virtual machines. Use \'Windows_Server\' for Azure Hybrid Benefit.')
 param licenseType string = ''
 
-var userAssignedIdentityObject = {
+@description('VM tags')
+param tags object = {}
+
+@description('Resource ID of a User Managed Identity for DCR of Log Analytics')
+param userMiResIdForLog string?
+
+var _userAssignedIdentity = trim(userAssignedIdentity)
+
+var userIdentity = {
   type: 'UserAssigned'
   userAssignedIdentities: {
     '${userAssignedIdentity}': {}
   }
 }
+var userIdentityForLog = {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userMiResIdForLog}': {}
+  }
+}
+var bothIdentities = {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userAssignedIdentity}': {}
+    '${userMiResIdForLog}': {}
+  }
+}
+
+var identity = empty(_userAssignedIdentity) && empty(userMiResIdForLog)
+  ? null
+  : (!empty(_userAssignedIdentity) && !empty(userMiResIdForLog) ? bothIdentities : (!empty(_userAssignedIdentity) ? userIdentity : userIdentityForLog))
+
 var nicName = '${vmName}-nic-${uniqueString(subnetId)}'
 var isWindowsOS = (toLower(imageOsPlatform) == 'windows')
 var trimmedSSHPublicKey = trim(sshPublicKey)
@@ -158,7 +184,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2019-04-01' = {
 resource vm 'Microsoft.Compute/virtualMachines@2019-03-01' = {
   name: vmName
   location: resourceGroup().location
-  identity: (empty(trim(userAssignedIdentity)) ? null : userAssignedIdentityObject)
+  identity: identity
+  tags: tags
   properties: {
     availabilitySet: (empty(trim(availabilitySetName)) ? null : availabilitySet)
     hardwareProfile: {

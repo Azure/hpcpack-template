@@ -9,7 +9,7 @@ $tableParams = @'
 {
   "properties": {
     "schema": {
-      "name": "HPCPack_CL",
+      "name": "TraceListener_CL",
       "columns": [
         {
           "name": "TimeGenerated",
@@ -17,24 +17,34 @@ $tableParams = @'
           "description": "The time at which the log was generated"
         },
         {
-          "name": "Computer",
+          "name": "ComputerName",
           "type": "string",
-          "description": "The computer that generated the log"
+          "description": "The name of the computer that generated the log"
         },
         {
-          "name": "Service",
+          "name": "ProcessName",
           "type": "string",
-          "description": "The service that generated the log"
+          "description": "The name of the process that generated the log"
         },
         {
-          "name": "Process",
+          "name": "ProcessId",
           "type": "int",
-          "description": "The the process that generated the log"
+          "description": "The id of the process that generated the log"
         },
         {
-          "name": "Level",
+          "name": "EventType",
           "type": "string",
-          "description": "Log level"
+          "description": "Log event type, such as error, info, etc."
+        },
+        {
+          "name": "EventId",
+          "type": "int",
+          "description": "Log event id"
+        },
+        {
+          "name": "Source",
+          "type": "string",
+          "description": "Log source"
         },
         {
           "name": "Content",
@@ -48,4 +58,4 @@ $tableParams = @'
 '@
 
 # TODO: Fail the script on failed HTTP request!
-Invoke-AzRestMethod -Path "$workSpaceResId/tables/HPCPack_CL?api-version=2022-10-01" -Method PUT -payload $tableParams
+Invoke-AzRestMethod -Path "$workSpaceResId/tables/TraceListener_CL?api-version=2022-10-01" -Method PUT -payload $tableParams
