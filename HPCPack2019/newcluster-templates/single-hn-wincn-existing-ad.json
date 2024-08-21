@@ -758,6 +758,34 @@
     },
     {
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[guid(resourceGroup().id, variables('clusterName'), 'HPCPackBVT-IaaS-c1')]",
+      "apiVersion": "2022-04-01",
+      "properties": {
+        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]",
+        "scope": "/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourceGroups/HPCPackBVT-IaaS-c1"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[guid(resourceGroup().id, variables('clusterName'), 'HPCPackBVT-IaaS-c2')]",
+      "apiVersion": "2022-04-01",
+      "properties": {
+        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]",
+        "scope": "/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourceGroups/HPCPackBVT-IaaS-c2"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
       "name": "msiVNetRoleAssignment",
