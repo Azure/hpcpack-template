@@ -183,6 +183,13 @@ var rdmaDriverSupportedCNImage = ((contains(computeNodeImage, 'CentOS_7') || con
   '_HPC'
 )))
 
+var vmTags = _enableAzureMonitor ? {
+  LA_MiClientId: monitor.outputs.logUserMiClientId
+  LA_DcrId: monitor.outputs.logDcrRunId
+  LA_DcrStream: monitor.outputs.logDcrStreamName
+  LA_DceUrl: monitor.outputs.logEndpoint
+} : {}
+
 module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
   name: 'AzureMonitor'
   params: {
@@ -252,6 +259,7 @@ module headNode 'shared/head-node.bicep' = {
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     privateIp: '10.0.0.4'
     subnetId: subnetRef
+    tags: vmTags
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup
   }
@@ -330,6 +338,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       headNodeList: _clusterName
       joinDomain: false
       domainName: ''
+      tags: vmTags
     }
     dependsOn: [
       monitor

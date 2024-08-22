@@ -173,6 +173,13 @@ var _computeNodeImages = union(windowsComputeNodeImages, {
 var headNodeImageRef = _headNodeImages[headNodeOS]
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
 
+var vmTags = _enableAzureMonitor ? {
+  LA_MiClientId: monitor.outputs.logUserMiClientId
+  LA_DcrId: monitor.outputs.logDcrRunId
+  LA_DcrStream: monitor.outputs.logDcrStreamName
+  LA_DceUrl: monitor.outputs.logEndpoint
+} : {}
+
 module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
   name: 'AzureMonitor'
   params: {
@@ -272,6 +279,7 @@ module headNode 'shared/head-node.bicep' = {
     installIBDriver:hnRDMACapable && autoEnableInfiniBand
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
+    tags: vmTags
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup
   }
@@ -350,6 +358,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       headNodeList: _clusterName
       joinDomain: true
       domainName: _domainName
+      tags: vmTags
     }
     dependsOn: [
       monitor
