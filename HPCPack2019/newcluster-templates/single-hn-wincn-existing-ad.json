@@ -773,7 +773,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[concat('HPCPackBVT-IaaS-c1-', guid('/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourceGroups/HPCPackBVT-IaaS-c1'))]",
+              "name": "[guid('/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourceGroups/HPCPackBVT-IaaS-c1'))]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
