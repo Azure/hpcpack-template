@@ -773,7 +773,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[guid('HPCPackBVT-IaaS-c1', 'resourceGroup().id', variables('clusterName'))]",
+              "name": "[guid(resourceGroup().id, variables('clusterName'))]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
@@ -801,7 +801,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[guid('HPCPackBVT-IaaS-c2', resourceGroup().id, variables('clusterName'))]",
+              "name": "[guid(resourceGroup().id, variables('clusterName'))]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
