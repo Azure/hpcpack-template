@@ -344,6 +344,14 @@
       "metadata": {
         "description": "Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network."
       }
+    },
+    "c1guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    },
+    "c2guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
     }
   },
   "variables": {
@@ -773,7 +781,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[guid(resourceGroup().id, variables('clusterName'))]",
+              "name": "[parameters('c1guid')]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
@@ -801,7 +809,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[guid(resourceGroup().id, variables('clusterName'))]",
+              "name": "[parameters('c2guid')]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
