@@ -889,6 +889,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "location": "[resourceGroup().location]",
       "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'), '/extensions/JoinADDomain')]",
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
       ],
       "apiVersion": "2021-03-01",
