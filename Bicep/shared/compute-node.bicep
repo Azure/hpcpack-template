@@ -89,33 +89,34 @@ param licenseType string = ''
 param tags object = {}
 
 @description('Resource ID of a User Managed Identity for DCR of Log Analytics')
-param userMiResIdForLog string?
+param userMiResIdForLog string = ''
 
 var _userAssignedIdentity = trim(userAssignedIdentity)
+var _userMiResIdForLog = trim(userMiResIdForLog)
 
 var userIdentity = {
   type: 'UserAssigned'
   userAssignedIdentities: {
-    '${userAssignedIdentity}': {}
+    '${_userAssignedIdentity}': {}
   }
 }
 var userIdentityForLog = {
   type: 'UserAssigned'
   userAssignedIdentities: {
-    '${userMiResIdForLog}': {}
+    '${_userMiResIdForLog}': {}
   }
 }
 var bothIdentities = {
   type: 'UserAssigned'
   userAssignedIdentities: {
-    '${userAssignedIdentity}': {}
-    '${userMiResIdForLog}': {}
+    '${_userAssignedIdentity}': {}
+    '${_userMiResIdForLog}': {}
   }
 }
 
-var identity = empty(_userAssignedIdentity) && empty(userMiResIdForLog)
+var identity = empty(_userAssignedIdentity) && empty(_userMiResIdForLog)
   ? null
-  : (!empty(_userAssignedIdentity) && !empty(userMiResIdForLog) ? bothIdentities : (!empty(_userAssignedIdentity) ? userIdentity : userIdentityForLog))
+  : (!empty(_userAssignedIdentity) && !empty(_userMiResIdForLog) ? bothIdentities : (!empty(_userAssignedIdentity) ? userIdentity : userIdentityForLog))
 
 var nicName = '${vmName}-nic-${uniqueString(subnetId)}'
 var isWindowsOS = (toLower(imageOsPlatform) == 'windows')
