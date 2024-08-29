@@ -94,6 +94,8 @@ param userMiResIdForLog string = ''
 var _userAssignedIdentity = trim(userAssignedIdentity)
 var _userMiResIdForLog = trim(userMiResIdForLog)
 
+var noIdentity = empty(_userAssignedIdentity) && empty(_userMiResIdForLog)
+
 var userIdentity = {
   type: 'UserAssigned'
   userAssignedIdentities: {
@@ -106,15 +108,20 @@ var userIdentityForLog = {
     '${_userMiResIdForLog}': {}
   }
 }
-var bothIdentities = {
-  type: 'UserAssigned'
-  userAssignedIdentities: {
-    '${_userAssignedIdentity}': {}
-    '${_userMiResIdForLog}': {}
-  }
-}
 
-var identity = empty(_userAssignedIdentity) && empty(_userMiResIdForLog)
+//NOTE: an variable of object value like { '': {}, '': {}, ... } cannot pass validation.
+//So we need to avoid that here.
+var bothIdentities = noIdentity
+  ? null
+  : {
+      type: 'UserAssigned'
+      userAssignedIdentities: {
+        '${_userAssignedIdentity}': {}
+        '${_userMiResIdForLog}': {}
+      }
+    }
+
+var identity = noIdentity
   ? null
   : (!empty(_userAssignedIdentity) && !empty(_userMiResIdForLog) ? bothIdentities : (!empty(_userAssignedIdentity) ? userIdentity : userIdentityForLog))
 
