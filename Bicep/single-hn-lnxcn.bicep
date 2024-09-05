@@ -260,6 +260,7 @@ module headNode 'shared/head-node.bicep' = {
     privateIp: '10.0.0.4'
     subnetId: subnetRef
     tags: vmTags
+    userMiResIdForLog: _enableAzureMonitor ? monitor.outputs.logUserMiResId : null
     vaultName: _vaultName
     vaultResourceGroup: _vaultResourceGroup
   }
@@ -339,6 +340,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       joinDomain: false
       domainName: ''
       tags: vmTags
+      userMiResIdForLog: _enableAzureMonitor ? monitor.outputs.logUserMiResId : null
     }
     dependsOn: [
       monitor
