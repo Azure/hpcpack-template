@@ -393,7 +393,7 @@
         "publisher": "MicrosoftWindowsServerHPCPack",
         "offer": "WindowsServerHPCPack",
         "sku": "2019hn-ws2019",
-        "version": "latest"
+        "version": "6.0.7214"
       },
       "CustomImage": {
         "id": "[trim(parameters('headNodeImageResourceId'))]"
