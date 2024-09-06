@@ -768,7 +768,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('ResourceGroupRoleAssignmentC1-', parameters('c1guid'))]",
+      "name": "[concat('RGRoleAssignmentC1-', parameters('c1guid'))]",
       "resourceGroup": "HPCPackBVT-IaaS-c1",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -796,7 +796,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('ResourceGroupRoleAssignmentC2-', parameters('c2guid'))]",
+      "name": "[concat('RGRoleAssignmentC2-', parameters('c2guid'))]",
       "resourceGroup": "HPCPackBVT-IaaS-c2",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
