@@ -824,7 +824,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('msiVNetRoleAssignment-', guid(variables('clusterName'), variables('vnetID')]",
+      "name": "[concat('msiVNetRoleAssignment-', guid(variables('clusterName'), variables('vnetID')))]",
       "resourceGroup": "[variables('virtualNetworkResourceGroupName')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -852,7 +852,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('msiKeyVaultRoleAssignment-', guid(variables('clusterName'), variables('vaultName'))]",
+      "name": "[concat('msiKeyVaultRoleAssignment-', guid(variables('clusterName'), variables('vaultName')))]",
       "resourceGroup": "[variables('vaultResourceGroup')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
