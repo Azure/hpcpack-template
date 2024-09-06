@@ -1,3 +1,5 @@
+import { AzureMonitorLogSettings } from 'types-and-vars.bicep'
+
 @description('The Id of the subnet in which the node is created')
 param subnetId string
 
@@ -85,11 +87,11 @@ param dnsServers array = []
 @description('Specifies the license type for the virtual machines. Use \'Windows_Server\' for Azure Hybrid Benefit.')
 param licenseType string = ''
 
-@description('VM tags')
-param tags object = {}
+@description('Azure Monitor log settings')
+param logSettings AzureMonitorLogSettings?
 
-@description('Resource ID of a User Managed Identity for DCR of Log Analytics')
-param userMiResIdForLog string = ''
+var tags = empty(logSettings) ? {} : logSettings
+var userMiResIdForLog = empty(logSettings) ? '' : logSettings!.LA_MiResId
 
 var _userAssignedIdentity = trim(userAssignedIdentity)
 var _userMiResIdForLog = trim(userMiResIdForLog)

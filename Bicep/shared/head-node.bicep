@@ -1,3 +1,5 @@
+import { AzureMonitorLogSettings } from 'types-and-vars.bicep'
+
 param hnName string
 
 //Network settings
@@ -24,8 +26,7 @@ param hnOsDiskType string
 param hnDataDiskType string
 
 //For Azure Monitor Log
-param tags object = {}
-param userMiResIdForLog string?
+param logSettings AzureMonitorLogSettings?
 
 //Role assignment settings
 param clusterName string
@@ -38,6 +39,9 @@ param domainName string?
 
 var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
+
+var tags = empty(logSettings) ? {} : logSettings
+var userMiResIdForLog = empty(logSettings) ? null : logSettings!.LA_MiResId
 
 var systemIdentity = {
   type: 'SystemAssigned'

@@ -1,3 +1,5 @@
+import { AzureMonitorLogSettings } from 'types-and-vars.bicep'
+
 param name string = 'azuremonitor'
 param location string = resourceGroup().location
 
@@ -25,8 +27,10 @@ module vmInsights 'vm-insights.bicep' = {
   }
 }
 
-output logEndpoint string = logIngestion.outputs.logsIngestionEndpoint
-output logDcrRunId string = logIngestion.outputs.dcrRunId
-output logDcrStreamName string = logIngestion.outputs.dcrStreamName
-output logUserMiClientId string = logIngestion.outputs.userMiClientId
-output logUserMiResId string = logIngestion.outputs.userMiResId
+output logSettings AzureMonitorLogSettings = {
+  LA_DceUrl: logIngestion.outputs.logsIngestionEndpoint
+  LA_DcrId: logIngestion.outputs.dcrRunId
+  LA_DcrStream: logIngestion.outputs.dcrStreamName
+  LA_MiClientId: logIngestion.outputs.userMiClientId
+  LA_MiResId: logIngestion.outputs.userMiResId
+}

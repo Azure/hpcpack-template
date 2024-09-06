@@ -454,3 +454,14 @@ var linuxComputeNodeImages = {
   }
   CustomImage: {}
 }
+
+//NOTE: The properties are set as VM Tags, and the names are referenced in HPC Pack code.
+//So be cautious when you want to change these names!
+@export()
+type AzureMonitorLogSettings = {
+  LA_MiResId: string
+  LA_MiClientId: string
+  LA_DcrId: string
+  LA_DcrStream: string
+  LA_DceUrl: string
+}
