@@ -121,6 +121,15 @@ var vmPriority = ((useSpotInstances == 'Yes') ? 'Spot' : 'Regular')
 var computeVmssName = take(replace(_computeNodeNamePrefix, '-', ''), 9)
 var vmssSinglePlacementGroup = ((length(availabilityZonesSS) <= 1) && (computeNodeNumber <= 100))
 
+var hnNames = split(trim(headNodeList), ',')
+
+module monitor 'shared/azure-monitor-detector.bicep' = {
+  name: 'monitor'
+  params: {
+    vmName: hnNames[0]
+  }
+}
+
 resource availabilitySet 'Microsoft.Compute/availabilitySets@2019-03-01' = if (!(useVmssForCN || empty(trim(availabilitySetName)))) {
   name: _availabilitySetName
   location: resourceGroup().location
@@ -173,6 +182,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       domainName: trim(domainName)
       domainOUPath: (empty(domainName) ? '' : domainOUPath)
       userAssignedIdentity: trim(userAssignedIdentity)
+      logSettings: monitor.outputs.logSettings
     }
     dependsOn: [
       availabilitySet
