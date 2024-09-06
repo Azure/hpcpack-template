@@ -768,7 +768,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "ResourceGroupRoleAssignmentC1",
+      "name": "[concat('ResourceGroupRoleAssignmentC1-', parameters('c1guid'))]",
       "resourceGroup": "HPCPackBVT-IaaS-c1",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -796,7 +796,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "ResourceGroupRoleAssignmentC2",
+      "name": "[concat('ResourceGroupRoleAssignmentC2-', parameters('c2guid'))]",
       "resourceGroup": "HPCPackBVT-IaaS-c2",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -824,7 +824,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "msiVNetRoleAssignment",
+      "name": "[concat('msiVNetRoleAssignment-', guid(variables('clusterName'), variables('vnetID')]",
       "resourceGroup": "[variables('virtualNetworkResourceGroupName')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -837,7 +837,7 @@
           "resources": [
             {
               "type": "Microsoft.Network/virtualNetworks/providers/roleAssignments",
-              "name": "[concat(variables('virtualNetworkName'), '/Microsoft.Authorization/', guid(variables('vnetID'), variables('clusterName')))]",
+              "name": "[concat(variables('virtualNetworkName'), '/Microsoft.Authorization/', guid(variables('clusterName'), variables('vnetID')))]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
@@ -852,7 +852,7 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "msiKeyVaultRoleAssignment",
+      "name": "[concat('msiKeyVaultRoleAssignment-', guid(variables('clusterName'), variables('vaultName'))]",
       "resourceGroup": "[variables('vaultResourceGroup')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
@@ -865,7 +865,7 @@
           "resources": [
             {
               "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-              "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('vaultName'), variables('vnetID'), variables('clusterName')))]",
+              "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('clusterName'), variables('vaultName'), variables('vnetID')))]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395",
