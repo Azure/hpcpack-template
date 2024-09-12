@@ -184,16 +184,17 @@ resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   }
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentity) {
+resource contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentity) {
   name: guid(resourceGroup().id, clusterName, hnName)
   scope: resourceGroup()
   properties: {
+    //Contributor Role
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
     principalId: headNode.identity.principalId
   }
 }
 
-module keyVaultRoleAssigment 'access-to-key-vault.bicep' = if (enableManagedIdentity) {
+module keyVaultRoleAssignment 'key-vault-role-assignment.bicep' = if (enableManagedIdentity) {
   name: 'msiKeyVaultRoleAssignment${hnName}'
   scope: resourceGroup(vaultResourceGroup)
   params: {
