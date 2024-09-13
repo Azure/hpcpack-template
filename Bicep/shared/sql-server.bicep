@@ -5,6 +5,7 @@ param vmName string
 param vmSize string
 param diskType string
 param domainName string
+param domainOUPath string = ''
 param adminUsername string
 @secure()
 param adminPassword string
@@ -54,6 +55,7 @@ resource joinADDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' 
     autoUpgradeMinorVersion: true
     settings: {
       Name: domainName
+      OUPath: domainOUPath
       User: '${domainName}\\${adminUsername}'
       NumberOfRetries: '50'
       RetryIntervalInMilliseconds: '10000'
