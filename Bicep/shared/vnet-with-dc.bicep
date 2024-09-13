@@ -1,13 +1,13 @@
 param vNetName string
-param vNetAddressPrefix string
-param subnetName string
-param subnetAddressPrefix string
+param vNetAddressPrefix string = '10.0.0.0/16'
+param subnetName string = 'Subnet-1'
+param subnetAddressPrefix string = '10.0.0.0/22'
 @secure()
 param adminPassword string
-param adminUsername string
-param domainName string
+param adminUsername string = 'hpcadmin'
+param domainName string = 'hpc.cluster'
 param dcVmName string
-param dcSize string
+param dcSize string = 'Standard_D2_v3'
 
 var vnetId = vnet.outputs.vNetId
 var subnetRef = '${vnetId}/subnets/${subnetName}'
