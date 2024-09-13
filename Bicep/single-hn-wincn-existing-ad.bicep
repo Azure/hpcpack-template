@@ -32,10 +32,10 @@ param headNodeOsDiskType DiskType = 'Premium_SSD'
 @description('The VM size of the head node, all available VM sizes in Azure can be found at <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment.')
 param headNodeVMSize string = 'Standard_DS4_v2'
 
-@description('The name prefix of the compute nodes. It must be no more than 12 characters, begin with a letter, and contain only letters, numbers and hyphens. For example, if \'IaaSCN\' is specified, the compute node names will be \'IaaSCN000\', \'IaaSCN001\', ...')
+@description('The name prefix of the compute nodes. It must be no more than 12 characters, begin with a letter, and contain only letters, numbers and hyphens. For example, if \'IaaSCN\' is specified, the compute node names will be \'IaaSCN000\', \'IaaSCN001\', and so on. The compute node names must be unique in the domain forest.')
 @minLength(1)
 @maxLength(12)
-param computeNodeNamePrefix string = 'IaaSCN'
+param computeNodeNamePrefix string
 
 @description('The number of the compute nodes.')
 param computeNodeNumber int = 10
@@ -256,6 +256,7 @@ module headNode 'shared/head-node.bicep' = {
   ]
 }
 
+//TODO: Move this into a module
 resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   name: '${_clusterName}/setupHpcHeadNode'
   location: resourceGroup().location
