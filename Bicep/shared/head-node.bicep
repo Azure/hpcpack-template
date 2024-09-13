@@ -3,7 +3,13 @@ import { AzureMonitorLogSettings } from 'types-and-vars.bicep'
 param hnName string
 
 //Network settings
+
+//TODO: Either get vnet rg and name from subnetId, or use params vnetRg, vnetName and vnetSubnet
+//instead of a single param subnetId.
+param externalVNetRg string?
+param externalVNetName string?
 param subnetId string
+
 param enableAcceleratedNetworking bool
 param createPublicIp bool
 param lbName string?
@@ -36,6 +42,9 @@ param vaultName string
 //VM extension settings
 param installIBDriver bool
 param domainName string?
+param domainOUPath string = ''
+
+var useExternalVNet = !empty(externalVNetName) && !empty(externalVNetRg)
 
 var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
@@ -203,6 +212,16 @@ module keyVaultRoleAssignment 'key-vault-role-assignment.bicep' = if (enableMana
   }
 }
 
+module vnetRoleAssignment 'vnet-role-assignment.bicep' = if (useExternalVNet) {
+  name: 'msiVNetRoleAssignment${hnName}'
+  //NOTE: To pass stupid ARM validation even when useExternalVNet is false.
+  scope: resourceGroup(useExternalVNet ? externalVNetRg! : 'externalVNetRg')
+  params: {
+    vnetName: externalVNetName!
+    principalId: headNode.identity.principalId
+  }
+}
+
 resource ibDriver 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (installIBDriver) {
   parent: headNode
   name: 'installInfiniBandDriver'
@@ -226,6 +245,7 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
     autoUpgradeMinorVersion: true
     settings: {
       Name: domainName
+      OUPath: domainOUPath
       User: '${domainName}\\${adminUsername}'
       NumberOfRetries: '50'
       RetryIntervalInMilliseconds: '10000'
