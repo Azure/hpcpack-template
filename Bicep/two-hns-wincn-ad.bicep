@@ -315,7 +315,6 @@ module sqlServer 'shared/sql-server.bicep' = {
     vmSize: sqlServerVMSize
   }
   dependsOn: [
-    monitor
     hnAvSet
     vnet
   ]
@@ -502,6 +501,4 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
   ]
 }
 
-output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No')
-  ? privateClusterFQDN
-  : lb.outputs.fqdn
+output clusterDNSName string = (createPublicIPAddressForHeadNode == 'No') ? privateClusterFQDN : lb.outputs.fqdn
