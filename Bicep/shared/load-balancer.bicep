@@ -39,7 +39,7 @@ resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = {
     ]
     backendAddressPools: [
       {
-        name: 'BackendPool1'
+        name: lbPoolName
       }
     ]
     inboundNatRules: [
