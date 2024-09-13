@@ -190,17 +190,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {}
 }
 
-module vnet 'shared/vnet.bicep' = {
-  name: 'createVNet'
-  scope: resourceGroup()
-  params: {
-    vNetName: vNetName
-    addressPrefix: addressPrefix
-    subnetName: subnet1Name
-    subnetPrefix: subnet1Prefix
-  }
-}
-
 module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
   name: 'nsg'
   params: {
@@ -208,34 +197,19 @@ module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
   }
 }
 
-module dc 'shared/domain-controller.bicep' = {
-  name: 'dc'
+module vnet 'shared/vnet-with-dc.bicep' = {
+  name: 'createVNetAndDC'
   params: {
     adminPassword: adminPassword
     adminUsername: adminUsername
+    dcSize: dcSize
+    dcVmName: dcVMName
     domainName: _domainName
-    subnetId: subnetRef
-    vmName: dcVMName
-    vmSize: dcSize
-  }
-  dependsOn: [
-    monitor
-  ]
-}
-
-module updateVNetDNS 'shared/vnet.bicep' = {
-  name: 'updateVNetDNS'
-  params: {
-    vNetName: vNetName
-    addressPrefix: addressPrefix
+    subnetAddressPrefix: subnet1Prefix
     subnetName: subnet1Name
-    subnetPrefix: subnet1Prefix
-    dnsSeverIp: '10.0.0.4'
+    vNetAddressPrefix: addressPrefix
+    vNetName: vNetName
   }
-  dependsOn: [
-    vnet
-    dc
-  ]
 }
 
 resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (createHNInAVSet || createCNInAVSet) {
@@ -279,7 +253,7 @@ module headNode 'shared/head-node.bicep' = {
   dependsOn: [
     monitor
     nsg
-    updateVNetDNS
+    vnet
   ]
 }
 
@@ -356,7 +330,7 @@ module computeNodes 'shared/compute-node.bicep' = [
     dependsOn: [
       monitor
       availabilitySet
-      updateVNetDNS
+      vnet
     ]
   }
 ]
@@ -387,7 +361,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     domainName: _domainName
   }
   dependsOn: [
-    updateVNetDNS
+    vnet
   ]
 }
 

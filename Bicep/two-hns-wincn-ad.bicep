@@ -217,14 +217,18 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {}
 }
 
-module vnet 'shared/vnet.bicep' = {
-  name: 'createVNet'
-  scope: resourceGroup()
+module vnet 'shared/vnet-with-dc.bicep' = {
+  name: 'createVNetAndDC'
   params: {
-    vNetName: vNetName
-    addressPrefix: addressPrefix
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    dcSize: dcSize
+    dcVmName: dcVMName
+    domainName: _domainName
+    subnetAddressPrefix: subnet1Prefix
     subnetName: subnet1Name
-    subnetPrefix: subnet1Prefix
+    vNetAddressPrefix: addressPrefix
+    vNetName: vNetName
   }
 }
 
@@ -243,37 +247,6 @@ module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
   name: 'nsg'
   params: {
     name: nsgName
-  }
-}
-
-module dc 'shared/domain-controller.bicep' = {
-  name: 'dc'
-  params: {
-    adminPassword: adminPassword
-    adminUsername: adminUsername
-    domainName: _domainName
-    subnetId: subnetRef
-    vmName: dcVMName
-    vmSize: dcSize
-  }
-  dependsOn: [
-    monitor
-  ]
-}
-
-module updateVNetDNS 'shared/vnet.bicep' = {
-  name: 'updateVNetDNS'
-  scope: resourceGroup()
-  dependsOn: [
-    vnet
-    dc
-  ]
-  params: {
-    vNetName: vNetName
-    addressPrefix: addressPrefix
-    subnetName: subnet1Name
-    subnetPrefix: subnet1Prefix
-    dnsSeverIp: '10.0.0.4'
   }
 }
 
@@ -322,7 +295,7 @@ module headNodes 'shared/head-node.bicep' = [
       monitor
       lb
       nsg
-      updateVNetDNS
+      vnet
     ]
   }
 ]
@@ -344,7 +317,7 @@ module sqlServer 'shared/sql-server.bicep' = {
   dependsOn: [
     monitor
     hnAvSet
-    updateVNetDNS
+    vnet
   ]
 }
 
@@ -458,7 +431,7 @@ resource cnAvSet 'Microsoft.Compute/availabilitySets@2023-03-01' = [
       platformFaultDomainCount: 2
     }
     dependsOn: [
-      updateVNetDNS
+      vnet
     ]
   }
 ]
@@ -493,7 +466,7 @@ module computeNodes 'shared/compute-node.bicep' = [
     }
     dependsOn: [
       monitor
-      updateVNetDNS
+      vnet
       cnAvSet
     ]
   }
@@ -525,7 +498,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     domainName: _domainName
   }
   dependsOn: [
-    updateVNetDNS
+    vnet
   ]
 }
 
