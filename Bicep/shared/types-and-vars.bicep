@@ -534,6 +534,12 @@ type AzureMonitorLogSettings = {
 }
 
 @export()
+type AzureMonitorAgentSettings = {
+  userMiResId: string
+  dcrResId: string
+}
+
+@export()
 type AzureSqlDataBaseServiceTier =
   | 'Standard_S0'
   | 'Standard_S1'

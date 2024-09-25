@@ -245,6 +245,7 @@ module headNode 'shared/head-node.bicep' = {
     hnVMSize: headNodeVMSize
     installIBDriver:hnRDMACapable && autoEnableInfiniBand
     logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
+    amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
     vaultName: _vaultName

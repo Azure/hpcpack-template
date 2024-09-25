@@ -286,6 +286,7 @@ module headNodes 'shared/head-node.bicep' = [
       lbName: lbName
       lbPoolName: lbPoolName
       logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
+      amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
       nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
       subnetId: subnetRef
       vaultName: _vaultName

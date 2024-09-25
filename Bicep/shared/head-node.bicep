@@ -1,4 +1,4 @@
-import { AzureMonitorLogSettings } from 'types-and-vars.bicep'
+import { AzureMonitorLogSettings, AzureMonitorAgentSettings } from 'types-and-vars.bicep'
 
 param hnName string
 
@@ -33,6 +33,7 @@ param hnDataDiskType string
 
 //For Azure Monitor Log
 param logSettings AzureMonitorLogSettings?
+param amaSettings AzureMonitorAgentSettings?
 
 //Role assignment settings
 param clusterName string
@@ -258,6 +259,18 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
   }
   dependsOn: [
     ibDriver
+  ]
+}
+
+module ama '../Shared/ama-windows.bicep' = if (!empty(amaSettings)) {
+  name: '${hnName}-windowsAMA'
+  params: {
+    dcrResId: empty(amaSettings) ? '' : amaSettings!.dcrResId
+    userMiResId: empty(amaSettings) ? '' : amaSettings!.userMiResId
+    vmName: hnName
+  }
+  dependsOn: [
+    headNode
   ]
 }
 
