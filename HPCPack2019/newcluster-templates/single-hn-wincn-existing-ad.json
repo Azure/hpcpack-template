@@ -352,6 +352,14 @@
     "c2guid": {
       "type": "string",
       "defaultValue": "[newGuid()]"
+    },
+    "p1guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    },
+    "p2guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
     }
   },
   "variables": {
@@ -810,6 +818,62 @@
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "name": "[parameters('c2guid')]",
+              "apiVersion": "2022-04-01",
+              "properties": {
+                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "apiVersion": "2022-09-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('RGRoleAssignmentP1-', parameters('p1guid'))]",
+      "resourceGroup": "HPCPackBVT-IaaS-p1",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "name": "[parameters('p1guid')]",
+              "apiVersion": "2022-04-01",
+              "properties": {
+                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "apiVersion": "2022-09-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('RGRoleAssignmentP2-', parameters('p2guid'))]",
+      "resourceGroup": "HPCPackBVT-IaaS-p2",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "name": "[parameters('p2guid')]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
