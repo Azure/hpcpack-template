@@ -46,7 +46,7 @@ This template deploys an HPC Pack cluster with one **single** head node for Wind
 
 This template deploys an HPC Pack cluster with one **single** head node for Windows HPC workloads in an existing Active Directory Domain forest. The cluster includes one **single** head node with local databases (SQL server 2019 Express version), and a configurable number of **Windows** compute nodes. You can choose not to create public IP address for the head node if you have a virtual network with Express Route configured and you want to join the cluster to your on-premises Active Directory Domain.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FHPCPack2019%2Fnewcluster-templates%2Fsingle-hn-wincn-existing-ad.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbvt-template%2FHPCPack2019%2Fnewcluster-templates%2Fsingle-hn-wincn-existing-ad.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
