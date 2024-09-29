@@ -1,4 +1,7 @@
-import { HeadNodeImage, headNodeImages, WindowsComputeNodeImage, windowsComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl } from 'shared/types-and-vars.bicep'
+import { HeadNodeImage, HpcPackRelease, getHeadNodeImageRef, WindowsComputeNodeImage, windowsComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl } from 'shared/types-and-vars.bicep'
+
+@description('The release of HPC Pack')
+param hpcPackRelease HpcPackRelease = '2019 Update 3'
 
 @description('The name of the HPC cluster. It must be unique in the domain forest; It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter.')
 @minLength(3)
@@ -194,17 +197,12 @@ var certSecrets = [
   }
 ]
 
-var _headNodeImages = union(headNodeImages, {
-  CustomImage: {
-    id: trim(headNodeImageResourceId)
-  }
-})
+var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId))
 var _computeNodeImages = union(windowsComputeNodeImages, {
   CustomImage: {
     id: trim(computeNodeImageResourceId)
   }
 })
-var headNodeImageRef = _headNodeImages[headNodeOS]
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
 var SqlDscExtName = 'configSQLServer'
 

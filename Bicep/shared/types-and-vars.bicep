@@ -24,24 +24,52 @@ type YesOrNo = 'Yes' | 'No'
 type YesOrNoOrAuto = 'Yes' | 'No' | 'Auto'
 
 @export()
-type HeadNodeImage = 'WindowsServer2022' | 'WindowsServer2019' | 'CustomImage'
+type HpcPackRelease = '2019 Update 2' | '2019 Update 3'
 
 @export()
+type HeadNodeImage = 'WindowsServer2022' | 'WindowsServer2019' | 'CustomImage'
+
+//@export()
 var headNodeImages = {
-  WindowsServer2019: {
-    publisher: 'MicrosoftWindowsServerHPCPack'
-    offer: 'WindowsServerHPCPack'
-    sku: '2019hn-ws2019'
-    version: 'latest'
+  '2019 Update 2': {
+    WindowsServer2019: {
+      publisher: 'MicrosoftWindowsServerHPCPack'
+      offer: 'WindowsServerHPCPack'
+      sku: '2019hn-ws2019'
+      version: '6.2.7756'
+    }
+    WindowsServer2022: {
+      publisher: 'MicrosoftWindowsServerHPCPack'
+      offer: 'WindowsServerHPCPack'
+      sku: '2019hn-ws2022'
+      version: '6.2.7756'
+    }
+    CustomImage: {}
   }
-  WindowsServer2022: {
-    publisher: 'MicrosoftWindowsServerHPCPack'
-    offer: 'WindowsServerHPCPack'
-    sku: '2019hn-ws2022'
-    version: 'latest'
+  '2019 Update 3': {
+    WindowsServer2019: {
+      publisher: 'MicrosoftWindowsServerHPCPack'
+      offer: 'WindowsServerHPCPack'
+      sku: '2019hn-ws2019'
+      version: 'latest'
+    }
+    WindowsServer2022: {
+      publisher: 'MicrosoftWindowsServerHPCPack'
+      offer: 'WindowsServerHPCPack'
+      sku: '2019hn-ws2022'
+      version: 'latest'
+    }
+    CustomImage: {}
   }
-  CustomImage: {}
 }
+
+@export()
+func getHeadNodeImageRef(release HpcPackRelease, imageName HeadNodeImage, customImageId string?) object =>
+  union(headNodeImages[release], {
+    CustomImage: {
+      id: customImageId
+    }
+  })[imageName]
 
 @export()
 type WindowsComputeNodeImage =
