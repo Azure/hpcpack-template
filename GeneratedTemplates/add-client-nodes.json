@@ -1,0 +1,647 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.30.23.60470",
+      "templateHash": "5379841316070605110"
+    }
+  },
+  "definitions": {
+    "DiskCount": {
+      "type": "int",
+      "allowedValues": [
+        0,
+        1,
+        2,
+        4,
+        8
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    },
+    "DiskSizeInGB": {
+      "type": "int",
+      "allowedValues": [
+        1024,
+        128,
+        2048,
+        256,
+        32,
+        4096,
+        512,
+        64
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    },
+    "DiskType": {
+      "type": "string",
+      "allowedValues": [
+        "Premium_SSD",
+        "Standard_HDD",
+        "Standard_SSD"
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    },
+    "WindowsComputeNodeImage": {
+      "type": "string",
+      "allowedValues": [
+        "CustomImage",
+        "WindowsServer2012",
+        "WindowsServer2012R2",
+        "WindowsServer2012R2WithExcel",
+        "WindowsServer2012R2_Gen2",
+        "WindowsServer2012_Gen2",
+        "WindowsServer2016",
+        "WindowsServer2016WithExcel",
+        "WindowsServer2016_Gen2",
+        "WindowsServer2019",
+        "WindowsServer2019_Gen2",
+        "WindowsServer2022",
+        "WindowsServer2022_Gen2"
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    },
+    "YesOrNo": {
+      "type": "string",
+      "allowedValues": [
+        "No",
+        "Yes"
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    },
+    "YesOrNoOrAuto": {
+      "type": "string",
+      "allowedValues": [
+        "Auto",
+        "No",
+        "Yes"
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "nodeNamePrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 12
+    },
+    "nodeNameStartIndex": {
+      "type": "int",
+      "defaultValue": 0
+    },
+    "nodeNumber": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 50
+    },
+    "nodeImage": {
+      "$ref": "#/definitions/WindowsComputeNodeImage",
+      "defaultValue": "WindowsServer2019"
+    },
+    "nodeVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_D3_v2"
+    },
+    "nodeOsDiskType": {
+      "$ref": "#/definitions/DiskType",
+      "defaultValue": "Standard_SSD"
+    },
+    "dataDiskCount": {
+      "$ref": "#/definitions/DiskCount",
+      "defaultValue": 1
+    },
+    "dataDiskSizeInGB": {
+      "$ref": "#/definitions/DiskSizeInGB",
+      "defaultValue": 128
+    },
+    "dataDiskType": {
+      "$ref": "#/definitions/DiskType",
+      "defaultValue": "Standard_SSD"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminUserPassword": {
+      "type": "securestring"
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "The existing virtual network"
+      }
+    },
+    "virtualNetworkResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group in which the existing virtual network was created."
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The existing subnet in which all VMs of the client nodes will be created."
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify the fully qualified domain name (FQDN) for the existing domain forest if your HPC cluster is domain joined, for example 'hpc.cluster'."
+      }
+    },
+    "domainOUPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The organizational unit (OU) in the domain, for example 'OU=testOU,DC=domain,DC=Domain,DC=com', used only when 'domainName' is specified."
+      }
+    }
+  },
+  "variables": {
+    "nodeImages": "[variables('windowsComputeNodeImages')]",
+    "nodeImageRef": "[variables('nodeImages')[parameters('nodeImage')]]",
+    "diskTypes": {
+      "Standard_HDD": "Standard_LRS",
+      "Standard_SSD": "StandardSSD_LRS",
+      "Premium_SSD": "Premium_LRS"
+    },
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources",
+    "windowsComputeNodeImages": {
+      "WindowsServer2008R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2008-R2-SP1",
+        "version": "latest"
+      },
+      "WindowsServer2012": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2012R2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2016": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2019": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-Datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2022": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter",
+        "version": "latest"
+      },
+      "WindowsServer2012R2WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2012R2-Excel",
+        "version": "latest"
+      },
+      "WindowsServer2016WithExcel": {
+        "publisher": "MicrosoftWindowsServerHPCPack",
+        "offer": "WindowsServerHPCPack",
+        "sku": "2016U2CN-WS2016-Excel",
+        "version": "latest"
+      },
+      "WindowsServer2012_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2012R2_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-r2-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2016_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2019_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2019-datacenter-gensecond",
+        "version": "latest"
+      },
+      "WindowsServer2022_Gen2": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2022-datacenter-g2",
+        "version": "latest"
+      },
+      "CustomImage": {}
+    }
+  },
+  "resources": {
+    "clientNodes": {
+      "copy": {
+        "name": "clientNodes",
+        "count": "[length(range(parameters('nodeNameStartIndex'), parameters('nodeNumber')))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}{1}', parameters('nodeNamePrefix'), padLeft(range(parameters('nodeNameStartIndex'), parameters('nodeNumber'))[copyIndex()], 3, '0'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vmName": {
+            "value": "[format('{0}{1}', parameters('nodeNamePrefix'), padLeft(range(parameters('nodeNameStartIndex'), parameters('nodeNumber'))[copyIndex()], 3, '0'))]"
+          },
+          "vmImage": {
+            "value": "[variables('nodeImageRef')]"
+          },
+          "vmSize": {
+            "value": "[parameters('nodeVMSize')]"
+          },
+          "vmOsDiskType": {
+            "value": "[parameters('nodeOsDiskType')]"
+          },
+          "vmDataDiskCount": {
+            "value": "[parameters('dataDiskCount')]"
+          },
+          "vmDataDiskSize": {
+            "value": "[parameters('dataDiskSizeInGB')]"
+          },
+          "vmDataDiskType": {
+            "value": "[parameters('dataDiskType')]"
+          },
+          "username": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "password": {
+            "value": "[parameters('adminUserPassword')]"
+          },
+          "domainName": {
+            "value": "[parameters('domainName')]"
+          },
+          "domainOUPath": {
+            "value": "[parameters('domainOUPath')]"
+          },
+          "vnetRg": {
+            "value": "[parameters('virtualNetworkResourceGroupName')]"
+          },
+          "vnetName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "subnetName": {
+            "value": "[parameters('subnetName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "5971084183388865605"
+            }
+          },
+          "definitions": {
+            "AzureMonitorLogSettings": {
+              "type": "object",
+              "properties": {
+                "LA_MiResId": {
+                  "type": "string"
+                },
+                "LA_MiClientId": {
+                  "type": "string"
+                },
+                "LA_DcrId": {
+                  "type": "string"
+                },
+                "LA_DcrStream": {
+                  "type": "string"
+                },
+                "LA_DceUrl": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            },
+            "DiskType": {
+              "type": "string",
+              "allowedValues": [
+                "Premium_SSD",
+                "Standard_HDD",
+                "Standard_SSD"
+              ],
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            }
+          },
+          "parameters": {
+            "vnetRg": {
+              "type": "string"
+            },
+            "vnetName": {
+              "type": "string"
+            },
+            "subnetName": {
+              "type": "string"
+            },
+            "newPublicIp": {
+              "type": "bool",
+              "defaultValue": true
+            },
+            "privateIp": {
+              "type": "string",
+              "nullable": true
+            },
+            "nsgName": {
+              "type": "string",
+              "nullable": true
+            },
+            "enableAcceleratedNetworking": {
+              "type": "bool",
+              "defaultValue": false
+            },
+            "vmName": {
+              "type": "string"
+            },
+            "vmSize": {
+              "type": "string"
+            },
+            "enableManagedIdentity": {
+              "type": "bool",
+              "defaultValue": false
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "securestring"
+            },
+            "vmImage": {
+              "type": "object"
+            },
+            "vmOsDiskType": {
+              "$ref": "#/definitions/DiskType"
+            },
+            "vmDataDiskType": {
+              "$ref": "#/definitions/DiskType"
+            },
+            "vmDataDiskSize": {
+              "type": "int"
+            },
+            "vmDataDiskCount": {
+              "type": "int"
+            },
+            "domainName": {
+              "type": "string",
+              "nullable": true
+            },
+            "domainOUPath": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "logSettings": {
+              "$ref": "#/definitions/AzureMonitorLogSettings",
+              "nullable": true
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "hnDataDisks",
+                "count": "[length(range(0, if(equals(parameters('vmDataDiskCount'), 0), 1, parameters('vmDataDiskCount'))))]",
+                "input": {
+                  "lun": "[range(0, if(equals(parameters('vmDataDiskCount'), 0), 1, parameters('vmDataDiskCount')))[copyIndex('hnDataDisks')]]",
+                  "createOption": "Empty",
+                  "diskSizeGB": "[parameters('vmDataDiskSize')]",
+                  "managedDisk": {
+                    "storageAccountType": "[variables('diskTypes')[parameters('vmDataDiskType')]]"
+                  }
+                }
+              }
+            ],
+            "publicIpSuffix": "[uniqueString(resourceGroup().id)]",
+            "nicSuffix": "[format('-nic-{0}', uniqueString(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('vnetRg')), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))))]",
+            "tags": "[if(empty(parameters('logSettings')), createObject(), parameters('logSettings'))]",
+            "userMiResIdForLog": "[if(empty(parameters('logSettings')), null(), parameters('logSettings').LA_MiResId)]",
+            "systemIdentity": {
+              "type": "SystemAssigned"
+            },
+            "userIdentity": {
+              "type": "UserAssigned",
+              "userAssignedIdentities": {
+                "[format('{0}', variables('userMiResIdForLog'))]": {}
+              }
+            },
+            "systemAndUserIdentities": {
+              "type": "SystemAssigned, UserAssigned",
+              "userAssignedIdentities": {
+                "[format('{0}', variables('userMiResIdForLog'))]": {}
+              }
+            },
+            "identity": "[if(and(not(parameters('enableManagedIdentity')), empty(variables('userMiResIdForLog'))), null(), if(and(parameters('enableManagedIdentity'), not(empty(variables('userMiResIdForLog')))), variables('systemAndUserIdentities'), if(parameters('enableManagedIdentity'), variables('systemIdentity'), variables('userIdentity'))))]",
+            "diskTypes": {
+              "Standard_HDD": "Standard_LRS",
+              "Standard_SSD": "StandardSSD_LRS",
+              "Premium_SSD": "Premium_LRS"
+            }
+          },
+          "resources": {
+            "vnet": {
+              "existing": true,
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2024-01-01",
+              "resourceGroup": "[parameters('vnetRg')]",
+              "name": "[parameters('vnetName')]"
+            },
+            "subnet": {
+              "existing": true,
+              "type": "Microsoft.Network/virtualNetworks/subnets",
+              "apiVersion": "2024-01-01",
+              "resourceGroup": "[parameters('vnetRg')]",
+              "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetName'))]",
+              "dependsOn": [
+                "vnet"
+              ]
+            },
+            "nsg": {
+              "condition": "[not(empty(parameters('nsgName')))]",
+              "existing": true,
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2023-11-01",
+              "resourceGroup": "[parameters('vnetRg')]",
+              "name": "[if(empty(parameters('nsgName')), 'nsgName', parameters('nsgName'))]"
+            },
+            "publicIp": {
+              "condition": "[parameters('newPublicIp')]",
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}PublicIp', parameters('vmName'))]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                  "domainNameLabel": "[toLower(format('{0}{1}', parameters('vmName'), variables('publicIpSuffix')))]"
+                }
+              }
+            },
+            "nic": {
+              "type": "Microsoft.Network/networkInterfaces",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}{1}', parameters('vmName'), variables('nicSuffix'))]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "IPConfig",
+                    "properties": {
+                      "subnet": {
+                        "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('vnetRg')), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+                      },
+                      "privateIPAllocationMethod": "[if(empty(parameters('privateIp')), 'Dynamic', 'Static')]",
+                      "privateIPAddress": "[parameters('privateIp')]",
+                      "publicIPAddress": "[if(not(parameters('newPublicIp')), null(), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('{0}PublicIp', parameters('vmName')))))]"
+                    }
+                  }
+                ],
+                "networkSecurityGroup": "[if(empty(parameters('nsgName')), null(), createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('vnetRg')), 'Microsoft.Network/networkSecurityGroups', if(empty(parameters('nsgName')), 'nsgName', parameters('nsgName')))))]",
+                "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
+              },
+              "dependsOn": [
+                "nsg",
+                "publicIp",
+                "subnet"
+              ]
+            },
+            "vm": {
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2023-03-01",
+              "name": "[parameters('vmName')]",
+              "location": "[resourceGroup().location]",
+              "identity": "[variables('identity')]",
+              "tags": "[variables('tags')]",
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                  "computerName": "[parameters('vmName')]",
+                  "adminUsername": "[parameters('username')]",
+                  "adminPassword": "[parameters('password')]",
+                  "windowsConfiguration": {
+                    "enableAutomaticUpdates": false
+                  }
+                },
+                "storageProfile": {
+                  "imageReference": "[parameters('vmImage')]",
+                  "osDisk": {
+                    "name": "[format('{0}-osdisk', parameters('vmName'))]",
+                    "caching": "ReadOnly",
+                    "createOption": "FromImage",
+                    "managedDisk": {
+                      "storageAccountType": "[variables('diskTypes')[parameters('vmOsDiskType')]]"
+                    }
+                  },
+                  "dataDisks": "[if(equals(parameters('vmDataDiskCount'), 0), createArray(), variables('hnDataDisks'))]"
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}{1}', parameters('vmName'), variables('nicSuffix')))]"
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "nic"
+              ]
+            },
+            "joinDomain": {
+              "condition": "[not(empty(parameters('domainName')))]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2023-03-01",
+              "name": "[format('{0}/{1}', parameters('vmName'), 'JoinADDomain')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "Name": "[parameters('domainName')]",
+                  "OUPath": "[parameters('domainOUPath')]",
+                  "User": "[format('{0}\\{1}', parameters('domainName'), parameters('username'))]",
+                  "NumberOfRetries": "50",
+                  "RetryIntervalInMilliseconds": "10000",
+                  "Restart": "true",
+                  "Options": "3"
+                },
+                "protectedSettings": {
+                  "Password": "[parameters('password')]"
+                }
+              },
+              "dependsOn": [
+                "vm"
+              ]
+            }
+          },
+          "outputs": {
+            "fqdn": {
+              "type": "string",
+              "value": "[if(parameters('newPublicIp'), reference('publicIp').dnsSettings.fqdn, '')]"
+            }
+          }
+        }
+      }
+    }
+  }
+}
