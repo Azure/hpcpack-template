@@ -1,5 +1,5 @@
 @export()
-var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/master/HPCPack2019/shared-resources'
+var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources'
 
 @export()
 type DiskType = 'Standard_HDD' | 'Standard_SSD' | 'Premium_SSD'
