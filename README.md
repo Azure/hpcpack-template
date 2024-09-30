@@ -1,18 +1,20 @@
-# Deploy Microsoft HPC Pack cluster in Azure
+# Azure HPC Pack Templates
 
-You can now easily deploy a Microsoft HPC Pack cluster in Azure, select an HPC Pack version to deploy.
+Azure HPC Pack templates make it easy to deploy an HPC Pack cluster on Azure.
 
-### [Microsoft HPC Pack 2019 Update 2](HPCPack2019/README.md)
+There are two kinds of templates in this repo: one is in Bicep and the other one is in traditional JSON.
 
+* [Bicep templates](./Bicep/)
+* [JSON templates](./GeneratedTemplates/)
 
-### [Microsoft HPC Pack 2019 Update 1](HPCPack2019-Update1/README.md)
+Bicep is recommended for better deployment and development experiences, with excellent tooling in VS Code, while the traditional JSON is kept for easy web deployment without VS Code.
 
-
-### [Microsoft HPC Pack 2016 Update 3](https://github.com/azure/hpcpack-template-2016)
-
-
-### [Microsoft HPC Pack 2012 R2 Update 3](https://github.com/azure/hpcpack-template-2012r2)
-
+> Note
+>
+> The templates in this repo are only for HPC Pack 2019. For legacy HPC Pack versions, please see
+>
+> * [Microsoft HPC Pack 2016 Update 3](https://github.com/azure/hpcpack-template-2016)
+> * [Microsoft HPC Pack 2012 R2 Update 3](https://github.com/azure/hpcpack-template-2012r2)
 
 # Contributing
 
