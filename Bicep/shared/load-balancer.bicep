@@ -43,26 +43,14 @@ resource lb 'Microsoft.Network/loadBalancers@2023-04-01' = {
       }
     ]
     inboundNatRules: [
-      {
-        name: 'RDP-${hnNames[0]}'
+      for (hnName, i) in hnNames: {
+        name: 'RDP-${hnName}'
         properties: {
           frontendIPConfiguration: {
             id: lbFrontEndIPConfigId
           }
           protocol: 'Tcp'
-          frontendPort: 50001
-          backendPort: 3389
-          enableFloatingIP: false
-        }
-      }
-      {
-        name: 'RDP-${hnNames[1]}'
-        properties: {
-          frontendIPConfiguration: {
-            id: lbFrontEndIPConfigId
-          }
-          protocol: 'Tcp'
-          frontendPort: 50002
+          frontendPort: 50001 + i
           backendPort: 3389
           enableFloatingIP: false
         }
