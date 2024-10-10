@@ -594,3 +594,11 @@ type AzureSqlDatabaseSettings = {
   maxSizeBytes: int
   serviceTier: AzureSqlDataBaseServiceTier
 }
+
+@export()
+type CertificateSettings = {
+  vaultResourceGroup: string
+  vaultName: string
+  url: string
+  thumbprint: string
+}
