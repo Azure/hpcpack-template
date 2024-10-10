@@ -137,10 +137,8 @@ var rdmaASeries = [
   'Standard_A8'
   'Standard_A9'
 ]
-var cnRDMACapable = (contains(rdmaASeries, computeNodeVMSize) || contains(
-  toLower(split(computeNodeVMSize, '_')[1]),
-  'r'
-))
+//TODO: Make function: isRDMACapable(vmSize)
+var cnRDMACapable = (contains(rdmaASeries, computeNodeVMSize) || contains(toLower(split(computeNodeVMSize, '_')[1]), 'r'))
 var hnRDMACapable = (contains(rdmaASeries, headNodeVMSize) || contains(toLower(split(headNodeVMSize, '_')[1]), 'r'))
 var autoEnableInfiniBand = (autoInstallInfiniBandDriver == 'Yes')
 var useVmssForCN = (useVmssForComputeNodes == 'Yes')
@@ -251,6 +249,7 @@ module headNode 'shared/head-node.bicep' = {
   ]
 }
 
+//TODO: make it a module
 resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   name: '${_clusterName}/setupHpcHeadNode'
   location: resourceGroup().location
