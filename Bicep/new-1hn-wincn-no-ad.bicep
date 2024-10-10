@@ -58,18 +58,6 @@ param adminUsername string = 'hpcadmin'
 @secure()
 param adminPassword string
 
-@description('Name of the KeyVault in which the certificate is stored.')
-param vaultName string
-
-@description('Resource Group of the KeyVault in which the certificate is stored.')
-param vaultResourceGroup string
-
-@description('Url of the certificate with version in KeyVault e.g. https://testault.vault.azure.net/secrets/testcert/b621es1db241e56a72d037479xab1r7.')
-param certificateUrl string
-
-@description('Thumbprint of the certificate.')
-param certThumbprint string
-
 @description('Specify whether to enable system-assigned managed identity on the head node, and use it to manage the Azure IaaS compute nodes.')
 param enableManagedIdentityOnHeadNode YesOrNo = 'Yes'
 
@@ -112,9 +100,6 @@ param enableAzureMonitor YesOrNo = 'Yes'
 var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
 
 var _clusterName = trim(clusterName)
-var _vaultName = trim(vaultName)
-var _vaultResourceGroup = trim(vaultResourceGroup)
-var _certThumbprint = trim(certThumbprint)
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
 
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
@@ -163,6 +148,15 @@ var _computeNodeImages = union(windowsComputeNodeImages, {
   }
 })
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
+
+var _vaultResourceGroup = keyVault.outputs.certSettings.vaultResourceGroup
+var _vaultName = keyVault.outputs.certSettings.vaultName
+var _certThumbprint = keyVault.outputs.certSettings.thumbprint
+var certificateUrl = keyVault.outputs.certSettings.url
+
+module keyVault 'shared/key-vault-with-cert.bicep' = {
+  name: 'KeyVaultWithCert'
+}
 
 module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
   name: 'AzureMonitor'

@@ -105,18 +105,6 @@ param sqlLoginName string = 'hpcsql'
 @secure()
 param sqlLoginPassword string
 
-@description('Name of the KeyVault in which the certificate is stored.')
-param vaultName string
-
-@description('Resource Group of the KeyVault in which the certificate is stored.')
-param vaultResourceGroup string
-
-@description('Url of the certificate with version in KeyVault e.g. https://testault.vault.azure.net/secrets/testcert/b621es1db241e56a72d037479xab1r7.')
-param certificateUrl string
-
-@description('Thumbprint of the certificate.')
-param certThumbprint string
-
 @description('Specify whether to enable system-assigned managed identity on the head node, and use it to manage the Azure IaaS compute nodes.')
 param enableManagedIdentityOnHeadNode YesOrNo = 'Yes'
 
@@ -163,9 +151,6 @@ var _virtualNetworkResourceGroupName = trim(virtualNetworkResourceGroupName)
 var _subnetName = trim(subnetName)
 var _domainName = trim(domainName)
 var _domainOUPath = trim(domainOUPath)
-var _vaultName = trim(vaultName)
-var _vaultResourceGroup = trim(vaultResourceGroup)
-var _certThumbprint = trim(certThumbprint)
 var _headNodeList = trim(headNodeList)
 var _sqlServerName = toLower(trim(sqlServerName))
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
@@ -264,6 +249,15 @@ var listOfSqlDatabaseSettings = [
     serviceTier: HAWitnessDBServiceTier
   }
 ]
+
+var _vaultResourceGroup = keyVault.outputs.certSettings.vaultResourceGroup
+var _vaultName = keyVault.outputs.certSettings.vaultName
+var _certThumbprint = keyVault.outputs.certSettings.thumbprint
+var certificateUrl = keyVault.outputs.certSettings.url
+
+module keyVault 'shared/key-vault-with-cert.bicep' = {
+  name: 'KeyVaultWithCert'
+}
 
 module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
   name: 'AzureMonitor'
