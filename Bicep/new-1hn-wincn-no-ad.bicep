@@ -126,11 +126,6 @@ var virtualNetworkName = '${_clusterName}vnet'
 var vnetID = vnet.outputs.vNetId
 var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var availabilitySetName = '${_clusterName}-avset'
-var _availabilitySet = {
-  id: availabilitySet.id
-}
-var uniqueSuffix = uniqueString(subnetRef)
-var uniqueNicSuffix = '-nic-${uniqueSuffix}'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 
 var rdmaASeries = [

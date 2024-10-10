@@ -29,7 +29,6 @@ type HpcPackRelease = '2019 Update 2' | '2019 Update 3'
 @export()
 type HeadNodeImage = 'WindowsServer2022' | 'WindowsServer2019' | 'CustomImage'
 
-//@export()
 var headNodeImages = {
   '2019 Update 2': {
     WindowsServer2019: {
@@ -86,6 +85,7 @@ type WindowsComputeNodeImage =
   | 'WindowsServer2019_Gen2'
   | 'WindowsServer2022_Gen2'
   | 'CustomImage'
+//End of WindowsComputeNodeImage
 
 @export()
 var windowsComputeNodeImages = {
@@ -226,6 +226,7 @@ type LinuxComputeNodeImage =
   | 'Ubuntu_18.04_HPC_Gen2'
   | 'Ubuntu_20.04_HPC_Gen2'
   | 'CustomImage'
+//End of LinuxComputeNodeImage
 
 @export()
 var linuxComputeNodeImages = {
@@ -585,10 +586,11 @@ type AzureSqlDataBaseServiceTier =
   | 'Premium_P6'
   | 'Premium_P11'
   | 'Premium_P15'
+//End of AzureSqlDataBaseServiceTier
 
-  @export()
-  type AzureSqlDatabaseSettings = {
-    name: string
-    maxSizeBytes: int
-    serviceTier: AzureSqlDataBaseServiceTier
-  }
+@export()
+type AzureSqlDatabaseSettings = {
+  name: string
+  maxSizeBytes: int
+  serviceTier: AzureSqlDataBaseServiceTier
+}
