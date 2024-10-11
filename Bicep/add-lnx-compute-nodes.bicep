@@ -69,18 +69,6 @@ param enableAcceleratedNetworking YesOrNo = 'No'
 @description('The cluster connection string is the list of head nodes separated by comma(\',\'). for example \'myhn\', \'myhn1,myhn2,myhn3\' if the head node(s) is not domain joined, or \'myhn.hpc.local\', \'myhn1.hpc.local,myhn2.hpc.local,myhn3.hpc.local\' if the head node(s) is domain joined. ')
 param clusterConnectionString string
 
-@description('Name of the KeyVault in which the certificate is stored.')
-param vaultName string
-
-@description('Resource Group of the KeyVault in which the certificate is stored.')
-param vaultResourceGroup string
-
-@description('Url of the certificate with version in KeyVault e.g. https://testault.vault.azure.net/secrets/testcert/b621es1db241e56a72d037479xab1r7.')
-param certificateUrl string
-
-@description('Thumbprint of the certificate.')
-param certThumbprint string
-
 @description('Specify whether you want to use the experimental feature to create compute nodes as VM scale set. Note that it is not recommended to use this feature in production cluster.')
 param useVMScaleSet YesOrNo = 'No'
 
@@ -127,6 +115,16 @@ var headNodeFullname = split(trim(clusterConnectionString), ',')[0]
 //If headNodeFullname is "a.b.c", then take "a".
 var headNodeName = split(headNodeFullname, '.')[0]
 
+//NOTE: Null can be returned. But Bicep has no way to throw an exception.
+var certSettings = keyvault.outputs.certSettings ?? {}
+
+module keyvault 'shared/key-vault-and-cert-detector.bicep' = {
+  name: 'keyvaultandcert'
+  params: {
+    vmName: headNodeName
+  }
+}
+
 module monitor 'shared/azure-monitor-detector.bicep' = {
   name: 'monitor'
   params: {
@@ -168,19 +166,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       installRDMADriver: (cnRDMACapable && autoEnableInfiniBand && rdmaDriverSupportedCNImage)
       enableAcceleratedNetworking: ((enableAcceleratedNetworking == 'Yes') ? bool('true') : bool('false'))
       dnsServers: dnsServers
-      secrets: [
-        {
-          sourceVault: {
-            id: resourceId(trim(vaultResourceGroup), 'Microsoft.KeyVault/vaults', trim(vaultName))
-          }
-          vaultCertificates: [
-            {
-              certificateUrl: trim(certificateUrl)
-            }
-          ]
-        }
-      ]
-      certThumbprint: trim(certThumbprint)
+      certSettings: certSettings
       headNodeList: trim(clusterConnectionString)
       joinDomain: false
       domainName: ''
@@ -215,19 +201,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     installRDMADriver: (cnRDMACapable && autoEnableInfiniBand && rdmaDriverSupportedCNImage)
     enableAcceleratedNetworking: ((enableAcceleratedNetworking == 'Yes') ? bool('true') : bool('false'))
     dnsServers: dnsServers
-    secrets: [
-      {
-        sourceVault: {
-          id: resourceId(trim(vaultResourceGroup), 'Microsoft.KeyVault/vaults', trim(vaultName))
-        }
-        vaultCertificates: [
-          {
-            certificateUrl: trim(certificateUrl)
-          }
-        ]
-      }
-    ]
-    certThumbprint: trim(certThumbprint)
+    certSettings: certSettings
     headNodeList: trim(clusterConnectionString)
     joinDomain: false
     domainName: ''

@@ -1,4 +1,4 @@
-import { AzureMonitorLogSettings } from 'types-and-vars.bicep'
+import { OsType, AzureMonitorLogSettings, CertificateSettings, certSecretForWindows, certSecretForLinux } from 'types-and-vars.bicep'
 
 @description('The Id of the subnet in which the node is created')
 param subnetId string
@@ -25,7 +25,7 @@ param dataDiskType string = 'Standard_LRS'
 param imageReference object
 
 @description('The VM image OS platform for the compute nodes')
-param imageOsPlatform string
+param imageOsPlatform OsType
 
 @description('The user name of the administrator')
 param adminUsername string
@@ -60,11 +60,8 @@ param enableAutomaticUpdates bool = false
 @description('Specify whether to create the Azure VM with accelerated networking')
 param enableAcceleratedNetworking bool = false
 
-@description('The property \'osProfile/secrets\', specify the set of certificates that shall be installed on the VM')
-param secrets array = []
-
-@description('Thumbprint of the certificate.')
-param certThumbprint string
+@description('The certificate that shall be installed on the VM')
+param certSettings CertificateSettings
 
 @description('The head node list')
 param headNodeList string
@@ -207,7 +204,11 @@ resource vm 'Microsoft.Compute/virtualMachines@2019-03-01' = {
       adminPassword: adminPassword
       linuxConfiguration: (isWindowsOS ? null : linuxConfiguration)
       windowsConfiguration: (isWindowsOS ? windowsConfiguration : null)
-      secrets: secrets
+      secrets: [
+        imageOsPlatform == 'windows'
+          ? certSecretForWindows(certSettings.vaultResourceGroup, certSettings.vaultName, certSettings.url)
+          : certSecretForLinux(certSettings.vaultResourceGroup, certSettings.vaultName, certSettings.url)
+      ]
     }
     licenseType: ((licenseType == '') ? null : licenseType)
     storageProfile: {
@@ -262,7 +263,7 @@ resource windowsNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-
       ouPath: domainOUPath
       userName: adminUsername
       headNodeList: headNodeList
-      certThumbprint: certThumbprint
+      certThumbprint: certSettings.thumbprint
       nonDomainRole: (!joinDomain)
     }
     protectedSettings: (joinDomain ? protectedSettings : null)
@@ -295,7 +296,7 @@ resource linuxNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01
     autoUpgradeMinorVersion: true
     settings: {
       ClusterConnectionString: headNodeList
-      SSLThumbprint: certThumbprint
+      SSLThumbprint: certSettings.thumbprint
       DomainName: domainName
     }
   }

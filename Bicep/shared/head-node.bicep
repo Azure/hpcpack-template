@@ -1,4 +1,4 @@
-import { AzureMonitorLogSettings, AzureMonitorAgentSettings } from 'types-and-vars.bicep'
+import { AzureMonitorLogSettings, AzureMonitorAgentSettings, CertificateSettings, certSecretForWindows, certSettingsToVmTags } from 'types-and-vars.bicep'
 
 param hnName string
 
@@ -24,7 +24,7 @@ param hnVMSize string
 param adminUsername string
 @secure()
 param adminPassword string
-param certSecrets object[]
+param certSettings CertificateSettings
 param hnImageRef object
 param hnDataDiskCount int
 param hnDataDiskSize int
@@ -37,8 +37,6 @@ param amaSettings AzureMonitorAgentSettings?
 
 //Role assignment settings
 param clusterName string
-param vaultResourceGroup string
-param vaultName string
 
 //VM extension settings
 param installIBDriver bool
@@ -50,7 +48,11 @@ var useExternalVNet = !empty(externalVNetName) && !empty(externalVNetRg)
 var publicIpSuffix = uniqueString(resourceGroup().id)
 var nicSuffix = '-nic-${uniqueString(subnetId)}'
 
-var tags = empty(logSettings) ? {} : logSettings
+var vaultResourceGroup = certSettings.vaultResourceGroup
+var vaultName = certSettings.vaultName
+
+var certTags = certSettingsToVmTags(certSettings)
+var tags = union(certTags, empty(logSettings) ? {} : logSettings!)
 var userMiResIdForLog = empty(logSettings) ? null : logSettings!.LA_MiResId
 
 var systemIdentity = {
@@ -170,7 +172,9 @@ resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
       windowsConfiguration: {
         enableAutomaticUpdates: false
       }
-      secrets: certSecrets
+      secrets: [
+        certSecretForWindows(certSettings.vaultResourceGroup, certSettings.vaultName, certSettings.url)
+      ]
     }
     storageProfile: {
       imageReference: hnImageRef

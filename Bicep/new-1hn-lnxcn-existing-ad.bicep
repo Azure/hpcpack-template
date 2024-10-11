@@ -152,31 +152,6 @@ var createCNInAVSet = ((!useVmssForCN) && (((availabilitySetOption == 'AllNodes'
 var vmPriority = ((useSpotInstanceForComputeNodes == 'Yes') ? 'Spot' : 'Regular')
 var computeVmssName = take(replace(_computeNodeNamePrefix, '-', ''), 9)
 var vmssSinglePlacementGroup = (computeNodeNumber <= 100)
-var winCertSecrets = [
-  {
-    sourceVault: {
-      id: resourceId(_vaultResourceGroup, 'Microsoft.KeyVault/vaults', _vaultName)
-    }
-    vaultCertificates: [
-      {
-        certificateUrl: certificateUrl
-        certificateStore: 'My'
-      }
-    ]
-  }
-]
-var lnxCertSecrets = [
-  {
-    sourceVault: {
-      id: resourceId(_vaultResourceGroup, 'Microsoft.KeyVault/vaults', _vaultName)
-    }
-    vaultCertificates: [
-      {
-        certificateUrl: certificateUrl
-      }
-    ]
-  }
-]
 
 var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId))
 var _computeNodeImages = union(linuxComputeNodeImages, {
@@ -191,10 +166,7 @@ var rdmaDriverSupportedCNImage = ((contains(computeNodeImage, 'CentOS_7') || con
   '_HPC'
 )))
 
-var _vaultResourceGroup = keyVault.outputs.certSettings.vaultResourceGroup
-var _vaultName = keyVault.outputs.certSettings.vaultName
-var _certThumbprint = keyVault.outputs.certSettings.thumbprint
-var certificateUrl = keyVault.outputs.certSettings.url
+var certSettings = keyVault.outputs.certSettings
 
 module keyVault 'shared/key-vault-with-cert.bicep' = {
   name: 'KeyVaultWithCert'
@@ -241,7 +213,7 @@ module headNode 'shared/head-node.bicep' = {
   params: {
     adminPassword: adminPassword
     adminUsername: adminUsername
-    certSecrets: winCertSecrets
+    certSettings: certSettings
     clusterName: _clusterName
     createPublicIp: createPublicIPAddressForHeadNode == 'Yes'
     domainName: _domainName
@@ -263,8 +235,6 @@ module headNode 'shared/head-node.bicep' = {
     amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
-    vaultName: _vaultName
-    vaultResourceGroup: _vaultResourceGroup
   }
   dependsOn: [
     monitor
@@ -288,15 +258,15 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
       }
       configurationArguments: {
         ClusterName: _clusterName
-        SSLThumbprint: _certThumbprint
+        SSLThumbprint: certSettings.thumbprint
         CNSize: computeNodeVMSize
         SubscriptionId: subscription().subscriptionId
         VNet: _virtualNetworkName
         Subnet: _subnetName
         Location: resourceGroup().location
         ResourceGroup: _virtualNetworkResourceGroupName
-        VaultResourceGroup: _vaultResourceGroup
-        CertificateUrl: certificateUrl
+        VaultResourceGroup: certSettings.vaultResourceGroup
+        CertificateUrl: certSettings.url
         CNNamePrefix: _computeNodeNamePrefix
         AutoGSUseManagedIdentity: (enableManagedIdentityOnHeadNode == 'Yes')
       }
@@ -336,8 +306,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       vmPriority: vmPriority
       installRDMADriver: (cnRDMACapable && autoEnableInfiniBand && rdmaDriverSupportedCNImage)
       enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-      secrets: lnxCertSecrets
-      certThumbprint: _certThumbprint
+      certSettings: certSettings
       headNodeList: _clusterName
       joinDomain: false
       domainName: _domainName
@@ -371,8 +340,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     vmPriority: vmPriority
     installRDMADriver: (cnRDMACapable && autoEnableInfiniBand && rdmaDriverSupportedCNImage)
     enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-    secrets: lnxCertSecrets
-    certThumbprint: _certThumbprint
+    certSettings: certSettings
     headNodeList: _clusterName
     joinDomain: false
     domainName: _domainName

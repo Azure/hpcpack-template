@@ -190,19 +190,6 @@ var autoEnableInfiniBand = (autoInstallInfiniBandDriver == 'Yes')
 var vmPriority = ((useSpotInstanceForComputeNodes == 'Yes') ? 'Spot' : 'Regular')
 var computeVmssName = take(replace(_computeNodeNamePrefix, '-', ''), 9)
 var vmssSinglePlacementGroup = (computeNodeNumber <= 100)
-var certSecrets = [
-  {
-    sourceVault: {
-      id: resourceId(_vaultResourceGroup, 'Microsoft.KeyVault/vaults', _vaultName)
-    }
-    vaultCertificates: [
-      {
-        certificateUrl: certificateUrl
-        certificateStore: 'My'
-      }
-    ]
-  }
-]
 
 var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId))
 var _computeNodeImages = union(windowsComputeNodeImages, {
@@ -250,10 +237,7 @@ var listOfSqlDatabaseSettings = [
   }
 ]
 
-var _vaultResourceGroup = keyVault.outputs.certSettings.vaultResourceGroup
-var _vaultName = keyVault.outputs.certSettings.vaultName
-var _certThumbprint = keyVault.outputs.certSettings.thumbprint
-var certificateUrl = keyVault.outputs.certSettings.url
+var certSettings = keyVault.outputs.certSettings
 
 module keyVault 'shared/key-vault-with-cert.bicep' = {
   name: 'KeyVaultWithCert'
@@ -312,7 +296,7 @@ module headNodes 'shared/head-node.bicep' = [
     params: {
       adminPassword: adminPassword
       adminUsername: adminUsername
-      certSecrets: certSecrets
+      certSettings: certSettings
       clusterName: _clusterName
       createPublicIp: (createPublicIPAddressForHeadNode == 'Yes')
       domainName: _domainName
@@ -334,8 +318,6 @@ module headNodes 'shared/head-node.bicep' = [
       amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
       nsgName: (createPublicIPAddressForHeadNode == 'Yes') ? nsgName : null
       subnetId: subnetRef
-      vaultName: _vaultName
-      vaultResourceGroup: _vaultResourceGroup
     }
     dependsOn: [
       monitor
@@ -372,7 +354,7 @@ resource setupPrimaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023
         function: 'InstallPrimaryHeadNode'
       }
       configurationArguments: {
-        SSLThumbprint: _certThumbprint
+        SSLThumbprint: certSettings.thumbprint
         ClusterName: _clusterName
         SQLServerInstance: sqlServer.outputs.fqdn
         EnableBuiltinHA: true
@@ -382,8 +364,8 @@ resource setupPrimaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023
         Subnet: _subnetName
         Location: resourceGroup().location
         ResourceGroup: _virtualNetworkResourceGroupName
-        VaultResourceGroup: _vaultResourceGroup
-        CertificateUrl: certificateUrl
+        VaultResourceGroup: certSettings.vaultResourceGroup
+        CertificateUrl: certSettings.url
         CNNamePrefix: _computeNodeNamePrefix
         AutoGSUseManagedIdentity: (enableManagedIdentityOnHeadNode == 'Yes')
       }
@@ -424,7 +406,7 @@ resource setupSecondaryHeadNode 'Microsoft.Compute/virtualMachines/extensions@20
       configurationArguments: {
         NodeType: 'PassiveHeadNode'
         HeadNodeList: _headNodeList
-        SSLThumbprint: _certThumbprint
+        SSLThumbprint: certSettings.thumbprint
       }
     }
     protectedSettings: {
@@ -476,8 +458,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       vmPriority: vmPriority
       installRDMADriver: (cnRDMACapable && autoEnableInfiniBand)
       enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-      secrets: certSecrets
-      certThumbprint: _certThumbprint
+      certSettings: certSettings
       headNodeList: _headNodeList
       joinDomain: true
       domainName: _domainName
@@ -510,8 +491,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     vmPriority: vmPriority
     installRDMADriver: (cnRDMACapable && autoEnableInfiniBand)
     enableAcceleratedNetworking: (enableAcceleratedNetworking == 'Yes')
-    secrets: certSecrets
-    certThumbprint: _certThumbprint
+    certSettings: certSettings
     headNodeList: _headNodeList
     joinDomain: true
     domainName: _domainName

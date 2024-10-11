@@ -2,6 +2,9 @@
 var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources'
 
 @export()
+type OsType = 'windows' | 'linux'
+
+@export()
 type DiskType = 'Standard_HDD' | 'Standard_SSD' | 'Premium_SSD'
 
 @export()
@@ -602,3 +605,66 @@ type CertificateSettings = {
   url: string
   thumbprint: string
 }
+
+@export()
+func isValidCertificateSettings(certSettings CertificateSettings) bool =>
+  !empty(certSettings.vaultResourceGroup) && !empty(certSettings.vaultName) && !empty(certSettings.url) && !empty(certSettings.thumbprint)
+
+var certificateSettingsToTagsKeyMap = {
+  vaultResourceGroup: 'KV_RG'
+  vaultName: 'KV_Name'
+  url: 'KV_CertUrl'
+  thumbprint: 'KV_CertThumbprint'
+}
+
+var tagsToCertificateSettingsKeyMap = toObject(items(certificateSettingsToTagsKeyMap), obj => obj.value, obj => obj.key)
+
+var defaultCertificateSettings = {
+  vaultResourceGroup: ''
+  vaultName: ''
+  url: ''
+  thumbprint: ''
+}
+
+@export()
+func certSettingsToVmTags(certSettings CertificateSettings) object =>
+  toObject(
+    items(certSettings),
+    obj => certificateSettingsToTagsKeyMap[obj.key],
+    obj => obj.value)
+
+@export()
+func vmTagsToCertSettings(tags object) CertificateSettings =>
+  union(
+    defaultCertificateSettings,
+    toObject(
+      filter(items(tags), item => contains(tagsToCertificateSettingsKeyMap, item.key)),
+      obj => tagsToCertificateSettingsKeyMap[obj.key],
+      obj => obj.value))
+
+@export()
+func certSecretForWindows(vaultRg string, vaultName string, certificateUrl string) object =>
+  {
+    sourceVault: {
+      id: resourceId(vaultRg, 'Microsoft.KeyVault/vaults', vaultName)
+    }
+    vaultCertificates: [
+      {
+        certificateUrl: certificateUrl
+        certificateStore: 'My'
+      }
+    ]
+  }
+
+@export()
+func certSecretForLinux(vaultRg string, vaultName string, certificateUrl string) object =>
+  {
+    sourceVault: {
+      id: resourceId(vaultRg, 'Microsoft.KeyVault/vaults', vaultName)
+    }
+    vaultCertificates: [
+      {
+        certificateUrl: certificateUrl
+      }
+    ]
+  }
