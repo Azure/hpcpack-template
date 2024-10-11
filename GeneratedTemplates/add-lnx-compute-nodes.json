@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "13838593854189868219"
+      "templateHash": "16540928323705870483"
     }
   },
   "definitions": {
@@ -287,30 +287,6 @@
       "type": "string",
       "metadata": {
         "description": "The cluster connection string is the list of head nodes separated by comma(','). for example 'myhn', 'myhn1,myhn2,myhn3' if the head node(s) is not domain joined, or 'myhn.hpc.local', 'myhn1.hpc.local,myhn2.hpc.local,myhn3.hpc.local' if the head node(s) is domain joined. "
-      }
-    },
-    "vaultName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the KeyVault in which the certificate is stored."
-      }
-    },
-    "vaultResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Resource Group of the KeyVault in which the certificate is stored."
-      }
-    },
-    "certificateUrl": {
-      "type": "string",
-      "metadata": {
-        "description": "Url of the certificate with version in KeyVault e.g. https://testault.vault.azure.net/secrets/testcert/b621es1db241e56a72d037479xab1r7."
-      }
-    },
-    "certThumbprint": {
-      "type": "string",
-      "metadata": {
-        "description": "Thumbprint of the certificate."
       }
     },
     "useVMScaleSet": {
@@ -716,6 +692,134 @@
         "platformFaultDomainCount": 2
       }
     },
+    "keyvault": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyvaultandcert",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vmName": {
+            "value": "[variables('headNodeName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "12428119165023799088"
+            }
+          },
+          "definitions": {
+            "CertificateSettings": {
+              "type": "object",
+              "properties": {
+                "vaultResourceGroup": {
+                  "type": "string"
+                },
+                "vaultName": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "thumbprint": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            }
+          },
+          "functions": [
+            {
+              "namespace": "__bicep",
+              "members": {
+                "isValidCertificateSettings": {
+                  "parameters": [
+                    {
+                      "$ref": "#/definitions/CertificateSettings",
+                      "name": "certSettings"
+                    }
+                  ],
+                  "output": {
+                    "type": "bool",
+                    "value": "[and(and(and(not(empty(parameters('certSettings').vaultResourceGroup)), not(empty(parameters('certSettings').vaultName))), not(empty(parameters('certSettings').url))), not(empty(parameters('certSettings').thumbprint)))]"
+                  },
+                  "metadata": {
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "types-and-vars.bicep"
+                    }
+                  }
+                },
+                "vmTagsToCertSettings": {
+                  "parameters": [
+                    {
+                      "type": "object",
+                      "name": "tags"
+                    }
+                  ],
+                  "output": {
+                    "$ref": "#/definitions/CertificateSettings",
+                    "value": "[union(variables('_1.defaultCertificateSettings'), toObject(filter(items(parameters('tags')), lambda('item', contains(variables('_1.tagsToCertificateSettingsKeyMap'), lambdaVariables('item').key))), lambda('obj', variables('_1.tagsToCertificateSettingsKeyMap')[lambdaVariables('obj').key]), lambda('obj', lambdaVariables('obj').value)))]"
+                  },
+                  "metadata": {
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "types-and-vars.bicep"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "parameters": {
+            "vmName": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "_1.certificateSettingsToTagsKeyMap": {
+              "vaultResourceGroup": "KV_RG",
+              "vaultName": "KV_Name",
+              "url": "KV_CertUrl",
+              "thumbprint": "KV_CertThumbprint"
+            },
+            "_1.defaultCertificateSettings": {
+              "vaultResourceGroup": "",
+              "vaultName": "",
+              "url": "",
+              "thumbprint": ""
+            },
+            "_1.tagsToCertificateSettingsKeyMap": "[toObject(items(variables('_1.certificateSettingsToTagsKeyMap')), lambda('obj', lambdaVariables('obj').value), lambda('obj', lambdaVariables('obj').key))]"
+          },
+          "resources": {
+            "vm": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2024-03-01",
+              "name": "[parameters('vmName')]"
+            }
+          },
+          "outputs": {
+            "certSettings": {
+              "$ref": "#/definitions/CertificateSettings",
+              "nullable": true,
+              "value": "[if(__bicep.isValidCertificateSettings(__bicep.vmTagsToCertSettings(reference('vm', '2024-03-01', 'full').tags)), __bicep.vmTagsToCertSettings(reference('vm', '2024-03-01', 'full').tags), null())]"
+            }
+          }
+        }
+      }
+    },
     "monitor": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
@@ -856,22 +960,8 @@
           "dnsServers": {
             "value": "[variables('dnsServers')]"
           },
-          "secrets": {
-            "value": [
-              {
-                "sourceVault": {
-                  "id": "[resourceId(trim(parameters('vaultResourceGroup')), 'Microsoft.KeyVault/vaults', trim(parameters('vaultName')))]"
-                },
-                "vaultCertificates": [
-                  {
-                    "certificateUrl": "[trim(parameters('certificateUrl'))]"
-                  }
-                ]
-              }
-            ]
-          },
-          "certThumbprint": {
-            "value": "[trim(parameters('certThumbprint'))]"
+          "certSettings": {
+            "value": "[coalesce(reference('keyvault').outputs.certSettings.value, createObject())]"
           },
           "headNodeList": {
             "value": "[trim(parameters('clusterConnectionString'))]"
@@ -897,7 +987,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "15254235189867180442"
+              "templateHash": "6775817623703107717"
             }
           },
           "definitions": {
@@ -925,8 +1015,118 @@
                   "sourceTemplate": "types-and-vars.bicep"
                 }
               }
+            },
+            "CertificateSettings": {
+              "type": "object",
+              "properties": {
+                "vaultResourceGroup": {
+                  "type": "string"
+                },
+                "vaultName": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "thumbprint": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            },
+            "OsType": {
+              "type": "string",
+              "allowedValues": [
+                "linux",
+                "windows"
+              ],
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
             }
           },
+          "functions": [
+            {
+              "namespace": "__bicep",
+              "members": {
+                "certSecretForLinux": {
+                  "parameters": [
+                    {
+                      "type": "string",
+                      "name": "vaultRg"
+                    },
+                    {
+                      "type": "string",
+                      "name": "vaultName"
+                    },
+                    {
+                      "type": "string",
+                      "name": "certificateUrl"
+                    }
+                  ],
+                  "output": {
+                    "type": "object",
+                    "value": {
+                      "sourceVault": {
+                        "id": "[resourceId(parameters('vaultRg'), 'Microsoft.KeyVault/vaults', parameters('vaultName'))]"
+                      },
+                      "vaultCertificates": [
+                        {
+                          "certificateUrl": "[parameters('certificateUrl')]"
+                        }
+                      ]
+                    }
+                  },
+                  "metadata": {
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "types-and-vars.bicep"
+                    }
+                  }
+                },
+                "certSecretForWindows": {
+                  "parameters": [
+                    {
+                      "type": "string",
+                      "name": "vaultRg"
+                    },
+                    {
+                      "type": "string",
+                      "name": "vaultName"
+                    },
+                    {
+                      "type": "string",
+                      "name": "certificateUrl"
+                    }
+                  ],
+                  "output": {
+                    "type": "object",
+                    "value": {
+                      "sourceVault": {
+                        "id": "[resourceId(parameters('vaultRg'), 'Microsoft.KeyVault/vaults', parameters('vaultName'))]"
+                      },
+                      "vaultCertificates": [
+                        {
+                          "certificateUrl": "[parameters('certificateUrl')]",
+                          "certificateStore": "My"
+                        }
+                      ]
+                    }
+                  },
+                  "metadata": {
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "types-and-vars.bicep"
+                    }
+                  }
+                }
+              }
+            }
+          ],
           "parameters": {
             "subnetId": {
               "type": "string",
@@ -981,7 +1181,7 @@
               }
             },
             "imageOsPlatform": {
-              "type": "string",
+              "$ref": "#/definitions/OsType",
               "metadata": {
                 "description": "The VM image OS platform for the compute nodes"
               }
@@ -1056,17 +1256,10 @@
                 "description": "Specify whether to create the Azure VM with accelerated networking"
               }
             },
-            "secrets": {
-              "type": "array",
-              "defaultValue": [],
+            "certSettings": {
+              "$ref": "#/definitions/CertificateSettings",
               "metadata": {
-                "description": "The property 'osProfile/secrets', specify the set of certificates that shall be installed on the VM"
-              }
-            },
-            "certThumbprint": {
-              "type": "string",
-              "metadata": {
-                "description": "Thumbprint of the certificate."
+                "description": "The certificate that shall be installed on the VM"
               }
             },
             "headNodeList": {
@@ -1232,7 +1425,9 @@
                   "adminPassword": "[parameters('adminPassword')]",
                   "linuxConfiguration": "[if(variables('isWindowsOS'), null(), variables('linuxConfiguration'))]",
                   "windowsConfiguration": "[if(variables('isWindowsOS'), variables('windowsConfiguration'), null())]",
-                  "secrets": "[parameters('secrets')]"
+                  "secrets": [
+                    "[if(equals(parameters('imageOsPlatform'), 'windows'), __bicep.certSecretForWindows(parameters('certSettings').vaultResourceGroup, parameters('certSettings').vaultName, parameters('certSettings').url), __bicep.certSecretForLinux(parameters('certSettings').vaultResourceGroup, parameters('certSettings').vaultName, parameters('certSettings').url))]"
+                  ]
                 },
                 "licenseType": "[if(equals(parameters('licenseType'), ''), null(), parameters('licenseType'))]",
                 "storageProfile": {
@@ -1295,7 +1490,7 @@
                   "ouPath": "[parameters('domainOUPath')]",
                   "userName": "[parameters('adminUsername')]",
                   "headNodeList": "[parameters('headNodeList')]",
-                  "certThumbprint": "[parameters('certThumbprint')]",
+                  "certThumbprint": "[parameters('certSettings').thumbprint]",
                   "nonDomainRole": "[not(parameters('joinDomain'))]"
                 },
                 "protectedSettings": "[if(parameters('joinDomain'), variables('protectedSettings'), null())]"
@@ -1334,7 +1529,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                   "ClusterConnectionString": "[parameters('headNodeList')]",
-                  "SSLThumbprint": "[parameters('certThumbprint')]",
+                  "SSLThumbprint": "[parameters('certSettings').thumbprint]",
                   "DomainName": "[parameters('domainName')]"
                 }
               },
@@ -1348,6 +1543,7 @@
       },
       "dependsOn": [
         "availabilitySet",
+        "keyvault",
         "monitor"
       ]
     },
@@ -1415,22 +1611,8 @@
           "dnsServers": {
             "value": "[variables('dnsServers')]"
           },
-          "secrets": {
-            "value": [
-              {
-                "sourceVault": {
-                  "id": "[resourceId(trim(parameters('vaultResourceGroup')), 'Microsoft.KeyVault/vaults', trim(parameters('vaultName')))]"
-                },
-                "vaultCertificates": [
-                  {
-                    "certificateUrl": "[trim(parameters('certificateUrl'))]"
-                  }
-                ]
-              }
-            ]
-          },
-          "certThumbprint": {
-            "value": "[trim(parameters('certThumbprint'))]"
+          "certSettings": {
+            "value": "[coalesce(reference('keyvault').outputs.certSettings.value, createObject())]"
           },
           "headNodeList": {
             "value": "[trim(parameters('clusterConnectionString'))]"
@@ -1447,14 +1629,127 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "12459975953015839760"
+              "templateHash": "6213467785962806661"
             }
           },
+          "definitions": {
+            "CertificateSettings": {
+              "type": "object",
+              "properties": {
+                "vaultResourceGroup": {
+                  "type": "string"
+                },
+                "vaultName": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "thumbprint": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            },
+            "OsType": {
+              "type": "string",
+              "allowedValues": [
+                "linux",
+                "windows"
+              ],
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            }
+          },
+          "functions": [
+            {
+              "namespace": "__bicep",
+              "members": {
+                "certSecretForLinux": {
+                  "parameters": [
+                    {
+                      "type": "string",
+                      "name": "vaultRg"
+                    },
+                    {
+                      "type": "string",
+                      "name": "vaultName"
+                    },
+                    {
+                      "type": "string",
+                      "name": "certificateUrl"
+                    }
+                  ],
+                  "output": {
+                    "type": "object",
+                    "value": {
+                      "sourceVault": {
+                        "id": "[resourceId(parameters('vaultRg'), 'Microsoft.KeyVault/vaults', parameters('vaultName'))]"
+                      },
+                      "vaultCertificates": [
+                        {
+                          "certificateUrl": "[parameters('certificateUrl')]"
+                        }
+                      ]
+                    }
+                  },
+                  "metadata": {
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "types-and-vars.bicep"
+                    }
+                  }
+                },
+                "certSecretForWindows": {
+                  "parameters": [
+                    {
+                      "type": "string",
+                      "name": "vaultRg"
+                    },
+                    {
+                      "type": "string",
+                      "name": "vaultName"
+                    },
+                    {
+                      "type": "string",
+                      "name": "certificateUrl"
+                    }
+                  ],
+                  "output": {
+                    "type": "object",
+                    "value": {
+                      "sourceVault": {
+                        "id": "[resourceId(parameters('vaultRg'), 'Microsoft.KeyVault/vaults', parameters('vaultName'))]"
+                      },
+                      "vaultCertificates": [
+                        {
+                          "certificateUrl": "[parameters('certificateUrl')]",
+                          "certificateStore": "My"
+                        }
+                      ]
+                    }
+                  },
+                  "metadata": {
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "types-and-vars.bicep"
+                    }
+                  }
+                }
+              }
+            }
+          ],
           "parameters": {
             "subnetId": {
               "type": "string",
@@ -1515,7 +1810,7 @@
               }
             },
             "imageOsPlatform": {
-              "type": "string",
+              "$ref": "#/definitions/OsType",
               "metadata": {
                 "description": "The VM image OS platform for the compute nodes"
               }
@@ -1590,17 +1885,10 @@
                 "description": "Specify whether to create the Azure VM with accelerated networking"
               }
             },
-            "secrets": {
-              "type": "array",
-              "defaultValue": [],
+            "certSettings": {
+              "$ref": "#/definitions/CertificateSettings",
               "metadata": {
-                "description": "The property 'osProfile/secrets', specify the set of certificates that shall be installed on the VM"
-              }
-            },
-            "certThumbprint": {
-              "type": "string",
-              "metadata": {
-                "description": "Thumbprint of the certificate."
+                "description": "The certificate that shall be installed on the VM"
               }
             },
             "headNodeList": {
@@ -1701,7 +1989,7 @@
                   "autoUpgradeMinorVersion": true,
                   "settings": {
                     "ClusterConnectionString": "[parameters('headNodeList')]",
-                    "SSLThumbprint": "[parameters('certThumbprint')]",
+                    "SSLThumbprint": "[parameters('certSettings').thumbprint]",
                     "DomainName": "[parameters('domainName')]"
                   }
                 }
@@ -1721,7 +2009,7 @@
                     "ouPath": "[parameters('domainOUPath')]",
                     "userName": "[parameters('adminUsername')]",
                     "headNodeList": "[parameters('headNodeList')]",
-                    "certThumbprint": "[parameters('certThumbprint')]",
+                    "certThumbprint": "[parameters('certSettings').thumbprint]",
                     "nonDomainRole": "[not(parameters('joinDomain'))]"
                   },
                   "protectedSettings": "[if(parameters('joinDomain'), variables('protectedSettings'), null())]"
@@ -1752,8 +2040,8 @@
             "hpcDriverExtension": "[if(variables('isWindowsOS'), variables('hpcWinDriverExtension'), variables('hpcLinuxDriverExtension'))]",
             "vmssExtensions": "[if(parameters('installRDMADriver'), concat(variables('basicVmssExtension'), array(variables('hpcDriverExtension'))), variables('basicVmssExtension'))]"
           },
-          "resources": [
-            {
+          "resources": {
+            "vmss": {
               "type": "Microsoft.Compute/virtualMachineScaleSets",
               "apiVersion": "2019-03-01",
               "name": "[parameters('vmssName')]",
@@ -1789,7 +2077,9 @@
                     "adminPassword": "[parameters('adminPassword')]",
                     "linuxConfiguration": "[if(variables('isWindowsOS'), null(), variables('linuxConfiguration'))]",
                     "windowsConfiguration": "[if(variables('isWindowsOS'), variables('windowsConfiguration'), null())]",
-                    "secrets": "[parameters('secrets')]"
+                    "secrets": [
+                      "[if(equals(parameters('imageOsPlatform'), 'windows'), __bicep.certSecretForWindows(parameters('certSettings').vaultResourceGroup, parameters('certSettings').vaultName, parameters('certSettings').url), __bicep.certSecretForLinux(parameters('certSettings').vaultResourceGroup, parameters('certSettings').vaultName, parameters('certSettings').url))]"
+                    ]
                   },
                   "networkProfile": {
                     "networkInterfaceConfigurations": [
@@ -1822,9 +2112,12 @@
               },
               "zones": "[parameters('availabilityZones')]"
             }
-          ]
+          }
         }
-      }
+      },
+      "dependsOn": [
+        "keyvault"
+      ]
     }
   }
 }
