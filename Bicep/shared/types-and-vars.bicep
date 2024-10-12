@@ -668,3 +668,12 @@ func certSecretForLinux(vaultRg string, vaultName string, certificateUrl string)
       }
     ]
   }
+
+var rdmaASeries = [
+  'Standard_A8'
+  'Standard_A9'
+]
+
+@export()
+func isRDMACapable(vmSize string) bool =>
+  (contains(rdmaASeries, vmSize) || contains(toLower(split(vmSize, '_')[1]), 'r'))

@@ -1,4 +1,4 @@
-import { AzureSqlDataBaseServiceTier, AzureSqlDatabaseSettings, HeadNodeImage, HpcPackRelease, getHeadNodeImageRef, WindowsComputeNodeImage, windowsComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl } from 'shared/types-and-vars.bicep'
+import { AzureSqlDataBaseServiceTier, AzureSqlDatabaseSettings, HeadNodeImage, HpcPackRelease, getHeadNodeImageRef, WindowsComputeNodeImage, windowsComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl, isRDMACapable } from 'shared/types-and-vars.bicep'
 
 @description('The release of HPC Pack')
 param hpcPackRelease HpcPackRelease = '2019 Update 3'
@@ -175,15 +175,8 @@ var cnAvailabilitySetName = '${_computeNodeNamePrefix}avset'
 var nbrVMPerAvailabilitySet = 200
 var cnAvailabilitySetNumber = ((computeNodeNumber / nbrVMPerAvailabilitySet) + 1)
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id,subnetRef)}'
-var rdmaASeries = [
-  'Standard_A8'
-  'Standard_A9'
-]
-var cnRDMACapable = (contains(rdmaASeries, computeNodeVMSize) || contains(
-  toLower(split(computeNodeVMSize, '_')[1]),
-  'r'
-))
-var hnRDMACapable = (contains(rdmaASeries, headNodeVMSize) || contains(toLower(split(headNodeVMSize, '_')[1]), 'r'))
+var cnRDMACapable = isRDMACapable(computeNodeVMSize)
+var hnRDMACapable = isRDMACapable(headNodeVMSize)
 var createCNInAVSet = ((computeNodeInAVSet == 'Yes') || ((computeNodeInAVSet == 'Auto') && cnRDMACapable))
 var useVmssForCN = (useVmssForComputeNodes == 'Yes')
 var autoEnableInfiniBand = (autoInstallInfiniBandDriver == 'Yes')

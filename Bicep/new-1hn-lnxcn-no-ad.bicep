@@ -1,4 +1,4 @@
-import { HpcPackRelease, HeadNodeImage, getHeadNodeImageRef, LinuxComputeNodeImage, linuxComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl } from 'shared/types-and-vars.bicep'
+import { HpcPackRelease, HeadNodeImage, getHeadNodeImageRef, LinuxComputeNodeImage, linuxComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl, isRDMACapable } from 'shared/types-and-vars.bicep'
 
 @description('The release of HPC Pack')
 param hpcPackRelease HpcPackRelease = '2019 Update 3'
@@ -113,15 +113,8 @@ var vnetID = vnet.outputs.vNetId
 var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var availabilitySetName = '${_clusterName}-avset'
 var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
-var rdmaASeries = [
-  'Standard_A8'
-  'Standard_A9'
-]
-var cnRDMACapable = (contains(rdmaASeries, computeNodeVMSize) || contains(
-  toLower(split(computeNodeVMSize, '_')[1]),
-  'r'
-))
-var hnRDMACapable = (contains(rdmaASeries, headNodeVMSize) || contains(toLower(split(headNodeVMSize, '_')[1]), 'r'))
+var cnRDMACapable = isRDMACapable(computeNodeVMSize)
+var hnRDMACapable = isRDMACapable(headNodeVMSize)
 var autoEnableInfiniBand = (autoInstallInfiniBandDriver == 'Yes')
 var useVmssForCN = (useVmssForComputeNodes == 'Yes')
 var createHNInAVSet = ((!useVmssForCN) && ((availabilitySetOption == 'AllNodes') || ((availabilitySetOption == 'Auto') && hnRDMACapable)))
