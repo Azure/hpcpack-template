@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "8167966007052452575"
+      "templateHash": "9904403891151200009"
     }
   },
   "definitions": {
@@ -153,6 +153,23 @@
           "output": {
             "type": "object",
             "value": "[union(variables('_1.headNodeImages')[parameters('release')], createObject('CustomImage', createObject('id', parameters('customImageId'))))[parameters('imageName')]]"
+          },
+          "metadata": {
+            "__bicep_imported_from!": {
+              "sourceTemplate": "shared/types-and-vars.bicep"
+            }
+          }
+        },
+        "isRDMACapable": {
+          "parameters": [
+            {
+              "type": "string",
+              "name": "vmSize"
+            }
+          ],
+          "output": {
+            "type": "bool",
+            "value": "[or(contains(variables('_1.rdmaASeries'), parameters('vmSize')), contains(toLower(split(parameters('vmSize'), '_')[1]), 'r'))]"
           },
           "metadata": {
             "__bicep_imported_from!": {
@@ -452,12 +469,8 @@
     "nbrVMPerAvailabilitySet": 200,
     "cnAvailabilitySetNumber": "[add(div(parameters('computeNodeNumber'), variables('nbrVMPerAvailabilitySet')), 1)]",
     "nsgName": "[format('hpcnsg-{0}', uniqueString(resourceGroup().id, variables('subnetRef')))]",
-    "rdmaASeries": [
-      "Standard_A8",
-      "Standard_A9"
-    ],
-    "cnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('computeNodeVMSize')), contains(toLower(split(parameters('computeNodeVMSize'), '_')[1]), 'r'))]",
-    "hnRDMACapable": "[or(contains(variables('rdmaASeries'), parameters('headNodeVMSize')), contains(toLower(split(parameters('headNodeVMSize'), '_')[1]), 'r'))]",
+    "cnRDMACapable": "[__bicep.isRDMACapable(parameters('computeNodeVMSize'))]",
+    "hnRDMACapable": "[__bicep.isRDMACapable(parameters('headNodeVMSize'))]",
     "createCNInAVSet": "[or(equals(parameters('computeNodeInAVSet'), 'Yes'), and(equals(parameters('computeNodeInAVSet'), 'Auto'), variables('cnRDMACapable')))]",
     "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
     "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
@@ -500,6 +513,10 @@
         "CustomImage": {}
       }
     },
+    "_1.rdmaASeries": [
+      "Standard_A8",
+      "Standard_A9"
+    ],
     "diskTypes": {
       "Standard_HDD": "Standard_LRS",
       "Standard_SSD": "StandardSSD_LRS",
@@ -1823,7 +1840,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "8198315856932346950"
+              "templateHash": "11142044395040566453"
             }
           },
           "definitions": {
@@ -2083,16 +2100,16 @@
               }
             },
             "identity": "[if(and(not(parameters('enableManagedIdentity')), empty(variables('userMiResIdForLog'))), null(), if(and(parameters('enableManagedIdentity'), not(empty(variables('userMiResIdForLog')))), variables('systemAndUserIdentities'), if(parameters('enableManagedIdentity'), variables('systemIdentity'), variables('userIdentity'))))]",
-            "diskTypes": {
-              "Standard_HDD": "Standard_LRS",
-              "Standard_SSD": "StandardSSD_LRS",
-              "Premium_SSD": "Premium_LRS"
-            },
             "_1.certificateSettingsToTagsKeyMap": {
               "vaultResourceGroup": "KV_RG",
               "vaultName": "KV_Name",
               "url": "KV_CertUrl",
               "thumbprint": "KV_CertThumbprint"
+            },
+            "diskTypes": {
+              "Standard_HDD": "Standard_LRS",
+              "Standard_SSD": "StandardSSD_LRS",
+              "Premium_SSD": "Premium_LRS"
             }
           },
           "resources": {
