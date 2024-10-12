@@ -1,4 +1,4 @@
-import { AzureMonitorLogSettings, AzureMonitorAgentSettings, CertificateSettings, certSecretForWindows, certSettingsToVmTags } from 'types-and-vars.bicep'
+import { diskTypes, AzureMonitorLogSettings, AzureMonitorAgentSettings, CertificateSettings, certSecretForWindows, certSettingsToVmTags } from 'types-and-vars.bicep'
 
 param hnName string
 
@@ -73,13 +73,6 @@ var systemAndUserIdentities = {
 var identity = !enableManagedIdentity && empty(userMiResIdForLog)
   ? null
   : (enableManagedIdentity && !empty(userMiResIdForLog) ? systemAndUserIdentities : (enableManagedIdentity ? systemIdentity : userIdentity))
-
-//TODO: Import this from the types-and-vars.bicep
-var diskTypes = {
-  Standard_HDD: 'Standard_LRS'
-  Standard_SSD: 'StandardSSD_LRS'
-  Premium_SSD: 'Premium_LRS'
-}
 
 var hnDataDisks = [
   for j in range(0, ((hnDataDiskCount == 0) ? 1 : hnDataDiskCount)): {
