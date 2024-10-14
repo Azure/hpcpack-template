@@ -2,10 +2,6 @@
 
 ## Deploy to Azure
 
-> Note
->
-> *See [prerequisites](../Prerequisites.md) before starting your deployment.*
-
 ### Templates that are integrated with Active Directory Domain
 
 1. High-availability cluster for Windows workloads with new Active Directory Domain

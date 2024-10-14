@@ -10,8 +10,6 @@ You need the followings for your deployment in Bicep
 
   There're several options of Bicep tools. Among these, VS Code + Bicep extension is recommended for authoring and deploying. Azure CLI and Azure PowerShell can be used for automatic scripts.
 
-* [A certificate in Azure Key Vault](../Prerequisites.md)
-
 ### Templates that are integrated with Active Directory Domain
 
 1. [High-availability cluster for Windows workloads with new Active Directory Domain](./new-2hn-wincn-ad.bicep)
