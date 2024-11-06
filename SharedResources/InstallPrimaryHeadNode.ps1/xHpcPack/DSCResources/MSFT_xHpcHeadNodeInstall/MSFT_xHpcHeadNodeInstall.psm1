@@ -126,7 +126,7 @@ function Set-TargetResource
     {
         $setupArg += " -LinuxCommOverHttp"
     }
-    if($LinuxClusterAuthenticationKey)
+    if($LinuxAuthenticationKey)
     {
         $setupArg += " -LinuxAuthenticationKey:$LinuxAuthenticationKey"
     }
