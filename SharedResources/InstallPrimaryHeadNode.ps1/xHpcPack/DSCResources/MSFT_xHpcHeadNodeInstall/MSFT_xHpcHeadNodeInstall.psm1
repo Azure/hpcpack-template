@@ -28,6 +28,9 @@ function Get-TargetResource
         [parameter(Mandatory = $false)]
         [Boolean] $LinuxCommOverHttp = $false,
 
+        [parameter(Mandatory = $false)]
+        [string] $LinuxAuthenticationKey = "",
+
         [Parameter(Mandatory=$false)]
         [Boolean] $EnableBuiltinHA = $false
     )
@@ -122,6 +125,10 @@ function Set-TargetResource
     if($LinuxCommOverHttp)
     {
         $setupArg += " -LinuxCommOverHttp"
+    }
+    if($LinuxClusterAuthenticationKey)
+    {
+        $setupArg += " -LinuxAuthenticationKey:$LinuxAuthenticationKey"
     }
     if(!$EnableBuiltinHA -and $HeadNodeList -and ($HeadNodeList -ne $env:COMPUTERNAME))
     {
