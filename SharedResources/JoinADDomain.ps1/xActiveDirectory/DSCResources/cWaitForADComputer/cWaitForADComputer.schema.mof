@@ -1,0 +1,7 @@
+[ClassVersion("1.0.0.0"), FriendlyName("cWaitForADComputer")]
+class cWaitForADComputer : OMI_BaseResource
+{
+    [Key] String ComputerName;
+    [Write] uint32 RetryIntervalSec;
+    [Write] uint32 RetryCount;
+};
