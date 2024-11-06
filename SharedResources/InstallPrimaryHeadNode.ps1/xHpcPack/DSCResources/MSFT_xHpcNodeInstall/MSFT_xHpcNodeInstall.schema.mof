@@ -1,0 +1,8 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xHpcNodeInstall")]
+class MSFT_xHpcNodeInstall : OMI_BaseResource
+{
+    [key, Description("HPC node type to be configured."), ValueMap{"ComputeNode","BrokerNode","HeadNodePreReq", "PassiveHeadNode"}, Values{"ComputeNode","BrokerNode","HeadNodePreReq", "PassiveHeadNode"}] string NodeType;
+    [Required, Description("HPC head node list joint with comma.")] string HeadNodeList;
+    [Required, Description("Thumbprint of the SSL certificate.")] string SSLThumbprint;    
+    [Required, Description("The url or local path of setup package.")] string SetupPkgPath;
+};
