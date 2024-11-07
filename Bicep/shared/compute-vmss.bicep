@@ -84,6 +84,10 @@ param userAssignedIdentity string = ''
 @description('The DNS servers in order, if not configured, the DNS servers configured in the virtual network will be used.')
 param dnsServers array = []
 
+@secure()
+@description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes.')
+param authenticationKey string = ''
+
 var userAssignedIdentityObject = {
   type: 'UserAssigned'
   userAssignedIdentities: {
@@ -132,12 +136,15 @@ var lnxBasicExtension = [
       provisionAfterExtensions: (installRDMADriver ? array('installRDMADriver') : emptyArray)
       publisher: 'Microsoft.HpcPack'
       type: 'LinuxNodeAgent2016U1'
-      typeHandlerVersion: '16.2'
+      typeHandlerVersion: '16.3'
       autoUpgradeMinorVersion: true
       settings: {
         ClusterConnectionString: headNodeList
         SSLThumbprint: certSettings.thumbprint
         DomainName: domainName
+      }
+      protectedSettings: {
+        AuthenticationKey: authenticationKey
       }
     }
   }
