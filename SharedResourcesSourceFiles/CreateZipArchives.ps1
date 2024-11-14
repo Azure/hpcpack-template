@@ -3,8 +3,6 @@ $scriptPath = $PSScriptRoot
 $zipFolders = Get-ChildItem -Path $scriptPath -Directory -Filter "*.ps1"
 foreach ($folder in $zipFolders) {
     $zipFileName = $folder.FullName + ".zip"
-    if (Test-Path -Path $zipFileName) {
-        Remove-Item -Path $zipFileName -Force
-    }
-    Compress-Archive -Path "$($folder.FullName)\*" -DestinationPath $zipFileName
+    $targetFileName = Split-Path -Path $zipFileName -Leaf
+    Compress-Archive -Path "$($folder.FullName)\*" -DestinationPath $scriptPath\..\SharedResources\$targetFileName -Force
 }
