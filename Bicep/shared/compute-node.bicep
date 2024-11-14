@@ -88,7 +88,7 @@ param licenseType string = ''
 param logSettings AzureMonitorLogSettings?
 
 @secure()
-@description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes.')
+@description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
 param authenticationKey string = ''
 
 var tags = empty(logSettings) ? {} : logSettings
