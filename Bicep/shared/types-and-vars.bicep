@@ -199,8 +199,6 @@ type LinuxComputeNodeImage =
   | 'AlmaLinux_8.6_HPC_Gen2'
   | 'AlmaLinux_8.7_HPC'
   | 'AlmaLinux_8.7_HPC_Gen2'
-  | 'Rocky Linux 8.6'
-  | 'Rocky Linux 8.7'
   | 'RHEL_7.7'
   | 'RHEL_7.8'
   | 'RHEL_7.9'
@@ -229,6 +227,33 @@ type LinuxComputeNodeImage =
   | 'Ubuntu_18.04_HPC_Gen2'
   | 'Ubuntu_20.04_HPC_Gen2'
   | 'CustomImage'
+  | 'AlmaLinux_9.1'
+  | 'AlmaLinux_9.1_Gen2'
+  | 'AlmaLinux_9.2'
+  | 'AlmaLinux_9.2_Gen2'
+  | 'AlmaLinux_9.3'
+  | 'AlmaLinux_9.3_Gen2'
+  | 'AlmaLinux_9.4'
+  | 'AlmaLinux_9.4_Gen2'
+  | 'Ubuntu_22.04'
+  | 'Ubuntu_22.04_Gen2'
+  | 'Ubuntu_24.04'
+  | 'Ubuntu_24.04_Gen2'   
+  | 'RHEL_8.9'
+  | 'RHEL_8.10'
+  | 'RHEL_9.0'
+  | 'RHEL_9.1'
+  | 'RHEL_9.2'
+  | 'RHEL_9.3'
+  | 'RHEL_9.4'
+  | 'RHEL_8.9_Gen2'
+  | 'RHEL_8.10_Gen2'
+  | 'RHEL_9.0_Gen2'
+  | 'RHEL_9.1_Gen2'
+  | 'RHEL_9.2_Gen2'
+  | 'RHEL_9.3_Gen2'
+  | 'RHEL_9.4_Gen2'
+  | 'Rocky Linux'
 //End of LinuxComputeNodeImage
 
 @export()
@@ -280,18 +305,6 @@ var linuxComputeNodeImages = {
     offer: 'almalinux-hpc'
     sku: '8_7-hpc-gen2'
     version: 'latest'
-  }
-  'Rocky Linux 8.6': {
-    publisher: 'erockyenterprisesoftwarefoundationinc1653071250513'
-    offer: 'rockylinux'
-    sku: 'free'
-    version: '8.6.0'
-  }
-  'Rocky Linux 8.7': {
-    publisher: 'erockyenterprisesoftwarefoundationinc1653071250513'
-    offer: 'rockylinux'
-    sku: 'free'
-    version: '8.7.0'
   }
   'CentOS_7.6': {
     publisher: 'OpenLogic'
@@ -552,6 +565,168 @@ var linuxComputeNodeImages = {
     version: 'latest'
   }
   CustomImage: {}
+  'AlmaLinux_9.1': {
+    publisher: 'almalinux'
+    offer: 'almalinux'
+    sku: '9-gen1'
+    version: 'latest'
+  }
+  'AlmaLinux_9.1_Gen2': {
+    publisher: 'almalinux'
+    offer: 'almalinux'
+    sku: '9-gen2'
+    version: 'latest'
+  }
+  'AlmaLinux_9.2': {
+    publisher: 'almalinux'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen1'
+    version: '9.2.2023072701'
+  }
+  'AlmaLinux_9.2_Gen2': {
+    publisher: 'almalinux'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen2'
+    version: '9.2.2023072701'
+  }
+  'AlmaLinux_9.3': {
+    publisher: 'almalinux'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen1'
+    version: '9.3.2023111602'
+  }
+  'AlmaLinux_9.3_Gen2': {
+    publisher: 'almalinux'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen2'
+    version: '9.3.2023111602'
+  }
+  'AlmaLinux_9.4': {
+    publisher: 'almalinux'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen1'
+    version: '9.4.2024080501'
+  }
+  'AlmaLinux_9.4_Gen2': {
+    publisher: 'almalinux'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen2'
+    version: '9.4.2024080501'
+  }
+  'Ubuntu_22.04': {
+    publisher: 'canonical'
+    offer: '0001-com-ubuntu-server-jammy'
+    sku: '22_04-lts'
+    version: 'latest'
+  }
+  'Ubuntu_22.04_Gen2': {
+    publisher: 'canonical'
+    offer: '0001-com-ubuntu-server-jammy'
+    sku: '22_04-lts-gen2'
+    version: 'latest'
+  }
+  'Ubuntu_24.04': {
+    publisher: 'canonical'
+    offer: 'ubuntu-24_04-lts'
+    sku: 'ubuntu-pro-gen1'
+    version: 'latest'
+  }
+  'Ubuntu_24.04_Gen2': {
+    publisher: 'canonical'
+    offer: 'ubuntu-24_04-lts'
+    sku: 'ubuntu-pro'
+    version: 'latest'
+  }
+  'RHEL_8.9': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '8_9'
+    version: 'latest'
+  }
+  'RHEL_8.10': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '8_10'
+    version: 'latest'
+  }
+  'RHEL_9.0': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_0'
+    version: 'latest'
+  }
+  'RHEL_9.1': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_1'
+    version: 'latest'
+  }
+  'RHEL_9.2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_2'
+    version: 'latest'
+  }
+  'RHEL_9.3': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_3'
+    version: 'latest'
+  }
+  'RHEL_9.4': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_4'
+    version: 'latest'
+  }
+  'RHEL_8.9_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '89-gen2'
+    version: 'latest'
+  }
+  'RHEL_8.10_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '810-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.0_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '90-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.1_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '91-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.2_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '92-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.3_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '93-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.4_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '94-gen2'
+    version: 'latest'
+  }
+  'Rocky Linux': {
+    publisher: 'solvedevops1643693563360'
+    offer: 'rocky-linux-9'
+    sku: 'plan001'
+    version: 'latest'
+  }
 }
 
 //NOTE: The properties are set as VM Tags, and the names are referenced in HPC Pack code.
