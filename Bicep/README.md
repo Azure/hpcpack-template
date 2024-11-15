@@ -8,7 +8,11 @@ You need the followings for your deployment in Bicep
 
 * [Bicep tools](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
-  There're several options of Bicep tools. Among these, VS Code + Bicep extension is recommended for authoring and deploying. Azure CLI and Azure PowerShell can be used for automatic scripts.
+  There're several options of Bicep tools. Among these, [VS Code](https://code.visualstudio.com/Download) + [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep) is recommended for both authoring and deploying. Azure CLI and Azure PowerShell can be used for automatic scripts.
+
+### Deployment using VS Code
+
+Refer to [this document](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-vscode) for a general guide on the deployment. It's recommended to generate a parameter file from a bicep file for easy deployment and redeployment.
 
 ### Templates that are integrated with Active Directory Domain
 
@@ -51,6 +55,25 @@ You need the followings for your deployment in Bicep
 2. [Single head node cluster for Linux workloads](./new-1hn-lnxcn-no-ad.bicep)
 
    This template deploys an HPC Pack cluster with one **single** head node and a configurable number of **Linux** compute nodes. The head node is with local databases (SQL server 2019 Express version).
+
+### Notes on deployed cluster
+
+A few tags are added to VMs of a cluster to support
+
+* The Key Vault and certificate used by the cluster. These tags have prefix "KV_"
+  * KV_RG
+  * KV_Name
+  * KV_CertUrl
+  * KV_CertThumbprint
+
+* Logging to Azure Monitor. These tags have prefix "LA_"
+  * LA_DceUrl
+  * LA_DcrId
+  * LA_DcrStream
+  * LA_MiClientId
+  * LA_MiResId
+
+Do not change or remove these tags on VMs, or the function they support may be broken.
 
 ## For developers
 

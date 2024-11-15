@@ -76,6 +76,24 @@
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
+### Notes on deployed cluster
+
+A few tags are added to VMs of a cluster to support
+
+* The Key Vault and certificate used by the cluster. These tags have prefix "KV_"
+  * KV_RG
+  * KV_Name
+  * KV_CertUrl
+  * KV_CertThumbprint
+
+* Logging to Azure Monitor. These tags have prefix "LA_"
+  * LA_DceUrl
+  * LA_DcrId
+  * LA_DcrStream
+  * LA_MiClientId
+  * LA_MiResId
+
+Do not change or remove these tags on VMs, or the function they support may be broken.
 
 ## For developers
 

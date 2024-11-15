@@ -2,7 +2,7 @@
 
 > **Note**
 >
-> **You no longer need this since a Key Vault and a certificate will be created for you by the templates.**
+> **You no longer need this since a Key Vault and a certificate will be created for you by the templates. The document is kept only for your information about how the certificate is created in the Key Vault.**
 
 An Azure Key Vault Certificate is required to deploy Microsoft HPC Pack cluster in Azure, it must be created in the **same Azure location** where the HPC Pack cluster will be deployed. The certificate will be installed on all the HPC nodes during the deployment, it is used to secure the communication between the HPC nodes. The certificate must meet the following requirements:
 

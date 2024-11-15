@@ -2,6 +2,8 @@
 
 Azure HPC Pack templates make it easy to deploy an HPC Pack cluster on Azure.
 
+## Templates
+
 There are two kinds of templates in this repo: one is in Bicep and the other one is in traditional JSON.
 
 * [Bicep templates](./Bicep/)
@@ -16,7 +18,11 @@ Bicep is recommended for better deployment and development experiences, with exc
 > * [Microsoft HPC Pack 2016 Update 3](https://github.com/azure/hpcpack-template-2016)
 > * [Microsoft HPC Pack 2012 R2 Update 3](https://github.com/azure/hpcpack-template-2012r2)
 
-# Contributing
+## Logging to Azure Monitor
+
+HPC Pack templates now integrate with Azure Monitor and can make logs to it, which makes it much more convenient than ever to diagnose problems and watch the health of a HPC Pack cluster on Azure. See [this document](./Docs/AzureMonitor.md) for the details.
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
