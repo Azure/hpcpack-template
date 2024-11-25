@@ -1,5 +1,5 @@
 @export()
-var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/robert/shared-resources/SharedResources/Generated'
+var sharedResxBaseUrl = 'https://raw.githubusercontent.com/Azure/hpcpack-template/bicep/SharedResources/Generated'
 
 @export()
 type OsType = 'windows' | 'linux'
