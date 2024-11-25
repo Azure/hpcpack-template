@@ -1,0 +1,22 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xHpcClusterInit")]
+class MSFT_xHpcClusterInit : OMI_BaseResource
+{
+    [key, Description("The topology for HPC network, only 'Enterprise' supported for cluster in Azure."), ValueMap{"Enterprise"}, Values{"Enterprise"}] string Topology;
+    [Required, EmbeddedInstance("MSFT_Credential"), Description("a PSCredetial object for the HPC cluster setup.")] String SetupCredential;
+    [write, Description("Use Http to communicate with Linux nodes.")] Boolean LinuxCommOverHttp;
+    [write, Description("The connection string for the Azure storage account.")] string AzureStorageConnString;
+    [write, Description("The VM size of the compute nodes.")] string CNSize;
+    [write, Description("The Id of the Azure subscription used to deploy the cluster.")] String SubscriptionId;
+    [write, Description("The Azure location in which the cluster was deployed.")] string Location;      
+    [write, Description("The Azure virtual network name in which the cluster was deployed.")] string VNet;
+    [write, Description("The subnet name in which the cluster was deployed.")] string Subnet;
+    [write, Description("The resource group of the virtual network.")] string ResourceGroup;
+    [write, Description("The resource group of the Azure Key Vault.")] string VaultResourceGroup;
+    [write, Description("The Url of the certificate with version in Key Vault.")] string CertificateUrl;
+    [write, Description("The Thumbprint of the certificate in Key Vault.")] string CertificateThumbprint;
+    [write, Description("The name prefix of compute nodes.")] string CNNamePrefix;
+    [write, Description("Use Azure managed identity for auto grow shrink")] Boolean AutoGSUseManagedIdentity;
+    [write, Description("The Id of the Azure Active Directory application for auto grow and shrink.")] string AutoGSApplicationId;
+    [write, Description("The Id of the Azure Active Directory tenant in which the application was created.")] string AutoGSTenantId;
+    [write, Description("The thumbprint of the certificate used for auto grow and shrink.")] string AutoGSThumbprint;
+};

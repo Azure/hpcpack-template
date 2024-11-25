@@ -1,0 +1,7 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xHpcWaitForCluster")]
+class MSFT_xHpcWaitForCluster : OMI_BaseResource
+{
+    [key, Description("The connection string of the HPC cluster")] string ConnectionString;
+    [Write] uint64 RetryIntervalSec;
+    [Write] uint32 RetryCount;
+};

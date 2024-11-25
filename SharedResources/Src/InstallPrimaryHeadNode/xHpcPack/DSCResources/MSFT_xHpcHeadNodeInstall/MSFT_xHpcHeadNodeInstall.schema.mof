@@ -1,0 +1,12 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xHpcHeadNodeInstall")]
+class MSFT_xHpcHeadNodeInstall : OMI_BaseResource
+{
+    [key, Description("The HPC cluster name.")] String ClusterName;
+    [Required, Description("Thumbprint of the SSL certificate.")] string SSLThumbprint;    
+    [Required, Description("The url or local path of setup package.")] string SetupPkgPath;
+    [write, Description("HPC head node list joint with comma, only for Service Fabric based High availability")] string HeadNodeList;
+    [write, Description("The SQL Server instance.")] string SQLServerInstance;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("a PSCredetial object for the SQL login.")] String SQLCredential;
+    [write, Description("Use Http to communicate with Linux nodes.")] Boolean LinuxCommOverHttp;
+    [write, Description("Enable the built-in High availability architecture.")] Boolean EnableBuiltinHA;
+};

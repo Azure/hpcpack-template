@@ -1,0 +1,15 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("cSQLServerDatabase")]
+class cSQLServerDatabase : OMI_BaseResource
+{
+    [Key] String Database;
+    [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write] String SQLServer;
+    [Write] String SQLInstanceName;
+    [Write] String Location;
+    [Write] uint32 DataFileSizeInMB;
+    [Write] uint32 DataFileGrowthPercent;
+    [Write] uint32 LogFileSizeInMB;
+    [Write] uint32 LogFileGrowthPercent;
+};
+

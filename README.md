@@ -24,6 +24,13 @@ HPC Pack templates now integrate with Azure Monitor and can make logs to it, whi
 
 ## Contributing
 
+> NOTE
+>
+> Make sure the source file EOL is correct and consistent by executing the following commands under the project root before everything else.
+>
+> * `git config set core.safecrlf true`
+> * `git config set core.autocrlf false`
+
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.

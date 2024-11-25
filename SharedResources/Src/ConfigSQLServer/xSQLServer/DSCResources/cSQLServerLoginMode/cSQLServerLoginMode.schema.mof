@@ -1,0 +1,8 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("cSQLServerLoginMode")]
+class cSQLServerLoginMode : OMI_BaseResource
+{
+    [Key] String SQLInstanceName;
+    [Key] String LoginMode;
+};
+
