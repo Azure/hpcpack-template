@@ -118,7 +118,7 @@ function Set-TargetResource
     }
 
     $legacyHa = $false
-    $setupArg = "-unattend -Quiet -HeadNode -ClusterName:$ClusterName -SSLThumbprint:$SSLThumbprint -SkipComponent:rras,dhcp,wds"
+    $setupArg = "-unattend -Quiet -HeadNode -ClusterName:$ClusterName -SSLThumbprint:$SSLThumbprint"
     if($LinuxCommOverHttp)
     {
         $setupArg += " -LinuxCommOverHttp"
