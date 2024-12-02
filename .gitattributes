@@ -1,3 +1,4 @@
 *     text=auto eol=crlf
 *.sh  text eol=lf
+GeneratedTemplates/*.json text eol=lf
 

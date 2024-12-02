@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "7517609578963766822"
+      "templateHash": "8554296750930014714"
     }
   },
   "definitions": {
@@ -651,7 +651,7 @@
       "Standard_SSD": "StandardSSD_LRS",
       "Premium_SSD": "Premium_LRS"
     },
-    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources",
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated",
     "windowsComputeNodeImages": {
       "WindowsServer2008R2": {
         "publisher": "MicrosoftWindowsServer",

@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "12461153829487912190"
+      "templateHash": "7089512936514176672"
     }
   },
   "definitions": {
@@ -857,7 +857,7 @@
       },
       "CustomImage": {}
     },
-    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources"
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
   },
   "resources": {
     "storageAccount": {

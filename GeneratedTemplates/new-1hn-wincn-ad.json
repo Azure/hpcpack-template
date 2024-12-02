@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "4813101470355360354"
+      "templateHash": "5038601708484685064"
     }
   },
   "definitions": {
@@ -468,7 +468,7 @@
       "Standard_SSD": "StandardSSD_LRS",
       "Premium_SSD": "Premium_LRS"
     },
-    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources",
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated",
     "windowsComputeNodeImages": {
       "WindowsServer2008R2": {
         "publisher": "MicrosoftWindowsServer",
@@ -1521,7 +1521,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "11516751441005183205"
+              "templateHash": "11928375294575572317"
             }
           },
           "parameters": {
@@ -1685,7 +1685,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.30.23.60470",
-                      "templateHash": "12474190574546522185"
+                      "templateHash": "1639511075517772985"
                     }
                   },
                   "parameters": {
@@ -1714,7 +1714,7 @@
                   },
                   "variables": {
                     "nicName": "[format('{0}-nic-{1}', parameters('vmName'), uniqueString(parameters('subnetId')))]",
-                    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources"
+                    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
                   },
                   "resources": {
                     "dcNIC": {

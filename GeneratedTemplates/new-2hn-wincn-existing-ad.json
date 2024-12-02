@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "9904403891151200009"
+      "templateHash": "6512444970512264025"
     }
   },
   "definitions": {
@@ -522,7 +522,7 @@
       "Standard_SSD": "StandardSSD_LRS",
       "Premium_SSD": "Premium_LRS"
     },
-    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources",
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated",
     "windowsComputeNodeImages": {
       "WindowsServer2008R2": {
         "publisher": "MicrosoftWindowsServer",
@@ -2569,7 +2569,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "18048163771603443368"
+              "templateHash": "8510834756138171164"
             }
           },
           "parameters": {
@@ -2609,7 +2609,7 @@
             }
           },
           "variables": {
-            "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources"
+            "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
           },
           "resources": {
             "joinADDomain": {
@@ -3036,7 +3036,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "3383544432626965274"
+              "templateHash": "6330314661187005990"
             }
           },
           "parameters": {
@@ -3060,7 +3060,7 @@
             }
           },
           "variables": {
-            "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources"
+            "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
           },
           "resources": {
             "dscExtension": {
