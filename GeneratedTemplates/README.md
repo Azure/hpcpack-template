@@ -8,7 +8,7 @@
 
    This template deploys an HPC Pack cluster with high availability for Windows HPC workloads in Active Directory Domain forest. The cluster includes one domain controller, **two** head nodes, one Database Server with SQL Server 2016 Standard version, and a configurable number of **Windows** compute nodes.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-2hn-wincn-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-2hn-wincn-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -16,7 +16,7 @@
 
    This template deploys an HPC Pack cluster with high availability for Windows HPC workloads in an existing Active Directory Domain forest. The cluster includes **two** head nodes, one Database Server with SQL Server 2016 Standard version, and a configurable number of **Windows** compute nodes. You can choose not to create public IP address for the head node if you have a virtual network with Express Route configured and you want to join the cluster to your on-premises Active Directory Domain.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-2hn-wincn-existing-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-2hn-wincn-existing-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -26,7 +26,7 @@
 
    ***Note***: Make sure you have enabled **service endpoint for Azure SQL Database(Microsoft.Sql)** on the subnet in which you want to create the cluster.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-2hn-wincn-existing-ad-azuresql.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-2hn-wincn-existing-ad-azuresql.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -34,7 +34,7 @@
 
    This template deploys an HPC Pack cluster with one **single** head node for Windows HPC workloads in Active Directory Domain forest. The cluster includes one domain controller, one **single** head node with local databases (SQL server 2019 Express version), and a configurable number of **Windows** compute nodes.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-1hn-wincn-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-1hn-wincn-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -42,7 +42,7 @@
 
    This template deploys an HPC Pack cluster with one **single** head node for Windows HPC workloads in an existing Active Directory Domain forest. The cluster includes one **single** head node with local databases (SQL server 2019 Express version), and a configurable number of **Windows** compute nodes. You can choose not to create public IP address for the head node if you have a virtual network with Express Route configured and you want to join the cluster to your on-premises Active Directory Domain.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-1hn-wincn-existing-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-1hn-wincn-existing-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -50,7 +50,7 @@
 
    This template deploys an HPC Pack cluster with one **single** head node for Windows HPC workloads in an existing Active Directory Domain forest. The cluster includes one **single** head node with local databases (SQL server 2019 Express version), and a configurable number of **Linux** compute nodes. You can choose not to create public IP address for the head node if you have a virtual network with Express Route configured and you want to join the cluster to your on-premises Active Directory Domain.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-1hn-lnxcn-existing-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-1hn-lnxcn-existing-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -64,7 +64,7 @@
 
    This template deploys an HPC Pack cluster with one **single** head node and a configurable number of **Windows** compute nodes. The head node is with local databases (SQL server 2019 Express version).
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-1hn-wincn-no-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-1hn-wincn-no-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
@@ -72,7 +72,7 @@
 
    This template deploys an HPC Pack cluster with one **single** head node and a configurable number of **Linux** compute nodes. The head node is with local databases (SQL server 2019 Express version).
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep%2FGeneratedTemplates%2Fnew-1hn-lnxcn-no-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-1hn-lnxcn-no-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
