@@ -374,7 +374,10 @@
     "certThumbprint": "[trim(parameters('certThumbprint'))]",
     "computeNodeNamePrefix": "[trim(parameters('computeNodeNamePrefix'))]",
     "managedIdentity": {
-      "type": "SystemAssigned"
+      "type": "SystemAssigned, UserAssigned",
+      "userAssignedIdentities":{
+        "/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourcegroups/hpcpackbuild/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mi_hpcpackbuild":{}
+      }
     },
     "emptyArray": [],
     "diskTypes": {
