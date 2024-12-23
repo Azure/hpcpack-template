@@ -376,7 +376,8 @@
     "managedIdentity": {
       "type": "SystemAssigned, UserAssigned",
       "userAssignedIdentities":{
-        "/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourcegroups/hpcpackbuild/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mi_hpcpackbuild":{}
+        "/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourcegroups/hpcpackbuild/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mi_hpcpackbuild":{},
+        "/subscriptions/a486e243-747b-42de-8c4c-379f8295a746/resourcegroups/HPCPackBVT-Pipelines-Agents/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mi_hpcpackbvt_agents":{}
       }
     },
     "emptyArray": [],
@@ -880,62 +881,6 @@
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
-      "apiVersion": "2022-09-01",
-      "type": "Microsoft.Resources/deployments",
-      "name": "[concat('msiVNetRoleAssignment-', guid(variables('clusterName'), variables('vnetID')))]",
-      "resourceGroup": "[variables('virtualNetworkResourceGroupName')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "resources": [
-            {
-              "type": "Microsoft.Network/virtualNetworks/providers/roleAssignments",
-              "name": "[concat(variables('virtualNetworkName'), '/Microsoft.Authorization/', guid(variables('clusterName'), variables('vnetID')))]",
-              "apiVersion": "2022-04-01",
-              "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
-                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
-      "apiVersion": "2022-09-01",
-      "type": "Microsoft.Resources/deployments",
-      "name": "[concat('msiKeyVaultRoleAssignment-', guid(variables('clusterName'), variables('vaultName')))]",
-      "resourceGroup": "[variables('vaultResourceGroup')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "resources": [
-            {
-              "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-              "name": "[concat(variables('vaultName'), '/Microsoft.Authorization/', guid(variables('clusterName'), variables('vaultName'), variables('vnetID')))]",
-              "apiVersion": "2022-04-01",
-              "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395",
                 "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
               }
             }
