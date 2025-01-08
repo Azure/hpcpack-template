@@ -97,6 +97,10 @@ param useSpotInstanceForComputeNodes YesOrNo = 'No'
 @description('Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network.')
 param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
+@secure()
+@description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
+param authenticationKey string = ''
+
 @description('Monitor the HPC Pack cluster in Azure Monitor.')
 param enableAzureMonitor YesOrNo = 'Yes'
 
@@ -255,6 +259,7 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
           Password: adminPassword
         }
         AzureStorageConnString: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys(storageAccountId,'2019-04-01').keys[0].value}'
+        LinuxAuthenticationKey: authenticationKey
       }
     }
   }
@@ -288,6 +293,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       joinDomain: false
       domainName: ''
       logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
+      authenticationKey: authenticationKey
     }
     dependsOn: [
       monitor
@@ -321,6 +327,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     headNodeList: _clusterName
     joinDomain: false
     domainName: ''
+    authenticationKey: authenticationKey
   }
   dependsOn: [
     headNode

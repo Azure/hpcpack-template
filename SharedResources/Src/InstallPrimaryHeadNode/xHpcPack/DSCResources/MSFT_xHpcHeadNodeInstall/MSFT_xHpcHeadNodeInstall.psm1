@@ -28,6 +28,9 @@ function Get-TargetResource
         [parameter(Mandatory = $false)]
         [Boolean] $LinuxCommOverHttp = $false,
 
+        [parameter(Mandatory = $false)]
+        [string] $LinuxAuthenticationKey = "",
+
         [Parameter(Mandatory=$false)]
         [Boolean] $EnableBuiltinHA = $false
     )
@@ -118,10 +121,14 @@ function Set-TargetResource
     }
 
     $legacyHa = $false
-    $setupArg = "-unattend -Quiet -HeadNode -ClusterName:$ClusterName -SSLThumbprint:$SSLThumbprint"
+    $setupArg = "-unattend -Quiet -HeadNode -ClusterName:$ClusterName -SSLThumbprint:$SSLThumbprint -SkipComponent:rras,dhcp,wds"
     if($LinuxCommOverHttp)
     {
         $setupArg += " -LinuxCommOverHttp"
+    }
+    if($LinuxAuthenticationKey)
+    {
+        $setupArg += " -LinuxAuthenticationKey:$LinuxAuthenticationKey"
     }
     if(!$EnableBuiltinHA -and $HeadNodeList -and ($HeadNodeList -ne $env:COMPUTERNAME))
     {
