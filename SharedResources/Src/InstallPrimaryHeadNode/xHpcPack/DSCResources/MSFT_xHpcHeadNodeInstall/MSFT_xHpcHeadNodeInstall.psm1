@@ -63,6 +63,9 @@ function Set-TargetResource
         [parameter(Mandatory = $false)]
         [Boolean] $LinuxCommOverHttp = $false,
 
+        [parameter(Mandatory = $false)]
+        [string] $LinuxAuthenticationKey = "",
+
         [Parameter(Mandatory=$false)]
         [Boolean] $EnableBuiltinHA = $false
     )
@@ -233,6 +236,9 @@ function Test-TargetResource
 
         [parameter(Mandatory = $false)]
         [Boolean] $LinuxCommOverHttp = $false,
+
+        [parameter(Mandatory = $false)]
+        [string] $LinuxAuthenticationKey = "",
 
         [Parameter(Mandatory=$false)]
         [Boolean] $EnableBuiltinHA = $false

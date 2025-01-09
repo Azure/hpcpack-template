@@ -8,5 +8,6 @@ class MSFT_xHpcHeadNodeInstall : OMI_BaseResource
     [write, Description("The SQL Server instance.")] string SQLServerInstance;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("a PSCredetial object for the SQL login.")] String SQLCredential;
     [write, Description("Use Http to communicate with Linux nodes.")] Boolean LinuxCommOverHttp;
+    [write, Description("Authentication Key for Linux communication")] string LinuxAuthenticationKey;
     [write, Description("Enable the built-in High availability architecture.")] Boolean EnableBuiltinHA;
 };
