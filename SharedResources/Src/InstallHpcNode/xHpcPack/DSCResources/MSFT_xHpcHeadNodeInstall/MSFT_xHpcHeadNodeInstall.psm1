@@ -131,7 +131,7 @@ function Set-TargetResource
     }
     if($LinuxAuthenticationKey)
     {
-        $setupArg += " -LinuxAuthenticationKey:$LinuxAuthenticationKey"
+        $setupArg += " -ClusterAuthenticationKey:$LinuxAuthenticationKey"
     }
     if(!$EnableBuiltinHA -and $HeadNodeList -and ($HeadNodeList -ne $env:COMPUTERNAME))
     {
