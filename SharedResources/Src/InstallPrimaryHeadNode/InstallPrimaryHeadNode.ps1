@@ -23,6 +23,10 @@
         [Boolean] $LinuxCommOverHttp = $false,
 
         [Parameter(Mandatory=$false)]
+        # 2019 Update 2 and below needs manual fix-up post-install by running Update-HpcLinuxAuthenticationKey.ps1
+        [string] $LinuxAuthenticationKey = "",
+
+        [Parameter(Mandatory=$false)]
         [Boolean] $EnableBuiltinHA = $false,
 
         [Parameter(Mandatory=$false)]
@@ -165,6 +169,7 @@
                 SSLThumbprint = $SSLThumbprint
                 SQLServerInstance = $SQLServerInstance
                 LinuxCommOverHttp = $LinuxCommOverHttp
+                LinuxAuthenticationKey = $LinuxAuthenticationKey
                 EnableBuiltinHA = $EnableBuiltinHA
                 PsDscRunAsCredential = $SetupUserCredential
                 DependsOn = "[xFileSystemAccessRule]certKeyAclForAdmin","[Group]AddADUserToLocalAdminGroup"
@@ -180,6 +185,7 @@
                 SQLServerInstance = $SQLServerInstance
                 SQLCredential = $SqlLoginCredential
                 LinuxCommOverHttp = $LinuxCommOverHttp
+                LinuxAuthenticationKey = $LinuxAuthenticationKey
                 EnableBuiltinHA = $EnableBuiltinHA
                 PsDscRunAsCredential = $SetupUserCredential
                 DependsOn = "[xFileSystemAccessRule]certKeyAclForAdmin","[Group]AddADUserToLocalAdminGroup"

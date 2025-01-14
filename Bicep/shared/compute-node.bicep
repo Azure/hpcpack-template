@@ -87,6 +87,10 @@ param licenseType string = ''
 @description('Azure Monitor log settings')
 param logSettings AzureMonitorLogSettings?
 
+@secure()
+@description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
+param authenticationKey string = ''
+
 var tags = empty(logSettings) ? {} : logSettings
 var userMiResIdForLog = empty(logSettings) ? '' : logSettings!.LA_MiResId
 
@@ -292,12 +296,15 @@ resource linuxNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-01
   properties: {
     publisher: 'Microsoft.HpcPack'
     type: 'LinuxNodeAgent2016U1'
-    typeHandlerVersion: '16.2'
+    typeHandlerVersion: '16.3'
     autoUpgradeMinorVersion: true
     settings: {
       ClusterConnectionString: headNodeList
       SSLThumbprint: certSettings.thumbprint
       DomainName: domainName
+    }
+    protectedSettings: {
+      AuthenticationKey: authenticationKey
     }
   }
   dependsOn: [

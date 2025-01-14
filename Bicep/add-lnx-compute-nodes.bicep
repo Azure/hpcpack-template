@@ -81,6 +81,10 @@ param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 @description('The DNS server for the compute nodes. If not specified, the DNS setting for the VNet will be applied. You can specify multiple DNS servers in order separated with \',\'.')
 param dnsServer string = ''
 
+@secure()
+@description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
+param authenticationKey string = ''
+
 @description('Optional, specify the resource ID of the user assigned identity to associate with the virtual machines in the form: /subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.ManagedIdentity/userAssignedIdentities/&lt;identityName&gt;')
 param userAssignedIdentity string = ''
 
@@ -172,6 +176,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       domainName: ''
       userAssignedIdentity: trim(userAssignedIdentity)
       logSettings: monitor.outputs.logSettings
+      authenticationKey: authenticationKey
     }
     dependsOn: [
       availabilitySet
@@ -205,6 +210,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     headNodeList: trim(clusterConnectionString)
     joinDomain: false
     domainName: ''
+    authenticationKey: authenticationKey
     userAssignedIdentity: trim(userAssignedIdentity)
   }
 }
