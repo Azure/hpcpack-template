@@ -260,7 +260,7 @@ resource windowsNodeAgent 'Microsoft.Compute/virtualMachines/extensions@2019-03-
   properties: {
     publisher: 'Microsoft.HpcPack'
     type: 'HPCComputeNode'
-    typeHandlerVersion: '16.2'
+    typeHandlerVersion: '16.3'
     autoUpgradeMinorVersion: true
     settings: {
       domainName: domainName

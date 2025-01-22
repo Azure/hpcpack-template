@@ -12,5 +12,6 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     //Key Vault Contributor role
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f25e0fa2-a7c8-4377-a976-54943a77a395')
     principalId: principalId
+    principalType: 'ServicePrincipal'
   }
 }
