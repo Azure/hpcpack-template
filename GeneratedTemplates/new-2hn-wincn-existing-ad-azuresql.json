@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "2047081490286320691"
+      "templateHash": "18434229134063349679"
     }
   },
   "definitions": {
@@ -231,6 +231,13 @@
       "defaultValue": "2019 Update 3",
       "metadata": {
         "description": "The release of HPC Pack"
+      }
+    },
+    "setupPkgPath": {
+      "type": "string",
+      "nullable": true,
+      "metadata": {
+        "description": "The path of the setup package. If you built your own image, you need to bake unzipped setup files into your image and specify this path. See https://github.com/Azure/hpcpack-template/blob/master/SharedResources/Src/InstallPrimaryHeadNode/xHpcPack/DSCResources/MSFT_xHpcHeadNodeInstall/MSFT_xHpcHeadNodeInstall.psm1 for more details."
       }
     },
     "clusterName": {
@@ -783,6 +790,7 @@
             "function": "InstallPrimaryHeadNode"
           },
           "configurationArguments": {
+            "SetupPkgPath": "[parameters('setupPkgPath')]",
             "SSLThumbprint": "[reference('keyVault').outputs.certSettings.value.thumbprint]",
             "ClusterName": "[variables('_clusterName')]",
             "SQLServerInstance": "[reference('sqlServer').outputs.fqdn.value]",
@@ -838,6 +846,7 @@
             "function": "InstallHpcNode"
           },
           "configurationArguments": {
+            "SetupPkgPath": "[parameters('setupPkgPath')]",
             "NodeType": "PassiveHeadNode",
             "HeadNodeList": "[variables('_headNodeList')]",
             "SSLThumbprint": "[reference('keyVault').outputs.certSettings.value.thumbprint]"
