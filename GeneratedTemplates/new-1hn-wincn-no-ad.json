@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "13640096712427552284"
+      "templateHash": "13431485731068573782"
     }
   },
   "definitions": {
@@ -1631,7 +1631,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "11142044395040566453"
+              "templateHash": "8292124965261937662"
             }
           },
           "definitions": {
@@ -2023,7 +2023,8 @@
               "name": "[guid(resourceGroup().id, parameters('clusterName'), parameters('hnName'))]",
               "properties": {
                 "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-                "principalId": "[reference('headNode', '2023-03-01', 'full').identity.principalId]"
+                "principalId": "[reference('headNode', '2023-03-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
               },
               "dependsOn": [
                 "headNode"
@@ -2100,7 +2101,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.30.23.60470",
-                      "templateHash": "6100945709862251984"
+                      "templateHash": "2881526503004659434"
                     }
                   },
                   "parameters": {
@@ -2119,7 +2120,8 @@
                       "name": "[guid(resourceGroup().id, parameters('keyVaultName'), parameters('principalId'))]",
                       "properties": {
                         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f25e0fa2-a7c8-4377-a976-54943a77a395')]",
-                        "principalId": "[parameters('principalId')]"
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal"
                       }
                     }
                   ]
@@ -2155,7 +2157,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.30.23.60470",
-                      "templateHash": "8678648686144519404"
+                      "templateHash": "17316373426169792223"
                     }
                   },
                   "parameters": {
@@ -2174,7 +2176,8 @@
                       "name": "[guid(resourceGroup().id, parameters('vnetName'), parameters('principalId'))]",
                       "properties": {
                         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]",
-                        "principalId": "[parameters('principalId')]"
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal"
                       }
                     }
                   ]
@@ -2385,7 +2388,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "15841975305160221807"
+              "templateHash": "455649492761979360"
             }
           },
           "definitions": {
@@ -2888,7 +2891,7 @@
               "properties": {
                 "publisher": "Microsoft.HpcPack",
                 "type": "HPCComputeNode",
-                "typeHandlerVersion": "16.2",
+                "typeHandlerVersion": "16.3",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                   "domainName": "[parameters('domainName')]",
