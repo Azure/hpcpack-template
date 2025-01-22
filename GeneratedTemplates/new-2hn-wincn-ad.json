@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "4322856162358574244"
+      "templateHash": "136491980954180682"
     }
   },
   "definitions": {
@@ -3639,7 +3639,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "455649492761979360"
+              "templateHash": "15841975305160221807"
             }
           },
           "definitions": {
@@ -4142,7 +4142,7 @@
               "properties": {
                 "publisher": "Microsoft.HpcPack",
                 "type": "HPCComputeNode",
-                "typeHandlerVersion": "16.3",
+                "typeHandlerVersion": "16.2",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                   "domainName": "[parameters('domainName')]",
