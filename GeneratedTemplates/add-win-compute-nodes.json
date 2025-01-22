@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "14707602770361484287"
+      "templateHash": "10862216643156733247"
     }
   },
   "definitions": {
@@ -708,7 +708,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "6775817623703107717"
+              "templateHash": "15841975305160221807"
             }
           },
           "definitions": {
@@ -1037,6 +1037,13 @@
               "metadata": {
                 "description": "Azure Monitor log settings"
               }
+            },
+            "authenticationKey": {
+              "type": "securestring",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes."
+              }
             }
           },
           "variables": {
@@ -1246,12 +1253,15 @@
               "properties": {
                 "publisher": "Microsoft.HpcPack",
                 "type": "LinuxNodeAgent2016U1",
-                "typeHandlerVersion": "16.2",
+                "typeHandlerVersion": "16.3",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                   "ClusterConnectionString": "[parameters('headNodeList')]",
                   "SSLThumbprint": "[parameters('certSettings').thumbprint]",
                   "DomainName": "[parameters('domainName')]"
+                },
+                "protectedSettings": {
+                  "AuthenticationKey": "[parameters('authenticationKey')]"
                 }
               },
               "dependsOn": [
@@ -1356,7 +1366,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "6213467785962806661"
+              "templateHash": "4854452253482264996"
             }
           },
           "definitions": {
@@ -1652,6 +1662,13 @@
               "metadata": {
                 "description": "The DNS servers in order, if not configured, the DNS servers configured in the virtual network will be used."
               }
+            },
+            "authenticationKey": {
+              "type": "securestring",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes."
+              }
             }
           },
           "variables": {
@@ -1706,12 +1723,15 @@
                   "provisionAfterExtensions": "[if(parameters('installRDMADriver'), array('installRDMADriver'), variables('emptyArray'))]",
                   "publisher": "Microsoft.HpcPack",
                   "type": "LinuxNodeAgent2016U1",
-                  "typeHandlerVersion": "16.2",
+                  "typeHandlerVersion": "16.3",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
                     "ClusterConnectionString": "[parameters('headNodeList')]",
                     "SSLThumbprint": "[parameters('certSettings').thumbprint]",
                     "DomainName": "[parameters('domainName')]"
+                  },
+                  "protectedSettings": {
+                    "AuthenticationKey": "[parameters('authenticationKey')]"
                   }
                 }
               }
