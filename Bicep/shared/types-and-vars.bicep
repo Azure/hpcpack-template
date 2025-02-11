@@ -191,16 +191,16 @@ type LinuxComputeNodeImage =
   | 'CentOS_7.7_HPC_Gen2'
   | 'CentOS_7.8_HPC_Gen2'
   | 'CentOS_7.9_HPC_Gen2'
-  | 'AlmaLinux_8.5'
-  | 'AlmaLinux_8.5_Gen2'
-  | 'AlmaLinux_8.5_HPC'
-  | 'AlmaLinux_8.5_HPC_Gen2'
-  | 'AlmaLinux_8.6_HPC'
-  | 'AlmaLinux_8.6_HPC_Gen2'
-  | 'AlmaLinux_8.7_HPC'
-  | 'AlmaLinux_8.7_HPC_Gen2'
-  | 'Rocky Linux 8.6'
-  | 'Rocky Linux 8.7'
+  | 'AlmaLinux_8_Gen1'
+  | 'AlmaLinux_8_Gen2'
+  | 'AlmaLinux_9_Gen1'
+  | 'AlmaLinux_9_Gen2'
+  | 'AlmaLinux_8_HPC_Gen1'
+  | 'AlmaLinux_8_HPC_Gen2'
+  | 'Rocky_Linux_8_base'
+  | 'Rocky_Linux_8_LVM'
+  | 'Rocky_Linux_9_base'
+  | 'Rocky_Linux_9_LVM'
   | 'RHEL_7.7'
   | 'RHEL_7.8'
   | 'RHEL_7.9'
@@ -208,13 +208,26 @@ type LinuxComputeNodeImage =
   | 'RHEL_8.6'
   | 'RHEL_8.7'
   | 'RHEL_8.8'
+  | 'RHEL_8.9'
+  | 'RHEL_9.0'
+  | 'RHEL_9.1'
+  | 'RHEL_9.2'
+  | 'RHEL_9.3'
+  | 'RHEL_9.4'
+  | 'RHEL_9.5'
   | 'RHEL_7.7_Gen2'
   | 'RHEL_7.8_Gen2'
   | 'RHEL_7.9_Gen2'
   | 'RHEL_8.5_Gen2'
   | 'RHEL_8.6_Gen2'
   | 'RHEL_8.7_Gen2'
-  | 'RHEL_8.8_Gen2'
+  | 'RHEL_8.9_Gen2'
+  | 'RHEL_9.0_Gen2'
+  | 'RHEL_9.1_Gen2'
+  | 'RHEL_9.2_Gen2'
+  | 'RHEL_9.3_Gen2'
+  | 'RHEL_9.4_Gen2'
+  | 'RHEL_9.5_Gen2'
   | 'SLES_12_SP5'
   | 'SLES_12_SP5_HPC'
   | 'SLES_12_SP5_Gen2'
@@ -223,75 +236,80 @@ type LinuxComputeNodeImage =
   | 'Ubuntu_16.04'
   | 'Ubuntu_18.04'
   | 'Ubuntu_20.04'
+  | 'Ubuntu_22.04'
+  | 'Ubuntu_24.04'
   | 'Ubuntu_16.04_Gen2'
   | 'Ubuntu_18.04_Gen2'
   | 'Ubuntu_20.04_Gen2'
+  | 'Ubuntu_22.04_Gen2'
+  | 'Ubuntu_24.04_Gen2'
   | 'Ubuntu_18.04_HPC_Gen2'
   | 'Ubuntu_20.04_HPC_Gen2'
+  | 'Ubuntu_22.04_HPC_Gen2'
   | 'CustomImage'
 //End of LinuxComputeNodeImage
 
 @export()
 var linuxComputeNodeImages = {
-  'AlmaLinux_8.5': {
+  AlmaLinux_8_Gen1: {
     publisher: 'almalinux'
-    offer: 'almalinux'
-    sku: '8_5'
+    offer: 'almalinux-x86_64'
+    sku: '8-gen1'
     version: 'latest'
   }
-  'AlmaLinux_8.5_Gen2': {
+  AlmaLinux_8_Gen2: {
     publisher: 'almalinux'
-    offer: 'almalinux'
-    sku: '8_5-gen2'
+    offer: 'almalinux-x86_64'
+    sku: '8-gen2'
     version: 'latest'
   }
-  'AlmaLinux_8.5_HPC': {
+  AlmaLinux_9_Gen1: {
     publisher: 'almalinux'
-    offer: 'almalinux-hpc'
-    sku: '8_5-hpc'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen1'
     version: 'latest'
   }
-  'AlmaLinux_8.5_HPC_Gen2': {
+  AlmaLinux_9_Gen2: {
     publisher: 'almalinux'
-    offer: 'almalinux-hpc'
-    sku: '8_5-hpc-gen2'
+    offer: 'almalinux-x86_64'
+    sku: '9-gen2'
     version: 'latest'
   }
-  'AlmaLinux_8.6_HPC': {
-    publisher: 'almalinux'
-    offer: 'almalinux-hpc'
-    sku: '8_6-hpc'
-    version: 'latest'
-  }
-  'AlmaLinux_8.6_HPC_Gen2': {
+  AlmaLinux_8_HPC_Gen1: {
     publisher: 'almalinux'
     offer: 'almalinux-hpc'
-    sku: '8_6-hpc-gen2'
+    sku: '8-hpc-gen1'
     version: 'latest'
   }
-  'AlmaLinux_8.7_HPC': {
+  AlmaLinux_8_HPC_Gen2: {
     publisher: 'almalinux'
     offer: 'almalinux-hpc'
-    sku: '8_7-hpc-gen1'
+    sku: '8-hpc-gen2'
     version: 'latest'
   }
-  'AlmaLinux_8.7_HPC_Gen2': {
-    publisher: 'almalinux'
-    offer: 'almalinux-hpc'
-    sku: '8_7-hpc-gen2'
+  Rocky_Linux_8_base: {
+    publisher: 'resf'
+    offer: 'rockylinux-x86_64'
+    sku: '8-base'
     version: 'latest'
   }
-  'Rocky Linux 8.6': {
-    publisher: 'erockyenterprisesoftwarefoundationinc1653071250513'
-    offer: 'rockylinux'
-    sku: 'free'
-    version: '8.6.0'
+  Rocky_Linux_8_LVM: {
+    publisher: 'resf'
+    offer: 'rockylinux-x86_64'
+    sku: '8-lvm'
+    version: 'latest'
   }
-  'Rocky Linux 8.7': {
-    publisher: 'erockyenterprisesoftwarefoundationinc1653071250513'
-    offer: 'rockylinux'
-    sku: 'free'
-    version: '8.7.0'
+  Rocky_Linux_9_base: {
+    publisher: 'resf'
+    offer: 'rockylinux-x86_64'
+    sku: '9-base'
+    version: 'latest'
+  }
+  Rocky_Linux_9_LVM: {
+    publisher: 'resf'
+    offer: 'rockylinux-x86_64'
+    sku: '9-lvm'
+    version: 'latest'
   }
   'CentOS_7.6': {
     publisher: 'OpenLogic'
@@ -431,6 +449,48 @@ var linuxComputeNodeImages = {
     sku: '8_8'
     version: 'latest'
   }
+  'RHEL_8.9': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '8_9'
+    version: 'latest'
+  }
+  'RHEL_9.0': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_0'
+    version: 'latest'
+  }
+  'RHEL_9.1': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_1'
+    version: 'latest'
+  }
+  'RHEL_9.2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_2'
+    version: 'latest'
+  }
+  'RHEL_9.3': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_3'
+    version: 'latest'
+  }
+  'RHEL_9.4': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_4'
+    version: 'latest'
+  }
+  'RHEL_9.5': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '9_5'
+    version: 'latest'
+  }
   'RHEL_7.7_Gen2': {
     publisher: 'RedHat'
     offer: 'RHEL'
@@ -471,6 +531,42 @@ var linuxComputeNodeImages = {
     publisher: 'RedHat'
     offer: 'RHEL'
     sku: '88-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.0_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '90-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.1_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '91-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.2_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '92-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.3_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '93-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.4_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '94-gen2'
+    version: 'latest'
+  }
+  'RHEL_9.5_Gen2': {
+    publisher: 'RedHat'
+    offer: 'RHEL'
+    sku: '95-gen2'
     version: 'latest'
   }
   SLES_12_SP5: {
@@ -521,6 +617,18 @@ var linuxComputeNodeImages = {
     sku: '20_04-lts'
     version: 'latest'
   }
+  'Ubuntu_22.04': {
+    publisher: 'Canonical'
+    offer: '0001-com-ubuntu-server-jammy'
+    sku: '22_04-lts'
+    version: 'latest'
+  }
+  'Ubuntu_24.04': {
+    publisher: 'Canonical'
+    offer: 'ubuntu-24_04-lts'
+    sku: 'server-gen1'
+    version: 'latest'
+  }
   'Ubuntu_16.04_Gen2': {
     publisher: 'Canonical'
     offer: 'UbuntuServer'
@@ -539,6 +647,18 @@ var linuxComputeNodeImages = {
     sku: '20_04-lts-gen2'
     version: 'latest'
   }
+  'Ubuntu_22.04_Gen2': {
+    publisher: 'Canonical'
+    offer: '0001-com-ubuntu-server-jammy'
+    sku: '22_04-lts-gen2'
+    version: 'latest'
+  }
+  'Ubuntu_24.04_Gen2': {
+    publisher: 'Canonical'
+    offer: 'ubuntu-24_04-lts'
+    sku: 'server'
+    version: 'latest'
+  }
   'Ubuntu_18.04_HPC_Gen2': {
     publisher: 'Microsoft-DSVM'
     offer: 'Ubuntu-HPC'
@@ -549,6 +669,12 @@ var linuxComputeNodeImages = {
     publisher: 'Microsoft-DSVM'
     offer: 'Ubuntu-HPC'
     sku: '2004'
+    version: 'latest'
+  }
+  'Ubuntu_22.04_HPC_Gen2': {
+    publisher: 'Microsoft-DSVM'
+    offer: 'Ubuntu-HPC'
+    sku: '2204'
     version: 'latest'
   }
   CustomImage: {}
