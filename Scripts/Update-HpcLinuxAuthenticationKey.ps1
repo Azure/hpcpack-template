@@ -1,4 +1,4 @@
-∩╗┐<#
+<#
 .Synopsis
     Updates the authentication key configuration on HPC Pack head node(s), used for securing communication between the head node and Linux compute nodes.
 
@@ -125,7 +125,7 @@ try {
                 $_.resources | ForEach-Object {
                     if ($_.name -like "*installHPCNodeAgent*") {
                         $_.properties.typeHandlerVersion = "16.3"
-                        $_.properties.settings | Add-Member -Type NoteProperty -Name "ProtectedSettings" -Value @{"AuthenticationKey" = "[parameters('authenticationKey')]"} -Force
+                        $_.properties.settings | Add-Member -Type NoteProperty -Name "ProtectedSettings" -Value @{"AuthenticationKey" = "[parameters('ClusterAuthenticationKey')]"} -Force
                     }
                 }
             }
