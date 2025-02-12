@@ -560,13 +560,13 @@ var linuxComputeNodeImages = {
   'RHEL_9.4_Gen2': {
     publisher: 'RedHat'
     offer: 'RHEL'
-    sku: '94-gen2'
+    sku: '94_gen2'
     version: 'latest'
   }
   'RHEL_9.5_Gen2': {
     publisher: 'RedHat'
     offer: 'RHEL'
-    sku: '95-gen2'
+    sku: '95_gen2'
     version: 'latest'
   }
   SLES_12_SP5: {
