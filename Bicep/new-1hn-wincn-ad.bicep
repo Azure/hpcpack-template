@@ -106,6 +106,9 @@ param authenticationKey string = ''
 @description('Monitor the HPC Pack cluster in Azure Monitor.')
 param enableAzureMonitor YesOrNo = 'Yes'
 
+@description('The resource group in which the iaas nodes will be created. Only used for BVT.')
+param iaasResourceGroupName string = ''
+
 var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
 var dcSize = trim(domainControllerVMSize)
 var _clusterName = trim(clusterName)
@@ -224,6 +227,7 @@ module headNode 'shared/head-node.bicep' = {
     amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
+    iaasResourceGroupName: iaasResourceGroupName
   }
   dependsOn: [
     monitor

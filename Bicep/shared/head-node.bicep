@@ -43,6 +43,18 @@ param installIBDriver bool
 param domainName string?
 param domainOUPath string = ''
 
+//IaaS settings
+param iaasResourceGroupName string
+
+@description('URL to the VSTS Configure WinRM script')
+param configureWinRMUri string = 'https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/demos/vm-winrm-windows/ConfigureWinRM.ps1'
+
+@description('URL to the VSTS MakeCert executable')
+param makeCertExeUri string = 'https://raw.githubusercontent.com/Azure/azure-quickstart-templates/501dc7d24537e820df7c80bce51aba9674233b2b/201-vm-winrm-windows/makecert.exe'
+
+@description('Command to execute the Configure WinRM script')
+param scriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File ConfigureWinRM.ps1 '
+
 var useExternalVNet = !empty(externalVNetName) && !empty(externalVNetRg)
 
 var publicIpSuffix = uniqueString(resourceGroup().id)
@@ -93,6 +105,21 @@ resource lb 'Microsoft.Network/loadBalancers@2023-11-01' existing = if (!empty(l
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-11-01' existing = if (!empty(nsgName)) {
   name: empty(nsgName) ? 'nsgName' : nsgName!
+}
+
+resource allowWinRmRule 'Microsoft.Network/networkSecurityGroups/securityRules@2023-05-01' = {
+  name: 'Allow-WinRM'
+  parent: nsg
+  properties: {
+    priority: 900
+    access: 'Allow'
+    direction: 'Inbound'
+    protocol: '*'
+    sourceAddressPrefix: '*'
+    sourcePortRange: '*'
+    destinationAddressPrefix: '*'
+    destinationPortRange: '5986'
+  }
 }
 
 resource avSet 'Microsoft.Compute/availabilitySets@2024-03-01' existing = if (!empty(hnAvSetName)) {
@@ -191,23 +218,23 @@ resource headNode 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   }
 }
 
-// resource contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentity) {
-//   name: guid(resourceId('Microsoft.Resources/resourceGroups', 'HPCPackBVT-IaaS-c1'), clusterName, hnName)
-//   scope: resourceGroup()
-//   properties: {
-//     //Contributor Role
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
-//     principalId: headNode.identity.principalId
-//   }
-// }
-
-resource contributorRoleAssignmentC1 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentity) {
+resource contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableManagedIdentity) {
   name: guid(resourceGroup().id, clusterName, hnName)
   scope: resourceGroup()
   properties: {
     //Contributor Role
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
     principalId: headNode.identity.principalId
+  }
+}
+
+module roleAssignmentC1Module 'role-assignment.bicep' = if (enableManagedIdentity) {
+  name: guid(iaasResourceGroupName, clusterName, hnName)
+  scope: resourceGroup(iaasResourceGroupName)
+  params: {
+    principalId: headNode.identity.principalId
+    clusterName: clusterName
+    hnName: hnName
   }
 }
 
@@ -267,6 +294,29 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
   dependsOn: [
     ibDriver
   ]
+}
+
+var isPublicIpCreated = createPublicIp && !empty(publicIpSuffix)
+
+resource winrmScriptExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = if (isPublicIpCreated) {
+  name: 'WinRMConfigScript'
+  location: resourceGroup().location
+  parent: headNode
+  properties: {
+    publisher: 'Microsoft.Compute'
+    type: 'CustomScriptExtension'
+    typeHandlerVersion: '1.10'
+    autoUpgradeMinorVersion: true
+    settings: {
+      fileUris: [
+        configureWinRMUri
+        makeCertExeUri
+      ]
+    }
+    protectedSettings: {
+      commandToExecute: '${scriptCommand}${publicIp.properties.dnsSettings.fqdn}'
+    }
+  }
 }
 
 module ama '../Shared/ama-windows.bicep' = if (!empty(amaSettings)) {
