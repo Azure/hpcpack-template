@@ -331,7 +331,7 @@
     },
     "headNodeDataDiskCount": {
       "$ref": "#/definitions/DiskCount",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "metadata": {
         "description": "The number of data disks attached to the head node VM."
       }
