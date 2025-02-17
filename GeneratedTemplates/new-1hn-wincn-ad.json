@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.30.23.60470",
-      "templateHash": "6106962881830713432"
+      "version": "0.33.93.31351",
+      "templateHash": "18244890887186304169"
     }
   },
   "definitions": {
@@ -405,6 +405,13 @@
       "metadata": {
         "description": "Monitor the HPC Pack cluster in Azure Monitor."
       }
+    },
+    "iaasResourceGroupName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource group in which the iaas nodes will be created. Only used for BVT."
+      }
     }
   },
   "variables": {
@@ -648,8 +655,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "10685993406751981134"
+              "version": "0.33.93.31351",
+              "templateHash": "8584877411247534376"
             }
           },
           "definitions": {
@@ -796,8 +803,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "933294187094482452"
+              "version": "0.33.93.31351",
+              "templateHash": "5818331227080187588"
             }
           },
           "definitions": {
@@ -894,8 +901,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "2774853078011716515"
+                      "version": "0.33.93.31351",
+                      "templateHash": "11521059538388082002"
                     }
                   },
                   "parameters": {
@@ -947,8 +954,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.30.23.60470",
-                              "templateHash": "7197570351787999488"
+                              "version": "0.33.93.31351",
+                              "templateHash": "15679950605840041992"
                             }
                           },
                           "parameters": {
@@ -1047,8 +1054,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.30.23.60470",
-                              "templateHash": "4084763194363877539"
+                              "version": "0.33.93.31351",
+                              "templateHash": "1147896825048532158"
                             }
                           },
                           "parameters": {
@@ -1239,8 +1246,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "17296570083588436459"
+                      "version": "0.33.93.31351",
+                      "templateHash": "8582780286012503029"
                     }
                   },
                   "parameters": {
@@ -1376,8 +1383,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "16197833208889092205"
+              "version": "0.33.93.31351",
+              "templateHash": "7039210023700097110"
             }
           },
           "parameters": {
@@ -1528,8 +1535,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "11928375294575572317"
+              "version": "0.33.93.31351",
+              "templateHash": "9941217986810907802"
             }
           },
           "parameters": {
@@ -1598,8 +1605,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "1888521141722433670"
+                      "version": "0.33.93.31351",
+                      "templateHash": "6181491736602483672"
                     }
                   },
                   "parameters": {
@@ -1692,8 +1699,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "1639511075517772985"
+                      "version": "0.33.93.31351",
+                      "templateHash": "14155005617855834151"
                     }
                   },
                   "parameters": {
@@ -1872,8 +1879,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "1888521141722433670"
+                      "version": "0.33.93.31351",
+                      "templateHash": "6181491736602483672"
                     }
                   },
                   "parameters": {
@@ -2008,6 +2015,9 @@
           "nsgName": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'Yes'), createObject('value', variables('nsgName')), createObject('value', null()))]",
           "subnetId": {
             "value": "[format('{0}/subnets/{1}', reference('vnet').outputs.vNetId.value, variables('subnet1Name'))]"
+          },
+          "iaasResourceGroupName": {
+            "value": "[parameters('iaasResourceGroupName')]"
           }
         },
         "template": {
@@ -2017,8 +2027,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "11142044395040566453"
+              "version": "0.33.93.31351",
+              "templateHash": "4198540585437292867"
             }
           },
           "definitions": {
@@ -2237,6 +2247,30 @@
             "domainOUPath": {
               "type": "string",
               "defaultValue": ""
+            },
+            "iaasResourceGroupName": {
+              "type": "string"
+            },
+            "configureWinRMUri": {
+              "type": "string",
+              "defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/demos/vm-winrm-windows/ConfigureWinRM.ps1",
+              "metadata": {
+                "description": "URL to the VSTS Configure WinRM script"
+              }
+            },
+            "makeCertExeUri": {
+              "type": "string",
+              "defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/501dc7d24537e820df7c80bce51aba9674233b2b/201-vm-winrm-windows/makecert.exe",
+              "metadata": {
+                "description": "URL to the VSTS MakeCert executable"
+              }
+            },
+            "scriptCommand": {
+              "type": "string",
+              "defaultValue": "powershell.exe -ExecutionPolicy RemoteSigned -File ConfigureWinRM.ps1 ",
+              "metadata": {
+                "description": "Command to execute the Configure WinRM script"
+              }
             }
           },
           "variables": {
@@ -2278,6 +2312,7 @@
               }
             },
             "identity": "[if(and(not(parameters('enableManagedIdentity')), empty(variables('userMiResIdForLog'))), null(), if(and(parameters('enableManagedIdentity'), not(empty(variables('userMiResIdForLog')))), variables('systemAndUserIdentities'), if(parameters('enableManagedIdentity'), variables('systemIdentity'), variables('userIdentity'))))]",
+            "isPublicIpCreated": "[and(parameters('createPublicIp'), not(empty(variables('publicIpSuffix'))))]",
             "_1.certificateSettingsToTagsKeyMap": {
               "vaultResourceGroup": "KV_RG",
               "vaultName": "KV_Name",
@@ -2304,6 +2339,21 @@
               "type": "Microsoft.Network/networkSecurityGroups",
               "apiVersion": "2023-11-01",
               "name": "[if(empty(parameters('nsgName')), 'nsgName', parameters('nsgName'))]"
+            },
+            "allowWinRmRule": {
+              "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', if(empty(parameters('nsgName')), 'nsgName', parameters('nsgName')), 'Allow-WinRM')]",
+              "properties": {
+                "priority": 900,
+                "access": "Allow",
+                "direction": "Inbound",
+                "protocol": "*",
+                "sourceAddressPrefix": "*",
+                "sourcePortRange": "*",
+                "destinationAddressPrefix": "*",
+                "destinationPortRange": "5986"
+              }
             },
             "avSet": {
               "condition": "[not(empty(parameters('hnAvSetName')))]",
@@ -2350,8 +2400,6 @@
                 "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
               },
               "dependsOn": [
-                "lb",
-                "nsg",
                 "publicIp"
               ]
             },
@@ -2399,7 +2447,6 @@
                 }
               },
               "dependsOn": [
-                "avSet",
                 "nic"
               ]
             },
@@ -2461,6 +2508,92 @@
                 "ibDriver"
               ]
             },
+            "winrmScriptExtension": {
+              "condition": "[variables('isPublicIpCreated')]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2023-03-01",
+              "name": "[format('{0}/{1}', parameters('hnName'), 'WinRMConfigScript')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.10",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "fileUris": [
+                    "[parameters('configureWinRMUri')]",
+                    "[parameters('makeCertExeUri')]"
+                  ]
+                },
+                "protectedSettings": {
+                  "commandToExecute": "[format('{0}{1}', parameters('scriptCommand'), reference('publicIp').dnsSettings.fqdn)]"
+                }
+              },
+              "dependsOn": [
+                "headNode",
+                "publicIp"
+              ]
+            },
+            "roleAssignmentC1Module": {
+              "condition": "[parameters('enableManagedIdentity')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[guid(parameters('iaasResourceGroupName'), parameters('clusterName'), parameters('hnName'))]",
+              "resourceGroup": "[parameters('iaasResourceGroupName')]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "principalId": {
+                    "value": "[reference('headNode', '2023-03-01', 'full').identity.principalId]"
+                  },
+                  "clusterName": {
+                    "value": "[parameters('clusterName')]"
+                  },
+                  "hnName": {
+                    "value": "[parameters('hnName')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.33.93.31351",
+                      "templateHash": "1216516745590008984"
+                    }
+                  },
+                  "parameters": {
+                    "principalId": {
+                      "type": "string"
+                    },
+                    "clusterName": {
+                      "type": "string"
+                    },
+                    "hnName": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "name": "[guid(resourceGroup().id, parameters('clusterName'), parameters('hnName'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+                        "principalId": "[parameters('principalId')]"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "headNode"
+              ]
+            },
             "keyVaultRoleAssignment": {
               "condition": "[parameters('enableManagedIdentity')]",
               "type": "Microsoft.Resources/deployments",
@@ -2486,8 +2619,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "6100945709862251984"
+                      "version": "0.33.93.31351",
+                      "templateHash": "14847733109539173278"
                     }
                   },
                   "parameters": {
@@ -2541,8 +2674,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "8678648686144519404"
+                      "version": "0.33.93.31351",
+                      "templateHash": "4451137204209985282"
                     }
                   },
                   "parameters": {
@@ -2594,8 +2727,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "16249311328539426854"
+                      "version": "0.33.93.31351",
+                      "templateHash": "9369134932364722971"
                     }
                   },
                   "parameters": {
@@ -2774,8 +2907,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "15841975305160221807"
+              "version": "0.33.93.31351",
+              "templateHash": "4992815909919738317"
             }
           },
           "definitions": {
@@ -3425,8 +3558,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "4854452253482264996"
+              "version": "0.33.93.31351",
+              "templateHash": "14181546536336799750"
             }
           },
           "definitions": {
