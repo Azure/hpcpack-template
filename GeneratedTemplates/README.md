@@ -34,7 +34,7 @@
 
    This template deploys an HPC Pack cluster with one **single** head node for Windows HPC workloads in Active Directory Domain forest. The cluster includes one domain controller, one **single** head node with local databases (SQL server 2019 Express version), and a configurable number of **Windows** compute nodes.
 
-   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fmaster%2FGeneratedTemplates%2Fnew-1hn-wincn-ad.json" target="_blank">
+   <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fhpcpack-template%2Fbicep-bvt%2FGeneratedTemplates%2Fnew-1hn-wincn-ad.json" target="_blank">
        <img src="https://aka.ms/deploytoazurebutton"/>
    </a>
 
