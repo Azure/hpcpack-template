@@ -83,7 +83,7 @@ param dnsServer string = ''
 
 @secure()
 @description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
-param authenticationKey string = ''
+param authenticationKey string
 
 @description('Optional, specify the resource ID of the user assigned identity to associate with the virtual machines in the form: /subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.ManagedIdentity/userAssignedIdentities/&lt;identityName&gt;')
 param userAssignedIdentity string = ''
