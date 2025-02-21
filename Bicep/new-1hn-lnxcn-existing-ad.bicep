@@ -115,7 +115,7 @@ param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
 @secure()
 @description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
-param authenticationKey string = ''
+param authenticationKey string
 
 @description('Monitor the HPC Pack cluster in Azure Monitor.')
 param enableAzureMonitor YesOrNo = 'Yes'
