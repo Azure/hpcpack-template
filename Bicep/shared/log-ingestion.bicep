@@ -7,7 +7,7 @@ resource workSpace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existin
 }
 
 module customTable 'custom-la-table.bicep' = {
-  name: '${prefix}logIngestionCustomTable'
+  name: '${prefix}LogTable'
   params: {
     prefix: prefix
     workSpaceName: workSpace.name
@@ -15,19 +15,19 @@ module customTable 'custom-la-table.bicep' = {
 }
 
 resource dce 'Microsoft.Insights/dataCollectionEndpoints@2023-03-11' = {
-  name: '${prefix}logIngestionDce'
+  name: '${prefix}LogDce'
   location: location
   properties: {
   }
 }
 
 resource userMi 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${prefix}logIngestionUserMi'
+  name: '${prefix}LogUserMi'
   location: location
 }
 
 module dcr 'dcr-log-ingestion.bicep' = {
-  name: '${prefix}logIngestionDcr'
+  name: '${prefix}LogDcr'
   params: {
     dataCollectionRuleName: '${prefix}dcrLogIngestionApi'
     workspaceResId: workSpace.id
