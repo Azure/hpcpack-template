@@ -14,7 +14,7 @@ param computeNodeNameStartIndex int = 0
 param computeNodeNumber int = 10
 
 @description('The Linux VM image of the compute nodes')
-param computeNodeImage LinuxComputeNodeImage = 'CentOS_7.9'
+param computeNodeImage LinuxComputeNodeImage = 'Ubuntu_24.04'
 
 @description('Specify only when \'CustomImage\' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param computeNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
