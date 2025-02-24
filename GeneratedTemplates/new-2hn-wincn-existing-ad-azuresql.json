@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "2047081490286320691"
+      "templateHash": "1793973276599448054"
     }
   },
   "definitions": {
@@ -1040,7 +1040,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "933294187094482452"
+              "templateHash": "15733758896132684114"
             }
           },
           "definitions": {
@@ -1097,7 +1097,7 @@
             }
           },
           "variables": {
-            "uniqStr": "[uniqueString(resourceGroup().id)]",
+            "uniqStr": "[take(uniqueString(resourceGroup().id), 8)]",
             "prefix": "[format('{0}-{1}-', parameters('name'), variables('uniqStr'))]",
             "workSpaceName": "[format('{0}workspace', variables('prefix'))]"
           },
@@ -1138,7 +1138,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.30.23.60470",
-                      "templateHash": "2774853078011716515"
+                      "templateHash": "7920368250566220215"
                     }
                   },
                   "parameters": {
@@ -1157,20 +1157,20 @@
                     {
                       "type": "Microsoft.Insights/dataCollectionEndpoints",
                       "apiVersion": "2023-03-11",
-                      "name": "[format('{0}logIngestionDce', parameters('prefix'))]",
+                      "name": "[format('{0}LogDce', parameters('prefix'))]",
                       "location": "[parameters('location')]",
                       "properties": {}
                     },
                     {
                       "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
                       "apiVersion": "2023-01-31",
-                      "name": "[format('{0}logIngestionUserMi', parameters('prefix'))]",
+                      "name": "[format('{0}LogUserMi', parameters('prefix'))]",
                       "location": "[parameters('location')]"
                     },
                     {
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[format('{0}logIngestionCustomTable', parameters('prefix'))]",
+                      "name": "[format('{0}LogTable', parameters('prefix'))]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -1261,7 +1261,7 @@
                     {
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[format('{0}logIngestionDcr', parameters('prefix'))]",
+                      "name": "[format('{0}LogDcr', parameters('prefix'))]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -1275,11 +1275,11 @@
                             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workSpaceName'))]"
                           },
                           "dataCollectionEndpointId": {
-                            "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}logIngestionDce', parameters('prefix')))]"
+                            "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}LogDce', parameters('prefix')))]"
                           },
                           "userMiPrincipalIds": {
                             "value": [
-                              "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix'))), '2023-01-31').principalId]"
+                              "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix'))), '2023-01-31').principalId]"
                             ]
                           }
                         },
@@ -1425,32 +1425,32 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Resources/deployments', format('{0}logIngestionCustomTable', parameters('prefix')))]",
-                        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}logIngestionDce', parameters('prefix')))]",
-                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix')))]"
+                        "[resourceId('Microsoft.Resources/deployments', format('{0}LogTable', parameters('prefix')))]",
+                        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}LogDce', parameters('prefix')))]",
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix')))]"
                       ]
                     }
                   ],
                   "outputs": {
                     "logsIngestionEndpoint": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}logIngestionDce', parameters('prefix'))), '2023-03-11').logsIngestion.endpoint]"
+                      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}LogDce', parameters('prefix'))), '2023-03-11').logsIngestion.endpoint]"
                     },
                     "dcrRunId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}logIngestionDcr', parameters('prefix'))), '2022-09-01').outputs.dcrRunId.value]"
+                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}LogDcr', parameters('prefix'))), '2022-09-01').outputs.dcrRunId.value]"
                     },
                     "dcrStreamName": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}logIngestionDcr', parameters('prefix'))), '2022-09-01').outputs.dcrStreamName.value]"
+                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}LogDcr', parameters('prefix'))), '2022-09-01').outputs.dcrStreamName.value]"
                     },
                     "userMiResId": {
                       "type": "string",
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix')))]"
+                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix')))]"
                     },
                     "userMiClientId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix'))), '2023-01-31').clientId]"
+                      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix'))), '2023-01-31').clientId]"
                     }
                   }
                 }
