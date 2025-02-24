@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "7892512261582841923"
+      "templateHash": "2495314497880629987"
     }
   },
   "definitions": {
@@ -191,7 +191,7 @@
     },
     "computeNodeImage": {
       "$ref": "#/definitions/LinuxComputeNodeImage",
-      "defaultValue": "CentOS_7.9",
+      "defaultValue": "Ubuntu_24.04",
       "metadata": {
         "description": "The Linux VM image of the compute nodes"
       }
@@ -337,7 +337,6 @@
     },
     "authenticationKey": {
       "type": "securestring",
-      "defaultValue": "",
       "metadata": {
         "description": "The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes."
       }
