@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.33.93.31351",
-      "templateHash": "18244890887186304169"
+      "version": "0.30.23.60470",
+      "templateHash": "12431689684345789470"
     }
   },
   "definitions": {
@@ -331,7 +331,7 @@
     },
     "headNodeDataDiskCount": {
       "$ref": "#/definitions/DiskCount",
-      "defaultValue": 1,
+      "defaultValue": 0,
       "metadata": {
         "description": "The number of data disks attached to the head node VM."
       }
@@ -411,6 +411,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "The resource group in which the iaas nodes will be created. Only used for BVT."
+      }
+    },
+    "domainPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Domain password, only used in BVT."
       }
     }
   },
@@ -655,8 +662,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "8584877411247534376"
+              "version": "0.30.23.60470",
+              "templateHash": "10685993406751981134"
             }
           },
           "definitions": {
@@ -803,8 +810,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "5818331227080187588"
+              "version": "0.30.23.60470",
+              "templateHash": "933294187094482452"
             }
           },
           "definitions": {
@@ -901,8 +908,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "11521059538388082002"
+                      "version": "0.30.23.60470",
+                      "templateHash": "2774853078011716515"
                     }
                   },
                   "parameters": {
@@ -954,8 +961,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.33.93.31351",
-                              "templateHash": "15679950605840041992"
+                              "version": "0.30.23.60470",
+                              "templateHash": "7197570351787999488"
                             }
                           },
                           "parameters": {
@@ -1054,8 +1061,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.33.93.31351",
-                              "templateHash": "1147896825048532158"
+                              "version": "0.30.23.60470",
+                              "templateHash": "4084763194363877539"
                             }
                           },
                           "parameters": {
@@ -1246,8 +1253,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "8582780286012503029"
+                      "version": "0.30.23.60470",
+                      "templateHash": "17296570083588436459"
                     }
                   },
                   "parameters": {
@@ -1383,8 +1390,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "7039210023700097110"
+              "version": "0.30.23.60470",
+              "templateHash": "16197833208889092205"
             }
           },
           "parameters": {
@@ -1527,6 +1534,9 @@
           },
           "vNetName": {
             "value": "[variables('vNetName')]"
+          },
+          "domainPassword": {
+            "value": "[parameters('domainPassword')]"
           }
         },
         "template": {
@@ -1535,8 +1545,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "9941217986810907802"
+              "version": "0.30.23.60470",
+              "templateHash": "5183386374455556839"
             }
           },
           "parameters": {
@@ -1572,6 +1582,9 @@
             "dcSize": {
               "type": "string",
               "defaultValue": "Standard_D2_v3"
+            },
+            "domainPassword": {
+              "type": "string"
             }
           },
           "resources": [
@@ -1605,8 +1618,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "6181491736602483672"
+                      "version": "0.30.23.60470",
+                      "templateHash": "1888521141722433670"
                     }
                   },
                   "parameters": {
@@ -1690,6 +1703,9 @@
                   },
                   "vmSize": {
                     "value": "[parameters('dcSize')]"
+                  },
+                  "domainPassword": {
+                    "value": "[parameters('domainPassword')]"
                   }
                 },
                 "template": {
@@ -1699,8 +1715,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "14155005617855834151"
+                      "version": "0.30.23.60470",
+                      "templateHash": "8577918395189822218"
                     }
                   },
                   "parameters": {
@@ -1724,6 +1740,23 @@
                       "type": "securestring"
                     },
                     "domainName": {
+                      "type": "string"
+                    },
+                    "addBVTUserScriptUri": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "URL to the addBVTUserScriptUri script"
+                      }
+                    },
+                    "scriptCommand": {
+                      "type": "string",
+                      "defaultValue": "powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 ",
+                      "metadata": {
+                        "description": "Command to execute the Add BVT User script"
+                      }
+                    },
+                    "domainPassword": {
                       "type": "string"
                     }
                   },
@@ -1838,6 +1871,29 @@
                       "dependsOn": [
                         "dcVM"
                       ]
+                    },
+                    "addBVTUserScriptExtension": {
+                      "type": "Microsoft.Compute/virtualMachines/extensions",
+                      "apiVersion": "2023-03-01",
+                      "name": "[format('{0}/{1}', parameters('vmName'), 'addBVTUserScript')]",
+                      "location": "[resourceGroup().location]",
+                      "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "CustomScriptExtension",
+                        "typeHandlerVersion": "1.10",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                          "fileUris": [
+                            "[parameters('addBVTUserScriptUri')]"
+                          ]
+                        },
+                        "protectedSettings": {
+                          "commandToExecute": "[format('{0}{1}', parameters('scriptCommand'), parameters('domainPassword'))]"
+                        }
+                      },
+                      "dependsOn": [
+                        "dcVM"
+                      ]
                     }
                   }
                 }
@@ -1879,8 +1935,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "6181491736602483672"
+                      "version": "0.30.23.60470",
+                      "templateHash": "1888521141722433670"
                     }
                   },
                   "parameters": {
@@ -2027,8 +2083,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4198540585437292867"
+              "version": "0.30.23.60470",
+              "templateHash": "8480152247338492175"
             }
           },
           "definitions": {
@@ -2353,7 +2409,10 @@
                 "sourcePortRange": "*",
                 "destinationAddressPrefix": "*",
                 "destinationPortRange": "5986"
-              }
+              },
+              "dependsOn": [
+                "nsg"
+              ]
             },
             "avSet": {
               "condition": "[not(empty(parameters('hnAvSetName')))]",
@@ -2400,6 +2459,8 @@
                 "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
               },
               "dependsOn": [
+                "lb",
+                "nsg",
                 "publicIp"
               ]
             },
@@ -2447,6 +2508,7 @@
                 }
               },
               "dependsOn": [
+                "avSet",
                 "nic"
               ]
             },
@@ -2562,8 +2624,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "1216516745590008984"
+                      "version": "0.30.23.60470",
+                      "templateHash": "4426504982918812340"
                     }
                   },
                   "parameters": {
@@ -2619,8 +2681,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "14847733109539173278"
+                      "version": "0.30.23.60470",
+                      "templateHash": "6100945709862251984"
                     }
                   },
                   "parameters": {
@@ -2674,8 +2736,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "4451137204209985282"
+                      "version": "0.30.23.60470",
+                      "templateHash": "8678648686144519404"
                     }
                   },
                   "parameters": {
@@ -2727,8 +2789,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "9369134932364722971"
+                      "version": "0.30.23.60470",
+                      "templateHash": "16249311328539426854"
                     }
                   },
                   "parameters": {
@@ -2907,8 +2969,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4992815909919738317"
+              "version": "0.30.23.60470",
+              "templateHash": "15841975305160221807"
             }
           },
           "definitions": {
@@ -3558,8 +3620,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "14181546536336799750"
+              "version": "0.30.23.60470",
+              "templateHash": "4854452253482264996"
             }
           },
           "definitions": {
