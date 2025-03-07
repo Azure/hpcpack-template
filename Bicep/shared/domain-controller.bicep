@@ -13,7 +13,7 @@ param domainName string
 param addBVTUserScriptUri string = 'https://raw.githubusercontent.com/Azure/hpcpack-template/bicep-bvt/SharedResources/Generated/AddBVTUser.ps1'
 
 @description('Command to execute the Add BVT User script')
-param scriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 '
+param addBVTUserScriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 '
 
 @secure()
 param domainPassword string
@@ -134,7 +134,7 @@ resource addBVTUserScriptExtension 'Microsoft.Compute/virtualMachines/extensions
       ]
     }
     protectedSettings: {
-      commandToExecute: '${scriptCommand}${domainPassword}'
+      commandToExecute: '${addBVTUserScriptCommand}${domainPassword}'
     }
   }
 }
