@@ -8,8 +8,6 @@ param adminUsername string = 'hpcadmin'
 param domainName string = 'hpc.cluster'
 param dcVmName string
 param dcSize string = 'Standard_D2_v3'
-@secure()
-param domainPassword string
 
 var vnetId = vnet.outputs.vNetId
 var subnetRef = '${vnetId}/subnets/${subnetName}'
@@ -34,7 +32,6 @@ module dc 'domain-controller.bicep' = {
     subnetId: subnetRef
     vmName: dcVmName
     vmSize: dcSize
-    domainPassword: domainPassword
   }
 }
 

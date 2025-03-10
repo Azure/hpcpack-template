@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "8113716054312855567"
+      "templateHash": "5362240225439795641"
     }
   },
   "definitions": {
@@ -1534,9 +1534,6 @@
           },
           "vNetName": {
             "value": "[variables('vNetName')]"
-          },
-          "domainPassword": {
-            "value": "[parameters('domainPassword')]"
           }
         },
         "template": {
@@ -1546,7 +1543,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "18198436646849247114"
+              "templateHash": "9941217986810907802"
             }
           },
           "parameters": {
@@ -1582,9 +1579,6 @@
             "dcSize": {
               "type": "string",
               "defaultValue": "Standard_D2_v3"
-            },
-            "domainPassword": {
-              "type": "securestring"
             }
           },
           "resources": [
@@ -1703,9 +1697,6 @@
                   },
                   "vmSize": {
                     "value": "[parameters('dcSize')]"
-                  },
-                  "domainPassword": {
-                    "value": "[parameters('domainPassword')]"
                   }
                 },
                 "template": {
@@ -1716,7 +1707,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.33.93.31351",
-                      "templateHash": "12378665839044748284"
+                      "templateHash": "14155005617855834151"
                     }
                   },
                   "parameters": {
@@ -1741,23 +1732,6 @@
                     },
                     "domainName": {
                       "type": "string"
-                    },
-                    "addBVTUserScriptUri": {
-                      "type": "string",
-                      "defaultValue": "https://raw.githubusercontent.com/Azure/hpcpack-template/bicep-bvt/SharedResources/Generated/AddBVTUser.ps1",
-                      "metadata": {
-                        "description": "URL to the addBVTUserScriptUri script"
-                      }
-                    },
-                    "addBVTUserScriptCommand": {
-                      "type": "string",
-                      "defaultValue": "powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 ",
-                      "metadata": {
-                        "description": "Command to execute the Add BVT User script"
-                      }
-                    },
-                    "domainPassword": {
-                      "type": "securestring"
                     }
                   },
                   "variables": {
@@ -1866,29 +1840,6 @@
                               "Password": "[parameters('adminPassword')]"
                             }
                           }
-                        }
-                      },
-                      "dependsOn": [
-                        "dcVM"
-                      ]
-                    },
-                    "addBVTUserScriptExtension": {
-                      "type": "Microsoft.Compute/virtualMachines/extensions",
-                      "apiVersion": "2023-03-01",
-                      "name": "[format('{0}/{1}', parameters('vmName'), 'addBVTUserScript')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "publisher": "Microsoft.Compute",
-                        "type": "CustomScriptExtension",
-                        "typeHandlerVersion": "1.10",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                          "fileUris": [
-                            "[parameters('addBVTUserScriptUri')]"
-                          ]
-                        },
-                        "protectedSettings": {
-                          "commandToExecute": "[format('{0}{1}', parameters('addBVTUserScriptCommand'), parameters('domainPassword'))]"
                         }
                       },
                       "dependsOn": [
@@ -2074,6 +2025,9 @@
           },
           "iaasResourceGroupName": {
             "value": "[parameters('iaasResourceGroupName')]"
+          },
+          "domainPassword": {
+            "value": "[parameters('domainPassword')]"
           }
         },
         "template": {
@@ -2084,7 +2038,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "4198540585437292867"
+              "templateHash": "16161771532552614801"
             }
           },
           "definitions": {
@@ -2327,6 +2281,23 @@
               "metadata": {
                 "description": "Command to execute the Configure WinRM script"
               }
+            },
+            "addBVTUserScriptUri": {
+              "type": "string",
+              "defaultValue": "https://raw.githubusercontent.com/Azure/hpcpack-template/bicep-bvt/SharedResources/Generated/AddBVTUser.ps1",
+              "metadata": {
+                "description": "URL to the addBVTUserScriptUri script"
+              }
+            },
+            "addBVTUserScriptCommand": {
+              "type": "string",
+              "defaultValue": "powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 ",
+              "metadata": {
+                "description": "Command to execute the Add BVT User script"
+              }
+            },
+            "domainPassword": {
+              "type": "securestring"
             }
           },
           "variables": {
@@ -2588,6 +2559,29 @@
               "dependsOn": [
                 "headNode",
                 "publicIp"
+              ]
+            },
+            "addBVTUserScriptExtension": {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2023-03-01",
+              "name": "[format('{0}/{1}', parameters('hnName'), 'addBVTUserScript')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.10",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "fileUris": [
+                    "[parameters('addBVTUserScriptUri')]"
+                  ]
+                },
+                "protectedSettings": {
+                  "commandToExecute": "[format('{0}{1}', parameters('addBVTUserScriptCommand'), parameters('domainPassword'))]"
+                }
+              },
+              "dependsOn": [
+                "headNode"
               ]
             },
             "roleAssignmentC1Module": {

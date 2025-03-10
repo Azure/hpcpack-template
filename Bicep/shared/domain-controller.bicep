@@ -9,15 +9,6 @@ param adminUsername string
 param adminPassword string
 param domainName string
 
-@description('URL to the addBVTUserScriptUri script')
-param addBVTUserScriptUri string = 'https://raw.githubusercontent.com/Azure/hpcpack-template/bicep-bvt/SharedResources/Generated/AddBVTUser.ps1'
-
-@description('Command to execute the Add BVT User script')
-param addBVTUserScriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 '
-
-@secure()
-param domainPassword string
-
 var nicName = '${vmName}-nic-${uniqueString(subnetId)}'
 
 resource dcNIC 'Microsoft.Network/networkInterfaces@2023-04-01' = {
@@ -115,26 +106,6 @@ resource promoteDC 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
           Password: adminPassword
         }
       }
-    }
-  }
-}
-
-resource addBVTUserScriptExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: dcVM
-  name: 'addBVTUserScript'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'CustomScriptExtension'
-    typeHandlerVersion: '1.10'
-    autoUpgradeMinorVersion: true
-    settings: {
-      fileUris: [
-        addBVTUserScriptUri
-      ]
-    }
-    protectedSettings: {
-      commandToExecute: '${addBVTUserScriptCommand}${domainPassword}'
     }
   }
 }

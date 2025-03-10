@@ -192,7 +192,6 @@ module vnet 'shared/vnet-with-dc.bicep' = {
     subnetName: subnet1Name
     vNetAddressPrefix: addressPrefix
     vNetName: vNetName
-    domainPassword: domainPassword
   }
 }
 
@@ -233,6 +232,7 @@ module headNode 'shared/head-node.bicep' = {
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
     iaasResourceGroupName: iaasResourceGroupName
+    domainPassword: domainPassword
   }
   dependsOn: [
     monitor
