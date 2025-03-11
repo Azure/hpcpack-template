@@ -109,10 +109,6 @@ param enableAzureMonitor YesOrNo = 'Yes'
 @description('The resource group in which the iaas nodes will be created. Only used for BVT.')
 param iaasResourceGroupName string = ''
 
-@description('Domain password, only used in BVT.')
-@secure()
-param domainPassword string = ''
-
 var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
 var dcSize = trim(domainControllerVMSize)
 var _clusterName = trim(clusterName)
@@ -232,7 +228,6 @@ module headNode 'shared/head-node.bicep' = {
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
     subnetId: subnetRef
     iaasResourceGroupName: iaasResourceGroupName
-    domainPassword: domainPassword
   }
   dependsOn: [
     monitor

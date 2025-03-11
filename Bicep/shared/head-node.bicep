@@ -55,14 +55,14 @@ param makeCertExeUri string = 'https://raw.githubusercontent.com/Azure/azure-qui
 @description('Command to execute the Configure WinRM script')
 param scriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File ConfigureWinRM.ps1 '
 
-@description('URL to the addBVTUserScriptUri script')
-param addBVTUserScriptUri string = 'https://raw.githubusercontent.com/Azure/hpcpack-template/bicep-bvt/SharedResources/Generated/AddBVTUser.ps1'
+// @description('URL to the addBVTUserScriptUri script')
+// param addBVTUserScriptUri string = 'https://raw.githubusercontent.com/Azure/hpcpack-template/bicep-bvt/SharedResources/Generated/AddBVTUser.ps1'
 
-@description('Command to execute the Add BVT User script')
-param addBVTUserScriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 '
+// @description('Command to execute the Add BVT User script')
+// param addBVTUserScriptCommand string = 'powershell.exe -ExecutionPolicy RemoteSigned -File AddBVTUser.ps1 '
 
-@secure()
-param domainPassword string
+// @secure()
+// param domainPassword string
 
 var useExternalVNet = !empty(externalVNetName) && !empty(externalVNetRg)
 
@@ -342,22 +342,22 @@ module ama '../Shared/ama-windows.bicep' = if (!empty(amaSettings)) {
 
 output fqdn string = createPublicIp ? publicIp.properties.dnsSettings.fqdn : ''
 
-resource addBVTUserScriptExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
-  parent: headNode
-  name: 'addBVTUserScript'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'CustomScriptExtension'
-    typeHandlerVersion: '1.10'
-    autoUpgradeMinorVersion: true
-    settings: {
-      fileUris: [
-        addBVTUserScriptUri
-      ]
-    }
-    protectedSettings: {
-      commandToExecute: '${addBVTUserScriptCommand}${domainPassword}'
-    }
-  }
-}
+// resource addBVTUserScriptExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
+//   parent: headNode
+//   name: 'addBVTUserScript'
+//   location: resourceGroup().location
+//   properties: {
+//     publisher: 'Microsoft.Compute'
+//     type: 'CustomScriptExtension'
+//     typeHandlerVersion: '1.10'
+//     autoUpgradeMinorVersion: true
+//     settings: {
+//       fileUris: [
+//         addBVTUserScriptUri
+//       ]
+//     }
+//     protectedSettings: {
+//       commandToExecute: '${addBVTUserScriptCommand}${domainPassword}'
+//     }
+//   }
+// }
