@@ -14,7 +14,7 @@ param computeNodeNameStartIndex int = 0
 param computeNodeNumber int = 10
 
 @description('The Linux VM image of the compute nodes')
-param computeNodeImage LinuxComputeNodeImage = 'CentOS_7.9'
+param computeNodeImage LinuxComputeNodeImage = 'Ubuntu_24.04'
 
 @description('Specify only when \'CustomImage\' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param computeNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
@@ -83,7 +83,7 @@ param dnsServer string = ''
 
 @secure()
 @description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
-param authenticationKey string = ''
+param authenticationKey string
 
 @description('Optional, specify the resource ID of the user assigned identity to associate with the virtual machines in the form: /subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.ManagedIdentity/userAssignedIdentities/&lt;identityName&gt;')
 param userAssignedIdentity string = ''

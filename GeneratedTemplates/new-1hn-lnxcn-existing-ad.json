@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "9739052346148271503"
+      "templateHash": "6375347140899605282"
     }
   },
   "definitions": {
@@ -84,14 +84,12 @@
     "LinuxComputeNodeImage": {
       "type": "string",
       "allowedValues": [
-        "AlmaLinux_8.5",
-        "AlmaLinux_8.5_Gen2",
-        "AlmaLinux_8.5_HPC",
-        "AlmaLinux_8.5_HPC_Gen2",
-        "AlmaLinux_8.6_HPC",
-        "AlmaLinux_8.6_HPC_Gen2",
-        "AlmaLinux_8.7_HPC",
-        "AlmaLinux_8.7_HPC_Gen2",
+        "AlmaLinux_8_Gen1",
+        "AlmaLinux_8_Gen2",
+        "AlmaLinux_8_HPC_Gen1",
+        "AlmaLinux_8_HPC_Gen2",
+        "AlmaLinux_9_Gen1",
+        "AlmaLinux_9_Gen2",
         "CentOS_7.6",
         "CentOS_7.6_Gen2",
         "CentOS_7.6_HPC",
@@ -122,9 +120,24 @@
         "RHEL_8.7",
         "RHEL_8.7_Gen2",
         "RHEL_8.8",
-        "RHEL_8.8_Gen2",
-        "Rocky Linux 8.6",
-        "Rocky Linux 8.7",
+        "RHEL_8.9",
+        "RHEL_8.9_Gen2",
+        "RHEL_9.0",
+        "RHEL_9.0_Gen2",
+        "RHEL_9.1",
+        "RHEL_9.1_Gen2",
+        "RHEL_9.2",
+        "RHEL_9.2_Gen2",
+        "RHEL_9.3",
+        "RHEL_9.3_Gen2",
+        "RHEL_9.4",
+        "RHEL_9.4_Gen2",
+        "RHEL_9.5",
+        "RHEL_9.5_Gen2",
+        "Rocky_Linux_8_LVM",
+        "Rocky_Linux_8_base",
+        "Rocky_Linux_9_LVM",
+        "Rocky_Linux_9_base",
         "SLES_12_SP5",
         "SLES_12_SP5_Gen2",
         "SLES_12_SP5_HPC",
@@ -137,7 +150,12 @@
         "Ubuntu_18.04_HPC_Gen2",
         "Ubuntu_20.04",
         "Ubuntu_20.04_Gen2",
-        "Ubuntu_20.04_HPC_Gen2"
+        "Ubuntu_20.04_HPC_Gen2",
+        "Ubuntu_22.04",
+        "Ubuntu_22.04_Gen2",
+        "Ubuntu_22.04_HPC_Gen2",
+        "Ubuntu_24.04",
+        "Ubuntu_24.04_Gen2"
       ],
       "metadata": {
         "__bicep_imported_from!": {
@@ -305,7 +323,7 @@
     },
     "computeNodeImage": {
       "$ref": "#/definitions/LinuxComputeNodeImage",
-      "defaultValue": "CentOS_7.9",
+      "defaultValue": "Ubuntu_24.04",
       "metadata": {
         "description": "The Linux VM image of the compute nodes"
       }
@@ -468,7 +486,6 @@
     },
     "authenticationKey": {
       "type": "securestring",
-      "defaultValue": "",
       "metadata": {
         "description": "The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes."
       }
@@ -551,65 +568,65 @@
       "Premium_SSD": "Premium_LRS"
     },
     "linuxComputeNodeImages": {
-      "AlmaLinux_8.5": {
+      "AlmaLinux_8_Gen1": {
         "publisher": "almalinux",
-        "offer": "almalinux",
-        "sku": "8_5",
+        "offer": "almalinux-x86_64",
+        "sku": "8-gen1",
         "version": "latest"
       },
-      "AlmaLinux_8.5_Gen2": {
+      "AlmaLinux_8_Gen2": {
         "publisher": "almalinux",
-        "offer": "almalinux",
-        "sku": "8_5-gen2",
+        "offer": "almalinux-x86_64",
+        "sku": "8-gen2",
         "version": "latest"
       },
-      "AlmaLinux_8.5_HPC": {
+      "AlmaLinux_9_Gen1": {
         "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_5-hpc",
+        "offer": "almalinux-x86_64",
+        "sku": "9-gen1",
         "version": "latest"
       },
-      "AlmaLinux_8.5_HPC_Gen2": {
+      "AlmaLinux_9_Gen2": {
         "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_5-hpc-gen2",
+        "offer": "almalinux-x86_64",
+        "sku": "9-gen2",
         "version": "latest"
       },
-      "AlmaLinux_8.6_HPC": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_6-hpc",
-        "version": "latest"
-      },
-      "AlmaLinux_8.6_HPC_Gen2": {
+      "AlmaLinux_8_HPC_Gen1": {
         "publisher": "almalinux",
         "offer": "almalinux-hpc",
-        "sku": "8_6-hpc-gen2",
+        "sku": "8-hpc-gen1",
         "version": "latest"
       },
-      "AlmaLinux_8.7_HPC": {
+      "AlmaLinux_8_HPC_Gen2": {
         "publisher": "almalinux",
         "offer": "almalinux-hpc",
-        "sku": "8_7-hpc-gen1",
+        "sku": "8-hpc-gen2",
         "version": "latest"
       },
-      "AlmaLinux_8.7_HPC_Gen2": {
-        "publisher": "almalinux",
-        "offer": "almalinux-hpc",
-        "sku": "8_7-hpc-gen2",
+      "Rocky_Linux_8_base": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "8-base",
         "version": "latest"
       },
-      "Rocky Linux 8.6": {
-        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
-        "offer": "rockylinux",
-        "sku": "free",
-        "version": "8.6.0"
+      "Rocky_Linux_8_LVM": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "8-lvm",
+        "version": "latest"
       },
-      "Rocky Linux 8.7": {
-        "publisher": "erockyenterprisesoftwarefoundationinc1653071250513",
-        "offer": "rockylinux",
-        "sku": "free",
-        "version": "8.7.0"
+      "Rocky_Linux_9_base": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "9-base",
+        "version": "latest"
+      },
+      "Rocky_Linux_9_LVM": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "9-lvm",
+        "version": "latest"
       },
       "CentOS_7.6": {
         "publisher": "OpenLogic",
@@ -749,6 +766,48 @@
         "sku": "8_8",
         "version": "latest"
       },
+      "RHEL_8.9": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_9",
+        "version": "latest"
+      },
+      "RHEL_9.0": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_0",
+        "version": "latest"
+      },
+      "RHEL_9.1": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_1",
+        "version": "latest"
+      },
+      "RHEL_9.2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_2",
+        "version": "latest"
+      },
+      "RHEL_9.3": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_3",
+        "version": "latest"
+      },
+      "RHEL_9.4": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_4",
+        "version": "latest"
+      },
+      "RHEL_9.5": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_5",
+        "version": "latest"
+      },
       "RHEL_7.7_Gen2": {
         "publisher": "RedHat",
         "offer": "RHEL",
@@ -789,6 +848,42 @@
         "publisher": "RedHat",
         "offer": "RHEL",
         "sku": "88-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.0_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "90-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.1_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "91-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.2_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "92-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.3_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "93-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.4_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "94_gen2",
+        "version": "latest"
+      },
+      "RHEL_9.5_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "95_gen2",
         "version": "latest"
       },
       "SLES_12_SP5": {
@@ -839,6 +934,18 @@
         "sku": "20_04-lts",
         "version": "latest"
       },
+      "Ubuntu_22.04": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-jammy",
+        "sku": "22_04-lts",
+        "version": "latest"
+      },
+      "Ubuntu_24.04": {
+        "publisher": "Canonical",
+        "offer": "ubuntu-24_04-lts",
+        "sku": "server-gen1",
+        "version": "latest"
+      },
       "Ubuntu_16.04_Gen2": {
         "publisher": "Canonical",
         "offer": "UbuntuServer",
@@ -857,6 +964,18 @@
         "sku": "20_04-lts-gen2",
         "version": "latest"
       },
+      "Ubuntu_22.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-jammy",
+        "sku": "22_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_24.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "ubuntu-24_04-lts",
+        "sku": "server",
+        "version": "latest"
+      },
       "Ubuntu_18.04_HPC_Gen2": {
         "publisher": "Microsoft-DSVM",
         "offer": "Ubuntu-HPC",
@@ -867,6 +986,12 @@
         "publisher": "Microsoft-DSVM",
         "offer": "Ubuntu-HPC",
         "sku": "2004",
+        "version": "latest"
+      },
+      "Ubuntu_22.04_HPC_Gen2": {
+        "publisher": "Microsoft-DSVM",
+        "offer": "Ubuntu-HPC",
+        "sku": "2204",
         "version": "latest"
       },
       "CustomImage": {}
@@ -965,7 +1090,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "10685993406751981134"
+              "templateHash": "3803593610052529128"
             }
           },
           "definitions": {
@@ -995,7 +1120,7 @@
           "parameters": {
             "vaultNamePrefix": {
               "type": "string",
-              "defaultValue": "keyvault"
+              "nullable": true
             },
             "location": {
               "type": "string",
@@ -1005,7 +1130,8 @@
           "variables": {
             "$fxv#0": "Param(\r\n  [Alias(\"v\")]\r\n  [string] $vaultName,\r\n  [Alias(\"c\")]\r\n  [string] $commonName = \"HPCPackCommunication\",\r\n  [Alias(\"n\")]\r\n  [string] $certName = \"HPCPackCommunication\"\r\n)\r\n\r\n$ErrorActionPreference = 'Stop'\r\n\r\nif($commonName.StartsWith(\"CN=\"))\r\n{\r\n    $subjectName = $commonName\r\n}\r\nelse\r\n{\r\n    $subjectName = \"CN=$commonName\"\r\n}\r\n\r\n\"Create a self-signed certificate '$certName' in the Azure Key Vault '$vaultName' with subject name '$subjectName'.\" | Out-Default\r\n\r\n$certPolicy = New-AzKeyVaultCertificatePolicy -SecretContentType \"application/x-pkcs12\" -SubjectName $subjectName -IssuerName \"Self\" -ValidityInMonths 60 -ReuseKeyOnRenewal -KeyUsage DigitalSignature, KeyAgreement, KeyEncipherment, KeyCertSign -Ekus \"1.3.6.1.5.5.7.3.1\", \"1.3.6.1.5.5.7.3.2\"\r\n\r\nAdd-AzKeyVaultCertificate -VaultName $vaultName -Name $certName -CertificatePolicy $certPolicy\r\n\r\n\"Waiting for the certificate to be ready...\" | Out-Default\r\nStart-Sleep -Seconds 5\r\n\r\n$keyVaultCert = Get-AzKeyVaultCertificate -VaultName $vaultName -Name $certName\r\nwhile(!$keyVaultCert.Thumbprint -or !$keyVaultCert.SecretId)\r\n{\r\n    Start-Sleep -Seconds 2\r\n    $keyVaultCert = Get-AzKeyVaultCertificate -VaultName $vaultName -Name $certName\r\n}\r\n\"The Azure Key Vault certificate '$certName' is ready for use.\" | Out-Default\r\n\r\n$DeploymentScriptOutputs = @{\r\n  thumbprint = $keyVaultCert.Thumbprint\r\n  url = $keyVaultCert.SecretId\r\n}\r\n\r\n$DeploymentScriptOutputs | Out-Default\r\n",
             "suffix": "[uniqueString(resourceGroup().id)]",
-            "vaultName": "[take(format('{0}-{1}', parameters('vaultNamePrefix'), variables('suffix')), 24)]",
+            "prefix": "[coalesce(parameters('vaultNamePrefix'), format('{0}-kv', resourceGroup().name))]",
+            "vaultName": "[take(format('{0}-{1}', variables('prefix'), variables('suffix')), 24)]",
             "rgName": "[resourceGroup().name]"
           },
           "resources": {
@@ -1113,7 +1239,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "933294187094482452"
+              "templateHash": "15733758896132684114"
             }
           },
           "definitions": {
@@ -1170,7 +1296,7 @@
             }
           },
           "variables": {
-            "uniqStr": "[uniqueString(resourceGroup().id)]",
+            "uniqStr": "[take(uniqueString(resourceGroup().id), 8)]",
             "prefix": "[format('{0}-{1}-', parameters('name'), variables('uniqStr'))]",
             "workSpaceName": "[format('{0}workspace', variables('prefix'))]"
           },
@@ -1211,7 +1337,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.30.23.60470",
-                      "templateHash": "2774853078011716515"
+                      "templateHash": "7920368250566220215"
                     }
                   },
                   "parameters": {
@@ -1230,20 +1356,20 @@
                     {
                       "type": "Microsoft.Insights/dataCollectionEndpoints",
                       "apiVersion": "2023-03-11",
-                      "name": "[format('{0}logIngestionDce', parameters('prefix'))]",
+                      "name": "[format('{0}LogDce', parameters('prefix'))]",
                       "location": "[parameters('location')]",
                       "properties": {}
                     },
                     {
                       "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
                       "apiVersion": "2023-01-31",
-                      "name": "[format('{0}logIngestionUserMi', parameters('prefix'))]",
+                      "name": "[format('{0}LogUserMi', parameters('prefix'))]",
                       "location": "[parameters('location')]"
                     },
                     {
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[format('{0}logIngestionCustomTable', parameters('prefix'))]",
+                      "name": "[format('{0}LogTable', parameters('prefix'))]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -1334,7 +1460,7 @@
                     {
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[format('{0}logIngestionDcr', parameters('prefix'))]",
+                      "name": "[format('{0}LogDcr', parameters('prefix'))]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -1348,11 +1474,11 @@
                             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workSpaceName'))]"
                           },
                           "dataCollectionEndpointId": {
-                            "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}logIngestionDce', parameters('prefix')))]"
+                            "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}LogDce', parameters('prefix')))]"
                           },
                           "userMiPrincipalIds": {
                             "value": [
-                              "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix'))), '2023-01-31').principalId]"
+                              "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix'))), '2023-01-31').principalId]"
                             ]
                           }
                         },
@@ -1498,32 +1624,32 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Resources/deployments', format('{0}logIngestionCustomTable', parameters('prefix')))]",
-                        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}logIngestionDce', parameters('prefix')))]",
-                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix')))]"
+                        "[resourceId('Microsoft.Resources/deployments', format('{0}LogTable', parameters('prefix')))]",
+                        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}LogDce', parameters('prefix')))]",
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix')))]"
                       ]
                     }
                   ],
                   "outputs": {
                     "logsIngestionEndpoint": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}logIngestionDce', parameters('prefix'))), '2023-03-11').logsIngestion.endpoint]"
+                      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', format('{0}LogDce', parameters('prefix'))), '2023-03-11').logsIngestion.endpoint]"
                     },
                     "dcrRunId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}logIngestionDcr', parameters('prefix'))), '2022-09-01').outputs.dcrRunId.value]"
+                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}LogDcr', parameters('prefix'))), '2022-09-01').outputs.dcrRunId.value]"
                     },
                     "dcrStreamName": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}logIngestionDcr', parameters('prefix'))), '2022-09-01').outputs.dcrStreamName.value]"
+                      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}LogDcr', parameters('prefix'))), '2022-09-01').outputs.dcrStreamName.value]"
                     },
                     "userMiResId": {
                       "type": "string",
-                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix')))]"
+                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix')))]"
                     },
                     "userMiClientId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}logIngestionUserMi', parameters('prefix'))), '2023-01-31').clientId]"
+                      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}LogUserMi', parameters('prefix'))), '2023-01-31').clientId]"
                     }
                   }
                 }

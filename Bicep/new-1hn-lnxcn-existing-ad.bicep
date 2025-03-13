@@ -39,7 +39,7 @@ param headNodeOsDiskType DiskType = 'Premium_SSD'
 param headNodeVMSize string = 'Standard_DS4_v2'
 
 @description('The Linux VM image of the compute nodes')
-param computeNodeImage LinuxComputeNodeImage = 'CentOS_7.9'
+param computeNodeImage LinuxComputeNodeImage = 'Ubuntu_24.04'
 
 @description('Specify only when \'CustomImage\' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param computeNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
@@ -118,7 +118,7 @@ param autoInstallInfiniBandDriver YesOrNo = 'Yes'
 
 @secure()
 @description('The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN\'s request headers to Linux nodes.')
-param authenticationKey string = ''
+param authenticationKey string
 
 @description('Monitor the HPC Pack cluster in Azure Monitor.')
 param enableAzureMonitor YesOrNo = 'Yes'

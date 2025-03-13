@@ -1,6 +1,6 @@
 import { CertificateSettings } from 'types-and-vars.bicep'
 
-param vaultNamePrefix string = 'keyvault'
+param vaultNamePrefix string?
 param location string = resourceGroup().location
 
 var suffix = uniqueString(resourceGroup().id)
@@ -12,7 +12,8 @@ var suffix = uniqueString(resourceGroup().id)
  * 1. Be globally unique
  * 2. Be of length 3-24
  */
-var vaultName = take('${vaultNamePrefix}-${suffix}', 24)
+var prefix = vaultNamePrefix ?? '${resourceGroup().name}-kv'
+var vaultName = take('${prefix}-${suffix}', 24)
 
 var rgName = resourceGroup().name
 

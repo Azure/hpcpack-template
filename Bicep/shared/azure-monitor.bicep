@@ -3,7 +3,7 @@ import { AzureMonitorLogSettings, AzureMonitorAgentSettings } from 'types-and-va
 param name string = 'azuremonitor'
 param location string = resourceGroup().location
 
-var uniqStr = uniqueString(resourceGroup().id)
+var uniqStr = take(uniqueString(resourceGroup().id), 8)
 var prefix = '${name}-${uniqStr}-'
 var workSpaceName = '${prefix}workspace'
 
@@ -11,7 +11,6 @@ resource workSpace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: workSpaceName
   location: location
 }
-
 
 module logIngestion 'log-ingestion.bicep' = {
   name: 'logIngestion'
