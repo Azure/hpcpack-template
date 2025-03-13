@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "12367922543025088442"
+      "templateHash": "9709957768758167477"
     }
   },
   "definitions": {
@@ -634,7 +634,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "10685993406751981134"
+              "templateHash": "3803593610052529128"
             }
           },
           "definitions": {
@@ -664,7 +664,7 @@
           "parameters": {
             "vaultNamePrefix": {
               "type": "string",
-              "defaultValue": "keyvault"
+              "nullable": true
             },
             "location": {
               "type": "string",
@@ -674,7 +674,8 @@
           "variables": {
             "$fxv#0": "Param(\r\n  [Alias(\"v\")]\r\n  [string] $vaultName,\r\n  [Alias(\"c\")]\r\n  [string] $commonName = \"HPCPackCommunication\",\r\n  [Alias(\"n\")]\r\n  [string] $certName = \"HPCPackCommunication\"\r\n)\r\n\r\n$ErrorActionPreference = 'Stop'\r\n\r\nif($commonName.StartsWith(\"CN=\"))\r\n{\r\n    $subjectName = $commonName\r\n}\r\nelse\r\n{\r\n    $subjectName = \"CN=$commonName\"\r\n}\r\n\r\n\"Create a self-signed certificate '$certName' in the Azure Key Vault '$vaultName' with subject name '$subjectName'.\" | Out-Default\r\n\r\n$certPolicy = New-AzKeyVaultCertificatePolicy -SecretContentType \"application/x-pkcs12\" -SubjectName $subjectName -IssuerName \"Self\" -ValidityInMonths 60 -ReuseKeyOnRenewal -KeyUsage DigitalSignature, KeyAgreement, KeyEncipherment, KeyCertSign -Ekus \"1.3.6.1.5.5.7.3.1\", \"1.3.6.1.5.5.7.3.2\"\r\n\r\nAdd-AzKeyVaultCertificate -VaultName $vaultName -Name $certName -CertificatePolicy $certPolicy\r\n\r\n\"Waiting for the certificate to be ready...\" | Out-Default\r\nStart-Sleep -Seconds 5\r\n\r\n$keyVaultCert = Get-AzKeyVaultCertificate -VaultName $vaultName -Name $certName\r\nwhile(!$keyVaultCert.Thumbprint -or !$keyVaultCert.SecretId)\r\n{\r\n    Start-Sleep -Seconds 2\r\n    $keyVaultCert = Get-AzKeyVaultCertificate -VaultName $vaultName -Name $certName\r\n}\r\n\"The Azure Key Vault certificate '$certName' is ready for use.\" | Out-Default\r\n\r\n$DeploymentScriptOutputs = @{\r\n  thumbprint = $keyVaultCert.Thumbprint\r\n  url = $keyVaultCert.SecretId\r\n}\r\n\r\n$DeploymentScriptOutputs | Out-Default\r\n",
             "suffix": "[uniqueString(resourceGroup().id)]",
-            "vaultName": "[take(format('{0}-{1}', parameters('vaultNamePrefix'), variables('suffix')), 24)]",
+            "prefix": "[coalesce(parameters('vaultNamePrefix'), format('{0}-kv', resourceGroup().name))]",
+            "vaultName": "[take(format('{0}-{1}', variables('prefix'), variables('suffix')), 24)]",
             "rgName": "[resourceGroup().name]"
           },
           "resources": {
