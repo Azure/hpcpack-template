@@ -6,10 +6,36 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "10870785064872770024"
+      "templateHash": "2197444239549230407"
     }
   },
   "definitions": {
+    "AzureSqlDataBaseServiceTier": {
+      "type": "string",
+      "allowedValues": [
+        "Premium_P1",
+        "Premium_P11",
+        "Premium_P15",
+        "Premium_P2",
+        "Premium_P3",
+        "Premium_P4",
+        "Premium_P6",
+        "Standard_S0",
+        "Standard_S1",
+        "Standard_S12",
+        "Standard_S2",
+        "Standard_S3",
+        "Standard_S4",
+        "Standard_S6",
+        "Standard_S7",
+        "Standard_S9"
+      ],
+      "metadata": {
+        "__bicep_imported_from!": {
+          "sourceTemplate": "shared/types-and-vars.bicep"
+        }
+      }
+    },
     "DiskCount": {
       "type": "int",
       "allowedValues": [
@@ -82,22 +108,81 @@
         }
       }
     },
-    "WindowsComputeNodeImage": {
+    "LinuxComputeNodeImage": {
       "type": "string",
       "allowedValues": [
+        "AlmaLinux_8_Gen1",
+        "AlmaLinux_8_Gen2",
+        "AlmaLinux_8_HPC_Gen1",
+        "AlmaLinux_8_HPC_Gen2",
+        "AlmaLinux_9_Gen1",
+        "AlmaLinux_9_Gen2",
+        "CentOS_7.6",
+        "CentOS_7.6_Gen2",
+        "CentOS_7.6_HPC",
+        "CentOS_7.6_HPC_Gen2",
+        "CentOS_7.7",
+        "CentOS_7.7_Gen2",
+        "CentOS_7.7_HPC",
+        "CentOS_7.7_HPC_Gen2",
+        "CentOS_7.8",
+        "CentOS_7.8_Gen2",
+        "CentOS_7.8_HPC",
+        "CentOS_7.8_HPC_Gen2",
+        "CentOS_7.9",
+        "CentOS_7.9_Gen2",
+        "CentOS_7.9_HPC",
+        "CentOS_7.9_HPC_Gen2",
         "CustomImage",
-        "WindowsServer2012",
-        "WindowsServer2012R2",
-        "WindowsServer2012R2WithExcel",
-        "WindowsServer2012R2_Gen2",
-        "WindowsServer2012_Gen2",
-        "WindowsServer2016",
-        "WindowsServer2016WithExcel",
-        "WindowsServer2016_Gen2",
-        "WindowsServer2019",
-        "WindowsServer2019_Gen2",
-        "WindowsServer2022",
-        "WindowsServer2022_Gen2"
+        "RHEL_7.7",
+        "RHEL_7.7_Gen2",
+        "RHEL_7.8",
+        "RHEL_7.8_Gen2",
+        "RHEL_7.9",
+        "RHEL_7.9_Gen2",
+        "RHEL_8.5",
+        "RHEL_8.5_Gen2",
+        "RHEL_8.6",
+        "RHEL_8.6_Gen2",
+        "RHEL_8.7",
+        "RHEL_8.7_Gen2",
+        "RHEL_8.8",
+        "RHEL_8.9",
+        "RHEL_8.9_Gen2",
+        "RHEL_9.0",
+        "RHEL_9.0_Gen2",
+        "RHEL_9.1",
+        "RHEL_9.1_Gen2",
+        "RHEL_9.2",
+        "RHEL_9.2_Gen2",
+        "RHEL_9.3",
+        "RHEL_9.3_Gen2",
+        "RHEL_9.4",
+        "RHEL_9.4_Gen2",
+        "RHEL_9.5",
+        "RHEL_9.5_Gen2",
+        "Rocky_Linux_8_LVM",
+        "Rocky_Linux_8_base",
+        "Rocky_Linux_9_LVM",
+        "Rocky_Linux_9_base",
+        "SLES_12_SP5",
+        "SLES_12_SP5_Gen2",
+        "SLES_12_SP5_HPC",
+        "SLES_12_SP5_HPC_Gen2",
+        "SLES_15_SP3_HPC",
+        "Ubuntu_16.04",
+        "Ubuntu_16.04_Gen2",
+        "Ubuntu_18.04",
+        "Ubuntu_18.04_Gen2",
+        "Ubuntu_18.04_HPC_Gen2",
+        "Ubuntu_20.04",
+        "Ubuntu_20.04_Gen2",
+        "Ubuntu_20.04_HPC_Gen2",
+        "Ubuntu_22.04",
+        "Ubuntu_22.04_Gen2",
+        "Ubuntu_22.04_HPC_Gen2",
+        "Ubuntu_24.04",
+        "Ubuntu_24.04_Gen2"
       ],
       "metadata": {
         "__bicep_imported_from!": {
@@ -204,61 +289,16 @@
     "clusterName": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 12,
-      "metadata": {
-        "description": "The name of the HPC cluster, also used as the host name prefix of the domain controller. It must contain between 3 and 12 characters with lowercase letters and numbers, and must start with a letter."
-      }
-    },
-    "domainName": {
-      "type": "string",
-      "defaultValue": "hpc.cluster",
-      "metadata": {
-        "description": "The fully qualified domain name (FQDN) for the private domain forest which will be created by this template, for example 'hpc.cluster'."
-      }
-    },
-    "domainControllerVMSize": {
-      "type": "string",
-      "defaultValue": "Standard_D2_v3",
-      "metadata": {
-        "description": "The VM size for the domain controller, all available VM sizes in Azure can be found at https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes"
-      }
-    },
-    "sqlServerVMName": {
-      "type": "string",
-      "minLength": 3,
       "maxLength": 15,
       "metadata": {
-        "description": "The name of the SQL Server VM."
-      }
-    },
-    "sqlServerDiskType": {
-      "$ref": "#/definitions/DiskType",
-      "defaultValue": "Premium_SSD",
-      "metadata": {
-        "description": "The disk type of SQL server VM. Note that Premium_SSD only supports some VM sizes, see <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>"
-      }
-    },
-    "sqlServerVMSize": {
-      "type": "string",
-      "defaultValue": "Standard_DS4_v2",
-      "metadata": {
-        "description": "The VM size for the SQL Server VM, all available VM sizes in Azure can be found at https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes"
-      }
-    },
-    "headNodeList": {
-      "type": "string",
-      "defaultValue": "HPCHN01,HPCHN02",
-      "minLength": 5,
-      "maxLength": 31,
-      "metadata": {
-        "description": "The list of two head node names separated by comma without any surrounding whitespace, for example 'HPCHN01,HPCHN02'. The head node names must be unique in the domain forest."
+        "description": "The name of the HPC cluster, also used as the head node name. It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter."
       }
     },
     "headNodeOS": {
       "$ref": "#/definitions/HeadNodeImage",
       "defaultValue": "WindowsServer2019",
       "metadata": {
-        "description": "The operating system of the head nodes."
+        "description": "The operating system of the head node."
       }
     },
     "headNodeImageResourceId": {
@@ -289,13 +329,27 @@
         "description": "The VM size of the head node, all available VM sizes in Azure can be found at <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment."
       }
     },
+    "computeNodeImage": {
+      "$ref": "#/definitions/LinuxComputeNodeImage",
+      "defaultValue": "Ubuntu_24.04",
+      "metadata": {
+        "description": "The Linux VM image of the compute nodes"
+      }
+    },
+    "computeNodeImageResourceId": {
+      "type": "string",
+      "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
+      "metadata": {
+        "description": "Specify only when 'CustomImage' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
+      }
+    },
     "computeNodeNamePrefix": {
       "type": "string",
-      "defaultValue": "IaaSCN",
+      "defaultValue": "IaaSLnxCN",
       "minLength": 1,
       "maxLength": 12,
       "metadata": {
-        "description": "The name prefix of the compute nodes. It must be no more than 12 characters, begin with a letter, and contain only letters, numbers and hyphens. For example, if 'IaaSCN' is specified, the compute node names will be 'IaaSCN000', 'IaaSCN001', and so on. The compute node names must be unique in the domain forest."
+        "description": "The name prefix of the compute nodes. It must be no more than 12 characters, begin with a letter, and contain only letters, numbers and hyphens. For example, if 'IaaSCN' is specified, the compute node names will be 'IaaSCN000', 'IaaSCN001', ..."
       }
     },
     "computeNodeNumber": {
@@ -305,20 +359,6 @@
       "maxValue": 500,
       "metadata": {
         "description": "The number of the compute nodes."
-      }
-    },
-    "computeNodeImage": {
-      "$ref": "#/definitions/WindowsComputeNodeImage",
-      "defaultValue": "WindowsServer2019",
-      "metadata": {
-        "description": "The VM image of the compute nodes."
-      }
-    },
-    "computeNodeImageResourceId": {
-      "type": "string",
-      "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
-      "metadata": {
-        "description": "Specify only when 'CustomImage' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
       }
     },
     "computeNodeOsDiskType": {
@@ -335,24 +375,50 @@
         "description": "The VM size of the compute nodes, all available VM sizes in Azure can be found at <a href='https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes' target='_blank'>Azure VM Sizes</a>. Note that some VM sizes in the list are only available in some particular locations. Please check the availability and the price of the VM sizes at https://azure.microsoft.com/pricing/details/virtual-machines/windows/ before deployment."
       }
     },
-    "computeNodeInAVSet": {
-      "$ref": "#/definitions/YesOrNoOrAuto",
+    "availabilitySetOption": {
+      "type": "string",
       "defaultValue": "Auto",
+      "allowedValues": [
+        "AllNodes",
+        "ComputeNodes",
+        "None",
+        "Auto"
+      ],
       "metadata": {
-        "description": "Specify whether you want to create the compute nodes in Azure availability set, if 'Auto' is specified, compute nodes are created in availability set only when the VM size is RDMA capable."
+        "description": "Specify whether you want to create the HPC nodes in an Azure availability set. Select 'AllNodes' to create both head node(s) and compute nodes in an availability set; select 'ComputeNodes' to only create compute nodes in an availability set; select 'Auto' to only create RDMA capable nodes in availability set; select 'None' not to create an availability set."
       }
     },
     "adminUsername": {
       "type": "string",
       "defaultValue": "hpcadmin",
       "metadata": {
-        "description": "Administrator user name for the virtual machines and the Active Directory domain."
+        "description": "Administrator user name for the virtual machines."
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Administrator password for the virtual machines and the Active Directory domain"
+        "description": "Administrator password for the virtual machines. Password must meet complexity requirements, see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements"
+      }
+    },
+    "sqlLoginName": {
+      "type": "string",
+      "defaultValue": "hpcsql",
+      "metadata": {
+        "description": "Sql login name."
+      }
+    },
+    "sqlLoginPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Sql login password."
+      }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify the SSH public key for the Linux nodes if you want to use SSH Key pair to authenticate. If not specified, you can use the adminPassword to authenticate."
       }
     },
     "enableManagedIdentityOnHeadNode": {
@@ -366,14 +432,14 @@
       "$ref": "#/definitions/YesOrNo",
       "defaultValue": "Yes",
       "metadata": {
-        "description": "Indicates whether to create a public IP address for head nodes."
+        "description": "Indicates whether to create a public IP address for head node."
       }
     },
     "enableAcceleratedNetworking": {
       "$ref": "#/definitions/YesOrNo",
       "defaultValue": "No",
       "metadata": {
-        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes. If you specify it as 'Yes', you must specify accelerated networking supported VM sizes for all the VMs in the cluster. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
+        "description": "Specify whether to create the Azure VMs with accelerated networking or not. Note accelerated networking is supported only for some VM sizes and Linux distributions. If you specify it as 'Yes', you must specify accelerated networking supported VM sizes and operating systems for all the VMs in the cluster. More information about accelerated networking please see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell."
       }
     },
     "headNodeDataDiskCount": {
@@ -441,7 +507,6 @@
     },
     "authenticationKey": {
       "type": "securestring",
-      "defaultValue": "",
       "metadata": {
         "description": "The AuthenticationKey for Linux nodes. Head nodes must have ClusterAuthenticationKey set in their registry so that it is included in HN's request headers to Linux nodes."
       }
@@ -452,47 +517,129 @@
       "metadata": {
         "description": "Monitor the HPC Pack cluster in Azure Monitor."
       }
+    },
+    "sqlServerName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 63,
+      "metadata": {
+        "description": "The Azure SQL Server name. It can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 63 characters."
+      }
+    },
+    "ManagementDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S3",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC Management."
+      }
+    },
+    "SchedulerDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S4",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC Scheduler."
+      }
+    },
+    "MonitoringDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S0",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC Monitoring."
+      }
+    },
+    "ReportingDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S0",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC Reporting."
+      }
+    },
+    "DiagnosticsDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S0",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC Diagnostics."
+      }
+    },
+    "HAStorageDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S0",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC HA Storage."
+      }
+    },
+    "HAWitnessDBServiceTier": {
+      "$ref": "#/definitions/AzureSqlDataBaseServiceTier",
+      "defaultValue": "Standard_S2",
+      "metadata": {
+        "description": "The service tier of the Azure SQL database for HPC HA Witness."
+      }
     }
   },
   "variables": {
     "_enableAzureMonitor": "[equals(parameters('enableAzureMonitor'), 'Yes')]",
-    "dcSize": "[trim(parameters('domainControllerVMSize'))]",
     "_clusterName": "[trim(parameters('clusterName'))]",
-    "_domainName": "[trim(parameters('domainName'))]",
-    "_headNodeList": "[trim(parameters('headNodeList'))]",
-    "_sqlServerVMName": "[trim(parameters('sqlServerVMName'))]",
     "_computeNodeNamePrefix": "[trim(parameters('computeNodeNamePrefix'))]",
+    "_sqlServerName": "[toLower(trim(parameters('sqlServerName')))]",
     "storageAccountName": "[format('hpc{0}', uniqueString(resourceGroup().id, variables('_clusterName')))]",
     "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-    "lbName": "[format('{0}-lb', variables('_clusterName'))]",
-    "lbPoolName": "BackendPool1",
     "addressPrefix": "10.0.0.0/16",
     "subnet1Name": "Subnet-1",
     "subnet1Prefix": "10.0.0.0/22",
-    "_hnNames": "[split(variables('_headNodeList'), ',')]",
-    "vNetName": "[format('{0}vnet', variables('_clusterName'))]",
-    "privateClusterFQDN": "[format('{0}.{1}', toLower(variables('_clusterName')), variables('_domainName'))]",
-    "publicIPSuffix": "[uniqueString(resourceGroup().id)]",
-    "publicIPName": "[format('{0}publicip', variables('_clusterName'))]",
-    "publicIPDNSNameLabel": "[format('{0}{1}', toLower(variables('_clusterName')), variables('publicIPSuffix'))]",
-    "_availabilitySetNameHN": "[format('{0}-avset', variables('_clusterName'))]",
-    "cnAvailabilitySetName": "[format('{0}avset', variables('_computeNodeNamePrefix'))]",
-    "nbrVMPerAvailabilitySet": 200,
-    "cnAvailabilitySetNumber": "[add(div(parameters('computeNodeNumber'), variables('nbrVMPerAvailabilitySet')), 1)]",
-    "dcVMName": "[format('{0}dc', variables('_clusterName'))]",
+    "virtualNetworkName": "[format('{0}vnet', variables('_clusterName'))]",
+    "availabilitySetName": "[format('{0}-avset', variables('_clusterName'))]",
     "nsgName": "[format('hpcnsg-{0}', uniqueString(resourceGroup().id))]",
     "cnRDMACapable": "[__bicep.isRDMACapable(parameters('computeNodeVMSize'))]",
     "hnRDMACapable": "[__bicep.isRDMACapable(parameters('headNodeVMSize'))]",
-    "createCNInAVSet": "[or(equals(parameters('computeNodeInAVSet'), 'Yes'), and(equals(parameters('computeNodeInAVSet'), 'Auto'), variables('cnRDMACapable')))]",
-    "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
     "autoEnableInfiniBand": "[equals(parameters('autoInstallInfiniBandDriver'), 'Yes')]",
+    "useVmssForCN": "[equals(parameters('useVmssForComputeNodes'), 'Yes')]",
+    "createHNInAVSet": "[and(not(variables('useVmssForCN')), or(equals(parameters('availabilitySetOption'), 'AllNodes'), and(equals(parameters('availabilitySetOption'), 'Auto'), variables('hnRDMACapable'))))]",
+    "createCNInAVSet": "[and(not(variables('useVmssForCN')), or(or(equals(parameters('availabilitySetOption'), 'AllNodes'), equals(parameters('availabilitySetOption'), 'ComputeNodes')), and(equals(parameters('availabilitySetOption'), 'Auto'), variables('cnRDMACapable'))))]",
     "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(variables('_computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
+    "_virtualNetworkName": "[trim(variables('virtualNetworkName'))]",
+    "_computeNodeImages": "[union(variables('linuxComputeNodeImages'), createObject('CustomImage', createObject('id', trim(parameters('computeNodeImageResourceId')))))]",
     "headNodeImageRef": "[__bicep.getHeadNodeImageRef(parameters('hpcPackRelease'), parameters('headNodeOS'), trim(parameters('headNodeImageResourceId')), parameters('headNodeImageReference'))]",
-    "_computeNodeImages": "[union(variables('windowsComputeNodeImages'), createObject('CustomImage', createObject('id', trim(parameters('computeNodeImageResourceId')))))]",
     "computeNodeImageRef": "[variables('_computeNodeImages')[parameters('computeNodeImage')]]",
-    "SqlDscExtName": "configSQLServer",
+    "rdmaDriverSupportedCNImage": "[and(or(contains(parameters('computeNodeImage'), 'CentOS_7'), contains(parameters('computeNodeImage'), 'RHEL_7')), not(contains(parameters('computeNodeImage'), '_HPC')))]",
+    "listOfSqlDatabaseSettings": [
+      {
+        "name": "HPCManagement",
+        "maxSizeBytes": 214748364800,
+        "serviceTier": "[parameters('ManagementDBServiceTier')]"
+      },
+      {
+        "name": "HPCScheduler",
+        "maxSizeBytes": 214748364800,
+        "serviceTier": "[parameters('SchedulerDBServiceTier')]"
+      },
+      {
+        "name": "HPCReporting",
+        "maxSizeBytes": 107374182400,
+        "serviceTier": "[parameters('ReportingDBServiceTier')]"
+      },
+      {
+        "name": "HPCDiagnostics",
+        "maxSizeBytes": 107374182400,
+        "serviceTier": "[parameters('DiagnosticsDBServiceTier')]"
+      },
+      {
+        "name": "HPCMonitoring",
+        "maxSizeBytes": 107374182400,
+        "serviceTier": "[parameters('MonitoringDBServiceTier')]"
+      },
+      {
+        "name": "HPCHAStorage",
+        "maxSizeBytes": 107374182400,
+        "serviceTier": "[parameters('HAStorageDBServiceTier')]"
+      },
+      {
+        "name": "HPCHAWitness",
+        "maxSizeBytes": 107374182400,
+        "serviceTier": "[parameters('HAWitnessDBServiceTier')]"
+      }
+    ],
     "_1.headNodeImages": {
       "2019 Update 2": {
         "WindowsServer2019": {
@@ -534,88 +681,436 @@
       "Standard_SSD": "StandardSSD_LRS",
       "Premium_SSD": "Premium_LRS"
     },
-    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated",
-    "windowsComputeNodeImages": {
-      "WindowsServer2008R2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2008-R2-SP1",
+    "linuxComputeNodeImages": {
+      "AlmaLinux_8_Gen1": {
+        "publisher": "almalinux",
+        "offer": "almalinux-x86_64",
+        "sku": "8-gen1",
         "version": "latest"
       },
-      "WindowsServer2012": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2012-Datacenter",
+      "AlmaLinux_8_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-x86_64",
+        "sku": "8-gen2",
         "version": "latest"
       },
-      "WindowsServer2012R2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2012-R2-Datacenter",
+      "AlmaLinux_9_Gen1": {
+        "publisher": "almalinux",
+        "offer": "almalinux-x86_64",
+        "sku": "9-gen1",
         "version": "latest"
       },
-      "WindowsServer2016": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2016-Datacenter",
+      "AlmaLinux_9_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-x86_64",
+        "sku": "9-gen2",
         "version": "latest"
       },
-      "WindowsServer2019": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2019-Datacenter",
+      "AlmaLinux_8_HPC_Gen1": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8-hpc-gen1",
         "version": "latest"
       },
-      "WindowsServer2022": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2022-datacenter",
+      "AlmaLinux_8_HPC_Gen2": {
+        "publisher": "almalinux",
+        "offer": "almalinux-hpc",
+        "sku": "8-hpc-gen2",
         "version": "latest"
       },
-      "WindowsServer2012R2WithExcel": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2016U2CN-WS2012R2-Excel",
+      "Rocky_Linux_8_base": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "8-base",
         "version": "latest"
       },
-      "WindowsServer2016WithExcel": {
-        "publisher": "MicrosoftWindowsServerHPCPack",
-        "offer": "WindowsServerHPCPack",
-        "sku": "2016U2CN-WS2016-Excel",
+      "Rocky_Linux_8_LVM": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "8-lvm",
         "version": "latest"
       },
-      "WindowsServer2012_Gen2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2012-datacenter-gensecond",
+      "Rocky_Linux_9_base": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "9-base",
         "version": "latest"
       },
-      "WindowsServer2012R2_Gen2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2012-r2-datacenter-gensecond",
+      "Rocky_Linux_9_LVM": {
+        "publisher": "resf",
+        "offer": "rockylinux-x86_64",
+        "sku": "9-lvm",
         "version": "latest"
       },
-      "WindowsServer2016_Gen2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2016-datacenter-gensecond",
+      "CentOS_7.6": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7.6",
         "version": "latest"
       },
-      "WindowsServer2019_Gen2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2019-datacenter-gensecond",
+      "CentOS_7.7": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7.7",
         "version": "latest"
       },
-      "WindowsServer2022_Gen2": {
-        "publisher": "MicrosoftWindowsServer",
-        "offer": "WindowsServer",
-        "sku": "2022-datacenter-g2",
+      "CentOS_7.8": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_8",
+        "version": "latest"
+      },
+      "CentOS_7.9": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_9",
+        "version": "latest"
+      },
+      "CentOS_7.6_HPC": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7.6",
+        "version": "latest"
+      },
+      "CentOS_7.7_HPC": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7.7",
+        "version": "latest"
+      },
+      "CentOS_7.8_HPC": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_8",
+        "version": "latest"
+      },
+      "CentOS_7.9_HPC": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_9",
+        "version": "latest"
+      },
+      "CentOS_7.6_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_6-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.7_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_7-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.8_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_8-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.9_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7_9-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.6_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_6gen2",
+        "version": "latest"
+      },
+      "CentOS_7.7_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_7-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.8_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_8-gen2",
+        "version": "latest"
+      },
+      "CentOS_7.9_HPC_Gen2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7_9-gen2",
+        "version": "latest"
+      },
+      "RHEL_7.7": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "7.7",
+        "version": "latest"
+      },
+      "RHEL_7.8": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "7.8",
+        "version": "latest"
+      },
+      "RHEL_7.9": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "7_9",
+        "version": "latest"
+      },
+      "RHEL_8.5": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_5",
+        "version": "latest"
+      },
+      "RHEL_8.6": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_6",
+        "version": "latest"
+      },
+      "RHEL_8.7": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_7",
+        "version": "latest"
+      },
+      "RHEL_8.8": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_8",
+        "version": "latest"
+      },
+      "RHEL_8.9": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "8_9",
+        "version": "latest"
+      },
+      "RHEL_9.0": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_0",
+        "version": "latest"
+      },
+      "RHEL_9.1": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_1",
+        "version": "latest"
+      },
+      "RHEL_9.2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_2",
+        "version": "latest"
+      },
+      "RHEL_9.3": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_3",
+        "version": "latest"
+      },
+      "RHEL_9.4": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_4",
+        "version": "latest"
+      },
+      "RHEL_9.5": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "9_5",
+        "version": "latest"
+      },
+      "RHEL_7.7_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "77-gen2",
+        "version": "latest"
+      },
+      "RHEL_7.8_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "78-gen2",
+        "version": "latest"
+      },
+      "RHEL_7.9_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "79-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.5_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "85-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.6_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "86-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.7_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "87-gen2",
+        "version": "latest"
+      },
+      "RHEL_8.8_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "88-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.0_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "90-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.1_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "91-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.2_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "92-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.3_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "93-gen2",
+        "version": "latest"
+      },
+      "RHEL_9.4_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "94_gen2",
+        "version": "latest"
+      },
+      "RHEL_9.5_Gen2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "95_gen2",
+        "version": "latest"
+      },
+      "SLES_12_SP5": {
+        "publisher": "SUSE",
+        "offer": "sles-12-sp5",
+        "sku": "gen1",
+        "version": "latest"
+      },
+      "SLES_12_SP5_HPC": {
+        "publisher": "SUSE",
+        "offer": "sles-12-sp5-hpc",
+        "sku": "gen1",
+        "version": "latest"
+      },
+      "SLES_12_SP5_Gen2": {
+        "publisher": "SUSE",
+        "offer": "sles-12-sp5",
+        "sku": "gen2",
+        "version": "latest"
+      },
+      "SLES_12_SP5_HPC_Gen2": {
+        "publisher": "SUSE",
+        "offer": "sles-12-sp5-hpc",
+        "sku": "gen2",
+        "version": "latest"
+      },
+      "SLES_15_SP3_HPC": {
+        "publisher": "SUSE",
+        "offer": "sles-15-sp3-hpc",
+        "sku": "gen1",
+        "version": "latest"
+      },
+      "Ubuntu_16.04": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "16.04-LTS",
+        "version": "latest"
+      },
+      "Ubuntu_18.04": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "18.04-LTS",
+        "version": "latest"
+      },
+      "Ubuntu_20.04": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-focal",
+        "sku": "20_04-lts",
+        "version": "latest"
+      },
+      "Ubuntu_22.04": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-jammy",
+        "sku": "22_04-lts",
+        "version": "latest"
+      },
+      "Ubuntu_24.04": {
+        "publisher": "Canonical",
+        "offer": "ubuntu-24_04-lts",
+        "sku": "server-gen1",
+        "version": "latest"
+      },
+      "Ubuntu_16.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "16_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_18.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "18_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_20.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-focal",
+        "sku": "20_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_22.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "0001-com-ubuntu-server-jammy",
+        "sku": "22_04-lts-gen2",
+        "version": "latest"
+      },
+      "Ubuntu_24.04_Gen2": {
+        "publisher": "Canonical",
+        "offer": "ubuntu-24_04-lts",
+        "sku": "server",
+        "version": "latest"
+      },
+      "Ubuntu_18.04_HPC_Gen2": {
+        "publisher": "Microsoft-DSVM",
+        "offer": "Ubuntu-HPC",
+        "sku": "1804",
+        "version": "latest"
+      },
+      "Ubuntu_20.04_HPC_Gen2": {
+        "publisher": "Microsoft-DSVM",
+        "offer": "Ubuntu-HPC",
+        "sku": "2004",
+        "version": "latest"
+      },
+      "Ubuntu_22.04_HPC_Gen2": {
+        "publisher": "Microsoft-DSVM",
+        "offer": "Ubuntu-HPC",
+        "sku": "2204",
         "version": "latest"
       },
       "CustomImage": {}
-    }
+    },
+    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
   },
   "resources": {
     "storageAccount": {
@@ -629,23 +1124,24 @@
       "kind": "Storage",
       "properties": {}
     },
-    "hnAvSet": {
+    "availabilitySet": {
+      "condition": "[or(variables('createHNInAVSet'), variables('createCNInAVSet'))]",
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2023-03-01",
-      "name": "[variables('_availabilitySetNameHN')]",
+      "name": "[variables('availabilitySetName')]",
+      "location": "[resourceGroup().location]",
       "sku": {
         "name": "Aligned"
       },
       "properties": {
-        "platformUpdateDomainCount": 3,
+        "platformUpdateDomainCount": 5,
         "platformFaultDomainCount": 2
-      },
-      "location": "[resourceGroup().location]"
+      }
     },
-    "setupPrimaryHeadNode": {
+    "setupHeadNode": {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2023-03-01",
-      "name": "[format('{0}/setupPrimaryHeadNode', variables('_hnNames')[0])]",
+      "name": "[format('{0}/installSingleHeadNode', variables('_clusterName'))]",
       "location": "[resourceGroup().location]",
       "properties": {
         "publisher": "Microsoft.Powershell",
@@ -660,13 +1156,12 @@
           },
           "configurationArguments": {
             "SetupPkgPath": "[parameters('setupPkgPath')]",
-            "SSLThumbprint": "[reference('keyVault').outputs.certSettings.value.thumbprint]",
             "ClusterName": "[variables('_clusterName')]",
-            "SQLServerInstance": "[variables('_sqlServerVMName')]",
-            "EnableBuiltinHA": true,
+            "SSLThumbprint": "[reference('keyVault').outputs.certSettings.value.thumbprint]",
+            "SQLServerInstance": "[reference('sqlServer').outputs.fqdn.value]",
             "CNSize": "[parameters('computeNodeVMSize')]",
             "SubscriptionId": "[subscription().subscriptionId]",
-            "VNet": "[variables('vNetName')]",
+            "VNet": "[variables('virtualNetworkName')]",
             "Subnet": "[variables('subnet1Name')]",
             "Location": "[resourceGroup().location]",
             "ResourceGroup": "[resourceGroup().name]",
@@ -679,78 +1174,23 @@
         "protectedSettings": {
           "configurationArguments": {
             "SetupUserCredential": {
-              "UserName": "[format('{0}\\{1}', variables('_domainName'), parameters('adminUsername'))]",
+              "UserName": "[parameters('adminUsername')]",
               "Password": "[parameters('adminPassword')]"
             },
             "AzureStorageConnString": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}', variables('storageAccountName'), listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value)]",
+            "SqlLoginCredential": {
+              "UserName": "[parameters('sqlLoginName')]",
+              "Password": "[parameters('sqlLoginPassword')]"
+            },
             "LinuxAuthenticationKey": "[parameters('authenticationKey')]"
           }
         }
       },
       "dependsOn": [
-        "configDBPermissions",
-        "headNodes",
+        "headNode",
         "keyVault",
+        "sqlServer",
         "storageAccount"
-      ]
-    },
-    "setupSecondaryHeadNode": {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2023-03-01",
-      "name": "[format('{0}/setupSecondaryHeadNode', variables('_hnNames')[1])]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "publisher": "Microsoft.Powershell",
-        "type": "DSC",
-        "typeHandlerVersion": "2.80",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "configuration": {
-            "url": "[format('{0}/InstallHpcNode.ps1.zip', variables('sharedResxBaseUrl'))]",
-            "script": "InstallHpcNode.ps1",
-            "function": "InstallHpcNode"
-          },
-          "configurationArguments": {
-            "SetupPkgPath": "[parameters('setupPkgPath')]",
-            "NodeType": "PassiveHeadNode",
-            "HeadNodeList": "[variables('_headNodeList')]",
-            "SSLThumbprint": "[reference('keyVault').outputs.certSettings.value.thumbprint]"
-          }
-        },
-        "protectedSettings": {
-          "configurationArguments": {
-            "SetupUserCredential": {
-              "UserName": "[format('{0}\\{1}', variables('_domainName'), parameters('adminUsername'))]",
-              "Password": "[parameters('adminPassword')]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "headNodes",
-        "keyVault",
-        "setupPrimaryHeadNode"
-      ]
-    },
-    "cnAvSet": {
-      "copy": {
-        "name": "cnAvSet",
-        "count": "[length(range(0, variables('cnAvailabilitySetNumber')))]"
-      },
-      "condition": "[variables('createCNInAVSet')]",
-      "type": "Microsoft.Compute/availabilitySets",
-      "apiVersion": "2023-03-01",
-      "name": "[format('{0}{1}', variables('cnAvailabilitySetName'), padLeft(string(range(0, variables('cnAvailabilitySetNumber'))[copyIndex()]), 2, '0'))]",
-      "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "Aligned"
-      },
-      "properties": {
-        "platformUpdateDomainCount": 5,
-        "platformFaultDomainCount": 2
-      },
-      "dependsOn": [
-        "vnet"
       ]
     },
     "keyVault": {
@@ -1480,498 +1920,24 @@
     "vnet": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "createVNetAndDC",
+      "name": "createVNet",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
         },
         "mode": "Incremental",
         "parameters": {
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+          "vNetName": {
+            "value": "[variables('virtualNetworkName')]"
           },
-          "adminUsername": {
-            "value": "[parameters('adminUsername')]"
-          },
-          "dcSize": {
-            "value": "[variables('dcSize')]"
-          },
-          "dcVmName": {
-            "value": "[variables('dcVMName')]"
-          },
-          "domainName": {
-            "value": "[variables('_domainName')]"
-          },
-          "subnetAddressPrefix": {
-            "value": "[variables('subnet1Prefix')]"
+          "addressPrefix": {
+            "value": "[variables('addressPrefix')]"
           },
           "subnetName": {
             "value": "[variables('subnet1Name')]"
           },
-          "vNetAddressPrefix": {
-            "value": "[variables('addressPrefix')]"
-          },
-          "vNetName": {
-            "value": "[variables('vNetName')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "6310101922360682282"
-            }
-          },
-          "parameters": {
-            "vNetName": {
-              "type": "string"
-            },
-            "vNetAddressPrefix": {
-              "type": "string",
-              "defaultValue": "10.0.0.0/16"
-            },
-            "subnetName": {
-              "type": "string",
-              "defaultValue": "Subnet-1"
-            },
-            "subnetAddressPrefix": {
-              "type": "string",
-              "defaultValue": "10.0.0.0/22"
-            },
-            "adminPassword": {
-              "type": "securestring"
-            },
-            "adminUsername": {
-              "type": "string",
-              "defaultValue": "hpcadmin"
-            },
-            "domainName": {
-              "type": "string",
-              "defaultValue": "hpc.cluster"
-            },
-            "dcVmName": {
-              "type": "string"
-            },
-            "dcSize": {
-              "type": "string",
-              "defaultValue": "Standard_D2_v3"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "createVNet",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "vNetName": {
-                    "value": "[parameters('vNetName')]"
-                  },
-                  "addressPrefix": {
-                    "value": "[parameters('vNetAddressPrefix')]"
-                  },
-                  "subnetName": {
-                    "value": "[parameters('subnetName')]"
-                  },
-                  "subnetPrefix": {
-                    "value": "[parameters('subnetAddressPrefix')]"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "languageVersion": "2.0",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "2756137353335145769"
-                    }
-                  },
-                  "parameters": {
-                    "vNetName": {
-                      "type": "string"
-                    },
-                    "addressPrefix": {
-                      "type": "string"
-                    },
-                    "subnetName": {
-                      "type": "string"
-                    },
-                    "subnetPrefix": {
-                      "type": "string"
-                    },
-                    "dnsSeverIp": {
-                      "type": "string",
-                      "nullable": true
-                    }
-                  },
-                  "variables": {
-                    "dhcpOpts": "[if(empty(parameters('dnsSeverIp')), null(), createObject('dnsServers', createArray(parameters('dnsSeverIp'), '8.8.8.8')))]"
-                  },
-                  "resources": {
-                    "vnet": {
-                      "type": "Microsoft.Network/virtualNetworks",
-                      "apiVersion": "2023-04-01",
-                      "name": "[parameters('vNetName')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "addressSpace": {
-                          "addressPrefixes": [
-                            "[parameters('addressPrefix')]"
-                          ]
-                        },
-                        "dhcpOptions": "[variables('dhcpOpts')]",
-                        "subnets": [
-                          {
-                            "name": "[parameters('subnetName')]",
-                            "properties": {
-                              "addressPrefix": "[parameters('subnetPrefix')]",
-                              "serviceEndpoints": [
-                                {
-                                  "service": "Microsoft.Sql"
-                                }
-                              ]
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "outputs": {
-                    "vNetId": {
-                      "type": "string",
-                      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNetName'))]"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "dc",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "adminPassword": {
-                    "value": "[parameters('adminPassword')]"
-                  },
-                  "adminUsername": {
-                    "value": "[parameters('adminUsername')]"
-                  },
-                  "domainName": {
-                    "value": "[parameters('domainName')]"
-                  },
-                  "subnetId": {
-                    "value": "[format('{0}/subnets/{1}', reference(resourceId('Microsoft.Resources/deployments', 'createVNet'), '2022-09-01').outputs.vNetId.value, parameters('subnetName'))]"
-                  },
-                  "vmName": {
-                    "value": "[parameters('dcVmName')]"
-                  },
-                  "vmSize": {
-                    "value": "[parameters('dcSize')]"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "languageVersion": "2.0",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "1639511075517772985"
-                    }
-                  },
-                  "parameters": {
-                    "subnetId": {
-                      "type": "string"
-                    },
-                    "ip": {
-                      "type": "string",
-                      "defaultValue": "10.0.0.4"
-                    },
-                    "vmName": {
-                      "type": "string"
-                    },
-                    "vmSize": {
-                      "type": "string"
-                    },
-                    "adminUsername": {
-                      "type": "string"
-                    },
-                    "adminPassword": {
-                      "type": "securestring"
-                    },
-                    "domainName": {
-                      "type": "string"
-                    }
-                  },
-                  "variables": {
-                    "nicName": "[format('{0}-nic-{1}', parameters('vmName'), uniqueString(parameters('subnetId')))]",
-                    "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
-                  },
-                  "resources": {
-                    "dcNIC": {
-                      "type": "Microsoft.Network/networkInterfaces",
-                      "apiVersion": "2023-04-01",
-                      "name": "[variables('nicName')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "ipConfigurations": [
-                          {
-                            "name": "IPConfig",
-                            "properties": {
-                              "privateIPAllocationMethod": "Static",
-                              "privateIPAddress": "[parameters('ip')]",
-                              "subnet": {
-                                "id": "[parameters('subnetId')]"
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    "dcVM": {
-                      "type": "Microsoft.Compute/virtualMachines",
-                      "apiVersion": "2023-03-01",
-                      "name": "[parameters('vmName')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "hardwareProfile": {
-                          "vmSize": "[parameters('vmSize')]"
-                        },
-                        "osProfile": {
-                          "computerName": "[parameters('vmName')]",
-                          "adminUsername": "[parameters('adminUsername')]",
-                          "adminPassword": "[parameters('adminPassword')]"
-                        },
-                        "storageProfile": {
-                          "imageReference": {
-                            "publisher": "MicrosoftWindowsServer",
-                            "offer": "WindowsServer",
-                            "sku": "2019-Datacenter",
-                            "version": "latest"
-                          },
-                          "osDisk": {
-                            "name": "[format('{0}-osdisk', parameters('vmName'))]",
-                            "caching": "ReadOnly",
-                            "createOption": "FromImage",
-                            "managedDisk": {
-                              "storageAccountType": "Standard_LRS"
-                            }
-                          },
-                          "dataDisks": [
-                            {
-                              "name": "[format('{0}-datadisk', parameters('vmName'))]",
-                              "caching": "None",
-                              "createOption": "Empty",
-                              "managedDisk": {
-                                "storageAccountType": "Standard_LRS"
-                              },
-                              "diskSizeGB": 200,
-                              "lun": 0
-                            }
-                          ]
-                        },
-                        "networkProfile": {
-                          "networkInterfaces": [
-                            {
-                              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-                            }
-                          ]
-                        }
-                      },
-                      "dependsOn": [
-                        "dcNIC"
-                      ]
-                    },
-                    "promoteDC": {
-                      "type": "Microsoft.Compute/virtualMachines/extensions",
-                      "apiVersion": "2023-03-01",
-                      "name": "[format('{0}/{1}', parameters('vmName'), 'promoteDomainController')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "publisher": "Microsoft.Powershell",
-                        "type": "DSC",
-                        "typeHandlerVersion": "2.80",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                          "configuration": {
-                            "url": "[format('{0}/CreateADPDC.ps1.zip', variables('sharedResxBaseUrl'))]",
-                            "script": "CreateADPDC.ps1",
-                            "function": "CreateADPDC"
-                          },
-                          "configurationArguments": {
-                            "DomainName": "[parameters('domainName')]"
-                          }
-                        },
-                        "protectedSettings": {
-                          "configurationArguments": {
-                            "AdminCreds": {
-                              "UserName": "[parameters('adminUsername')]",
-                              "Password": "[parameters('adminPassword')]"
-                            }
-                          }
-                        }
-                      },
-                      "dependsOn": [
-                        "dcVM"
-                      ]
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'createVNet')]"
-              ]
-            },
-            {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "updateVNetDNS",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "vNetName": {
-                    "value": "[parameters('vNetName')]"
-                  },
-                  "addressPrefix": {
-                    "value": "[parameters('vNetAddressPrefix')]"
-                  },
-                  "subnetName": {
-                    "value": "[parameters('subnetName')]"
-                  },
-                  "subnetPrefix": {
-                    "value": "[parameters('subnetAddressPrefix')]"
-                  },
-                  "dnsSeverIp": {
-                    "value": "10.0.0.4"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "languageVersion": "2.0",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "2756137353335145769"
-                    }
-                  },
-                  "parameters": {
-                    "vNetName": {
-                      "type": "string"
-                    },
-                    "addressPrefix": {
-                      "type": "string"
-                    },
-                    "subnetName": {
-                      "type": "string"
-                    },
-                    "subnetPrefix": {
-                      "type": "string"
-                    },
-                    "dnsSeverIp": {
-                      "type": "string",
-                      "nullable": true
-                    }
-                  },
-                  "variables": {
-                    "dhcpOpts": "[if(empty(parameters('dnsSeverIp')), null(), createObject('dnsServers', createArray(parameters('dnsSeverIp'), '8.8.8.8')))]"
-                  },
-                  "resources": {
-                    "vnet": {
-                      "type": "Microsoft.Network/virtualNetworks",
-                      "apiVersion": "2023-04-01",
-                      "name": "[parameters('vNetName')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "addressSpace": {
-                          "addressPrefixes": [
-                            "[parameters('addressPrefix')]"
-                          ]
-                        },
-                        "dhcpOptions": "[variables('dhcpOpts')]",
-                        "subnets": [
-                          {
-                            "name": "[parameters('subnetName')]",
-                            "properties": {
-                              "addressPrefix": "[parameters('subnetPrefix')]",
-                              "serviceEndpoints": [
-                                {
-                                  "service": "Microsoft.Sql"
-                                }
-                              ]
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "outputs": {
-                    "vNetId": {
-                      "type": "string",
-                      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNetName'))]"
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'dc')]",
-                "[resourceId('Microsoft.Resources/deployments', 'createVNet')]"
-              ]
-            }
-          ],
-          "outputs": {
-            "vNetId": {
-              "type": "string",
-              "value": "[reference(resourceId('Microsoft.Resources/deployments', 'createVNet'), '2022-09-01').outputs.vNetId.value]"
-            }
-          }
-        }
-      }
-    },
-    "lb": {
-      "condition": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "createLB",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "hnNames": {
-            "value": "[variables('_hnNames')]"
-          },
-          "lbName": {
-            "value": "[variables('lbName')]"
-          },
-          "lbPoolName": {
-            "value": "[variables('lbPoolName')]"
-          },
-          "publicIpDnsNameLabel": {
-            "value": "[variables('publicIPDNSNameLabel')]"
-          },
-          "publicIpName": {
-            "value": "[variables('publicIPName')]"
+          "subnetPrefix": {
+            "value": "[variables('subnet1Prefix')]"
           }
         },
         "template": {
@@ -1982,132 +1948,63 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "8941358526194626473"
+              "templateHash": "2756137353335145769"
             }
           },
           "parameters": {
-            "publicIpName": {
+            "vNetName": {
               "type": "string"
             },
-            "publicIpDnsNameLabel": {
+            "addressPrefix": {
               "type": "string"
             },
-            "lbName": {
+            "subnetName": {
               "type": "string"
             },
-            "lbPoolName": {
+            "subnetPrefix": {
               "type": "string"
             },
-            "hnNames": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+            "dnsSeverIp": {
+              "type": "string",
+              "nullable": true
             }
           },
           "variables": {
-            "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('lbName'))]",
-            "lbFrontEndIPConfigId": "[format('{0}/frontendIPConfigurations/LoadBalancerFrontEnd', variables('lbId'))]",
-            "lbPoolId": "[format('{0}/backendAddressPools/{1}', variables('lbId'), parameters('lbPoolName'))]",
-            "lbProbeId": "[format('{0}/probes/tcpProbe', variables('lbId'))]"
+            "dhcpOpts": "[if(empty(parameters('dnsSeverIp')), null(), createObject('dnsServers', createArray(parameters('dnsSeverIp'), '8.8.8.8')))]"
           },
           "resources": {
-            "lbPublicIp": {
-              "type": "Microsoft.Network/publicIPAddresses",
+            "vnet": {
+              "type": "Microsoft.Network/virtualNetworks",
               "apiVersion": "2023-04-01",
-              "name": "[parameters('publicIpName')]",
-              "location": "[resourceGroup().location]",
-              "sku": {
-                "name": "Basic"
-              },
-              "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                  "domainNameLabel": "[parameters('publicIpDnsNameLabel')]"
-                }
-              }
-            },
-            "lb": {
-              "type": "Microsoft.Network/loadBalancers",
-              "apiVersion": "2023-04-01",
-              "name": "[parameters('lbName')]",
+              "name": "[parameters('vNetName')]",
               "location": "[resourceGroup().location]",
               "properties": {
-                "copy": [
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('addressPrefix')]"
+                  ]
+                },
+                "dhcpOptions": "[variables('dhcpOpts')]",
+                "subnets": [
                   {
-                    "name": "inboundNatRules",
-                    "count": "[length(parameters('hnNames'))]",
-                    "input": {
-                      "name": "[format('RDP-{0}', parameters('hnNames')[copyIndex('inboundNatRules')])]",
-                      "properties": {
-                        "frontendIPConfiguration": {
-                          "id": "[variables('lbFrontEndIPConfigId')]"
-                        },
-                        "protocol": "Tcp",
-                        "frontendPort": "[add(50001, copyIndex('inboundNatRules'))]",
-                        "backendPort": 3389,
-                        "enableFloatingIP": false
-                      }
-                    }
-                  }
-                ],
-                "frontendIPConfigurations": [
-                  {
-                    "name": "LoadBalancerFrontEnd",
+                    "name": "[parameters('subnetName')]",
                     "properties": {
-                      "publicIPAddress": {
-                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
-                      }
-                    }
-                  }
-                ],
-                "backendAddressPools": [
-                  {
-                    "name": "[parameters('lbPoolName')]"
-                  }
-                ],
-                "loadBalancingRules": [
-                  {
-                    "name": "LBRule",
-                    "properties": {
-                      "frontendIPConfiguration": {
-                        "id": "[variables('lbFrontEndIPConfigId')]"
-                      },
-                      "backendAddressPool": {
-                        "id": "[variables('lbPoolId')]"
-                      },
-                      "protocol": "Tcp",
-                      "frontendPort": 443,
-                      "backendPort": 443,
-                      "enableFloatingIP": false,
-                      "idleTimeoutInMinutes": 5,
-                      "probe": {
-                        "id": "[variables('lbProbeId')]"
-                      }
-                    }
-                  }
-                ],
-                "probes": [
-                  {
-                    "name": "tcpProbe",
-                    "properties": {
-                      "protocol": "Tcp",
-                      "port": 5802,
-                      "intervalInSeconds": 5,
-                      "numberOfProbes": 2
+                      "addressPrefix": "[parameters('subnetPrefix')]",
+                      "serviceEndpoints": [
+                        {
+                          "service": "Microsoft.Sql"
+                        }
+                      ]
                     }
                   }
                 ]
-              },
-              "dependsOn": [
-                "lbPublicIp"
-              ]
+              }
             }
           },
           "outputs": {
-            "fqdn": {
+            "vNetId": {
               "type": "string",
-              "value": "[reference('lbPublicIp').dnsSettings.fqdn]"
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNetName'))]"
             }
           }
         }
@@ -2242,14 +2139,185 @@
         }
       }
     },
-    "headNodes": {
-      "copy": {
-        "name": "headNodes",
-        "count": "[length(variables('_hnNames'))]"
-      },
+    "sqlServer": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[variables('_hnNames')[copyIndex()]]",
+      "name": "azureSqlServerAndDatabases",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "listOfSqlDatabaseSettings": {
+            "value": "[variables('listOfSqlDatabaseSettings')]"
+          },
+          "sqlLoginName": {
+            "value": "[parameters('sqlLoginName')]"
+          },
+          "sqlLoginPassword": {
+            "value": "[parameters('sqlLoginPassword')]"
+          },
+          "sqlServerName": {
+            "value": "[variables('_sqlServerName')]"
+          },
+          "sqlServerVnetRulesName": {
+            "value": "[format('{0}-{1}', resourceGroup().name, variables('_virtualNetworkName'))]"
+          },
+          "subnetId": {
+            "value": "[format('{0}/subnets/{1}', reference('vnet').outputs.vNetId.value, variables('subnet1Name'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "17664246390932181115"
+            }
+          },
+          "definitions": {
+            "_1.AzureSqlDataBaseServiceTier": {
+              "type": "string",
+              "allowedValues": [
+                "Premium_P1",
+                "Premium_P11",
+                "Premium_P15",
+                "Premium_P2",
+                "Premium_P3",
+                "Premium_P4",
+                "Premium_P6",
+                "Standard_S0",
+                "Standard_S1",
+                "Standard_S12",
+                "Standard_S2",
+                "Standard_S3",
+                "Standard_S4",
+                "Standard_S6",
+                "Standard_S7",
+                "Standard_S9"
+              ],
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            },
+            "AzureSqlDatabaseSettings": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "maxSizeBytes": {
+                  "type": "int"
+                },
+                "serviceTier": {
+                  "$ref": "#/definitions/_1.AzureSqlDataBaseServiceTier"
+                }
+              },
+              "metadata": {
+                "__bicep_imported_from!": {
+                  "sourceTemplate": "types-and-vars.bicep"
+                }
+              }
+            }
+          },
+          "parameters": {
+            "sqlServerName": {
+              "type": "string"
+            },
+            "sqlLoginName": {
+              "type": "string"
+            },
+            "sqlLoginPassword": {
+              "type": "securestring"
+            },
+            "subnetId": {
+              "type": "string"
+            },
+            "sqlServerVnetRulesName": {
+              "type": "string"
+            },
+            "listOfSqlDatabaseSettings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AzureSqlDatabaseSettings"
+              }
+            }
+          },
+          "variables": {
+            "location": "[resourceGroup().location]"
+          },
+          "resources": {
+            "sqlServer": {
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2022-05-01-preview",
+              "name": "[parameters('sqlServerName')]",
+              "location": "[variables('location')]",
+              "tags": {
+                "displayName": "SqlServer"
+              },
+              "properties": {
+                "administratorLogin": "[parameters('sqlLoginName')]",
+                "administratorLoginPassword": "[parameters('sqlLoginPassword')]",
+                "version": "12.0"
+              }
+            },
+            "vnetRules": {
+              "type": "Microsoft.Sql/servers/virtualNetworkRules",
+              "apiVersion": "2022-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('sqlServerVnetRulesName'))]",
+              "properties": {
+                "virtualNetworkSubnetId": "[parameters('subnetId')]"
+              },
+              "dependsOn": [
+                "sqlServer"
+              ]
+            },
+            "sqlDatabases": {
+              "copy": {
+                "name": "sqlDatabases",
+                "count": "[length(parameters('listOfSqlDatabaseSettings'))]"
+              },
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2022-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('listOfSqlDatabaseSettings')[copyIndex()].name)]",
+              "location": "[variables('location')]",
+              "tags": {
+                "displayName": "[parameters('listOfSqlDatabaseSettings')[copyIndex()].name]"
+              },
+              "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": "[parameters('listOfSqlDatabaseSettings')[copyIndex()].maxSizeBytes]",
+                "edition": "[split(parameters('listOfSqlDatabaseSettings')[copyIndex()].serviceTier, '_')[0]]",
+                "requestedServiceObjectiveName": "[split(parameters('listOfSqlDatabaseSettings')[copyIndex()].serviceTier, '_')[1]]"
+              },
+              "dependsOn": [
+                "sqlServer"
+              ]
+            }
+          },
+          "outputs": {
+            "fqdn": {
+              "type": "string",
+              "value": "[reference('sqlServer').fullyQualifiedDomainName]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "nsg",
+        "vnet"
+      ]
+    },
+    "headNode": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('_clusterName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -2271,18 +2339,13 @@
           "createPublicIp": {
             "value": "[equals(parameters('createPublicIPAddressForHeadNode'), 'Yes')]"
           },
-          "domainName": {
-            "value": "[variables('_domainName')]"
-          },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
           },
           "enableManagedIdentity": {
             "value": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]"
           },
-          "hnAvSetName": {
-            "value": "[variables('_availabilitySetNameHN')]"
-          },
+          "hnAvSetName": "[if(variables('createHNInAVSet'), createObject('value', variables('availabilitySetName')), createObject('value', null()))]",
           "hnDataDiskCount": {
             "value": "[parameters('headNodeDataDiskCount')]"
           },
@@ -2296,7 +2359,7 @@
             "value": "[variables('headNodeImageRef')]"
           },
           "hnName": {
-            "value": "[variables('_hnNames')[copyIndex()]]"
+            "value": "[variables('_clusterName')]"
           },
           "hnOsDiskType": {
             "value": "[parameters('headNodeOsDiskType')]"
@@ -2307,15 +2370,12 @@
           "installIBDriver": {
             "value": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
-          "lbName": {
-            "value": "[variables('lbName')]"
-          },
-          "lbPoolName": {
-            "value": "[variables('lbPoolName')]"
-          },
           "logSettings": "[if(variables('_enableAzureMonitor'), createObject('value', reference('monitor').outputs.logSettings.value), createObject('value', null()))]",
           "amaSettings": "[if(variables('_enableAzureMonitor'), createObject('value', reference('monitor').outputs.amaSettings.value), createObject('value', null()))]",
           "nsgName": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'Yes'), createObject('value', variables('nsgName')), createObject('value', null()))]",
+          "privateIp": {
+            "value": "10.0.0.4"
+          },
           "subnetId": {
             "value": "[format('{0}/subnets/{1}', reference('vnet').outputs.vNetId.value, variables('subnet1Name'))]"
           }
@@ -3001,595 +3061,11 @@
         }
       },
       "dependsOn": [
-        "hnAvSet",
+        "availabilitySet",
         "keyVault",
-        "lb",
         "monitor",
         "nsg",
         "vnet"
-      ]
-    },
-    "sqlServer": {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "sqlServer",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
-          },
-          "adminUsername": {
-            "value": "[parameters('adminUsername')]"
-          },
-          "availabilitySetName": {
-            "value": "[variables('_availabilitySetNameHN')]"
-          },
-          "diskType": {
-            "value": "[variables('diskTypes')[parameters('sqlServerDiskType')]]"
-          },
-          "domainName": {
-            "value": "[variables('_domainName')]"
-          },
-          "enableAcceleratedNetworking": {
-            "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
-          },
-          "SqlDscExtName": {
-            "value": "[variables('SqlDscExtName')]"
-          },
-          "subnetId": {
-            "value": "[format('{0}/subnets/{1}', reference('vnet').outputs.vNetId.value, variables('subnet1Name'))]"
-          },
-          "vmName": {
-            "value": "[variables('_sqlServerVMName')]"
-          },
-          "vmSize": {
-            "value": "[parameters('sqlServerVMSize')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "languageVersion": "2.0",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "8510834756138171164"
-            }
-          },
-          "parameters": {
-            "subnetId": {
-              "type": "string"
-            },
-            "vmName": {
-              "type": "string"
-            },
-            "vmSize": {
-              "type": "string"
-            },
-            "diskType": {
-              "type": "string"
-            },
-            "domainName": {
-              "type": "string"
-            },
-            "domainOUPath": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "adminUsername": {
-              "type": "string"
-            },
-            "adminPassword": {
-              "type": "securestring"
-            },
-            "availabilitySetName": {
-              "type": "string"
-            },
-            "enableAcceleratedNetworking": {
-              "type": "bool"
-            },
-            "SqlDscExtName": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
-          },
-          "resources": {
-            "joinADDomain": {
-              "type": "Microsoft.Compute/virtualMachines/extensions",
-              "apiVersion": "2023-03-01",
-              "name": "[format('{0}/JoinADDomain', parameters('vmName'))]",
-              "location": "[resourceGroup().location]",
-              "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "JsonADDomainExtension",
-                "typeHandlerVersion": "1.3",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "Name": "[parameters('domainName')]",
-                  "OUPath": "[parameters('domainOUPath')]",
-                  "User": "[format('{0}\\{1}', parameters('domainName'), parameters('adminUsername'))]",
-                  "NumberOfRetries": "50",
-                  "RetryIntervalInMilliseconds": "10000",
-                  "Restart": "true",
-                  "Options": "3"
-                },
-                "protectedSettings": {
-                  "Password": "[parameters('adminPassword')]"
-                }
-              },
-              "dependsOn": [
-                "sqlServer"
-              ]
-            },
-            "sqlServer": {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('createDBServer{0}', parameters('vmName'))]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "subnetId": {
-                    "value": "[parameters('subnetId')]"
-                  },
-                  "vmName": {
-                    "value": "[parameters('vmName')]"
-                  },
-                  "vmSize": {
-                    "value": "[parameters('vmSize')]"
-                  },
-                  "osDiskType": {
-                    "value": "[parameters('diskType')]"
-                  },
-                  "imageReference": {
-                    "value": {
-                      "publisher": "MicrosoftSQLServer",
-                      "offer": "sql2019-ws2022",
-                      "sku": "Standard",
-                      "version": "latest"
-                    }
-                  },
-                  "adminUsername": {
-                    "value": "[parameters('adminUsername')]"
-                  },
-                  "adminPassword": {
-                    "value": "[parameters('adminPassword')]"
-                  },
-                  "availabilitySetName": {
-                    "value": "[parameters('availabilitySetName')]"
-                  },
-                  "dataDiskCount": {
-                    "value": 1
-                  },
-                  "dataDiskSizeInGB": {
-                    "value": 200
-                  },
-                  "dataDiskType": {
-                    "value": "[parameters('diskType')]"
-                  },
-                  "enableAcceleratedNetworking": {
-                    "value": "[parameters('enableAcceleratedNetworking')]"
-                  },
-                  "dscExtensionName": {
-                    "value": "[parameters('SqlDscExtName')]"
-                  },
-                  "dscSettings": {
-                    "value": {
-                      "configuration": {
-                        "url": "[format('{0}/ConfigSQLServer.ps1.zip', variables('sharedResxBaseUrl'))]",
-                        "script": "ConfigSQLServer.ps1",
-                        "function": "ConfigSQLServer"
-                      }
-                    }
-                  },
-                  "dscProtectedSettings": {
-                    "value": {}
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.30.23.60470",
-                      "templateHash": "12859915245990389270"
-                    }
-                  },
-                  "parameters": {
-                    "subnetId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The Id of the subnet in which the node is created"
-                      }
-                    },
-                    "vmName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The VM name"
-                      }
-                    },
-                    "vmSize": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The VM role size"
-                      }
-                    },
-                    "osDiskType": {
-                      "type": "string",
-                      "defaultValue": "StandardSSD_LRS",
-                      "metadata": {
-                        "description": "The OS disk type of the VM"
-                      }
-                    },
-                    "imageReference": {
-                      "type": "object",
-                      "metadata": {
-                        "description": "The image reference"
-                      }
-                    },
-                    "adminUsername": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The user name of the administrator"
-                      }
-                    },
-                    "adminPassword": {
-                      "type": "securestring",
-                      "metadata": {
-                        "description": "The password of the administrator"
-                      }
-                    },
-                    "availabilitySetName": {
-                      "type": "string",
-                      "defaultValue": "",
-                      "metadata": {
-                        "description": "The availability set name to join if specified"
-                      }
-                    },
-                    "osDiskSizeInGB": {
-                      "type": "int",
-                      "defaultValue": 128,
-                      "minValue": 30,
-                      "maxValue": 1023,
-                      "metadata": {
-                        "description": "The os disk size in GB"
-                      }
-                    },
-                    "dataDiskSizeInGB": {
-                      "type": "int",
-                      "defaultValue": 128,
-                      "metadata": {
-                        "description": "The size in GB of each data disk that is attached to the VM."
-                      }
-                    },
-                    "dataDiskCount": {
-                      "type": "int",
-                      "defaultValue": 0,
-                      "metadata": {
-                        "description": "The count of data disks attached to the VM."
-                      }
-                    },
-                    "dataDiskType": {
-                      "type": "string",
-                      "defaultValue": "Standard_LRS",
-                      "metadata": {
-                        "description": "The data disk type of the VM"
-                      }
-                    },
-                    "customData": {
-                      "type": "string",
-                      "defaultValue": "[base64('None')]",
-                      "metadata": {
-                        "description": "The custom data in base64 format"
-                      }
-                    },
-                    "installRDMADriver": {
-                      "type": "bool",
-                      "defaultValue": false,
-                      "metadata": {
-                        "description": "Specify whether to install RDMA driver"
-                      }
-                    },
-                    "enableAutomaticUpdates": {
-                      "type": "bool",
-                      "defaultValue": false,
-                      "metadata": {
-                        "description": "Specify whether the VM is enabled for automatic updates"
-                      }
-                    },
-                    "enableAcceleratedNetworking": {
-                      "type": "bool",
-                      "defaultValue": false,
-                      "metadata": {
-                        "description": "Specify whether to create the Azure VM with accelerated networking"
-                      }
-                    },
-                    "dnsServers": {
-                      "type": "array",
-                      "defaultValue": [],
-                      "metadata": {
-                        "description": "The DNS servers"
-                      }
-                    },
-                    "secrets": {
-                      "type": "array",
-                      "defaultValue": [],
-                      "metadata": {
-                        "description": "The property 'osProfile/secrets', specify the set of certificates that shall be installed on the VM"
-                      }
-                    },
-                    "dscExtensionName": {
-                      "type": "string",
-                      "defaultValue": "configNodeWithDsc",
-                      "metadata": {
-                        "description": "The name of the Dsc extension"
-                      }
-                    },
-                    "dscSettings": {
-                      "type": "object",
-                      "metadata": {
-                        "description": "The DSC public settings"
-                      }
-                    },
-                    "dscProtectedSettings": {
-                      "type": "secureObject",
-                      "defaultValue": {},
-                      "metadata": {
-                        "description": "The DSC protected settings"
-                      }
-                    }
-                  },
-                  "variables": {
-                    "copy": [
-                      {
-                        "name": "dataDisks",
-                        "count": "[length(range(0, if(equals(parameters('dataDiskCount'), 0), 1, parameters('dataDiskCount'))))]",
-                        "input": {
-                          "lun": "[range(0, if(equals(parameters('dataDiskCount'), 0), 1, parameters('dataDiskCount')))[copyIndex('dataDisks')]]",
-                          "caching": "None",
-                          "name": "[if(empty(variables('dataDiskNamePrefix')), null(), format('{0}{1}', variables('dataDiskNamePrefix'), string(range(0, if(equals(parameters('dataDiskCount'), 0), 1, parameters('dataDiskCount')))[copyIndex('dataDisks')])))]",
-                          "createOption": "Empty",
-                          "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
-                          "managedDisk": {
-                            "storageAccountType": "[parameters('dataDiskType')]"
-                          }
-                        }
-                      }
-                    ],
-                    "availabilitySet": {
-                      "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
-                    },
-                    "dnsSettings": {
-                      "dnsServers": "[parameters('dnsServers')]"
-                    },
-                    "nicName": "[format('{0}-nic-{1}', parameters('vmName'), uniqueString(parameters('subnetId')))]",
-                    "emptyArray": [],
-                    "dataDiskNamePrefix": "[format('{0}-datadisk-', parameters('vmName'))]"
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.Network/networkInterfaces",
-                      "apiVersion": "2019-04-01",
-                      "name": "[variables('nicName')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "ipConfigurations": [
-                          {
-                            "name": "IPConfig",
-                            "properties": {
-                              "privateIPAllocationMethod": "Dynamic",
-                              "subnet": {
-                                "id": "[parameters('subnetId')]"
-                              }
-                            }
-                          }
-                        ],
-                        "dnsSettings": "[if(empty(parameters('dnsServers')), null(), variables('dnsSettings'))]",
-                        "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
-                      }
-                    },
-                    {
-                      "type": "Microsoft.Compute/virtualMachines",
-                      "apiVersion": "2019-03-01",
-                      "name": "[parameters('vmName')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "availabilitySet": "[if(empty(parameters('availabilitySetName')), null(), variables('availabilitySet'))]",
-                        "hardwareProfile": {
-                          "vmSize": "[parameters('vmSize')]"
-                        },
-                        "osProfile": {
-                          "computerName": "[parameters('vmName')]",
-                          "adminUsername": "[parameters('adminUsername')]",
-                          "adminPassword": "[parameters('adminPassword')]",
-                          "customData": "[parameters('customData')]",
-                          "windowsConfiguration": {
-                            "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]"
-                          },
-                          "secrets": "[parameters('secrets')]"
-                        },
-                        "storageProfile": {
-                          "imageReference": "[parameters('imageReference')]",
-                          "osDisk": {
-                            "name": "[format('{0}-osdisk', parameters('vmName'))]",
-                            "caching": "ReadOnly",
-                            "createOption": "FromImage",
-                            "diskSizeGB": "[parameters('osDiskSizeInGB')]",
-                            "managedDisk": {
-                              "storageAccountType": "[parameters('osDiskType')]"
-                            }
-                          },
-                          "dataDisks": "[if(equals(parameters('dataDiskCount'), 0), variables('emptyArray'), variables('dataDisks'))]"
-                        },
-                        "networkProfile": {
-                          "networkInterfaces": [
-                            {
-                              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-                            }
-                          ]
-                        }
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-                      ]
-                    },
-                    {
-                      "condition": "[parameters('installRDMADriver')]",
-                      "type": "Microsoft.Compute/virtualMachines/extensions",
-                      "apiVersion": "2019-03-01",
-                      "name": "[format('{0}/{1}', parameters('vmName'), 'installRDMADriver')]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "publisher": "Microsoft.HpcCompute",
-                        "type": "InfiniBandDriverWindows",
-                        "typeHandlerVersion": "1.2",
-                        "autoUpgradeMinorVersion": true
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-                      ]
-                    },
-                    {
-                      "type": "Microsoft.Compute/virtualMachines/extensions",
-                      "apiVersion": "2019-03-01",
-                      "name": "[format('{0}/{1}', parameters('vmName'), parameters('dscExtensionName'))]",
-                      "location": "[resourceGroup().location]",
-                      "properties": {
-                        "publisher": "Microsoft.Powershell",
-                        "type": "DSC",
-                        "typeHandlerVersion": "2.80",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": "[parameters('dscSettings')]",
-                        "protectedSettings": "[parameters('dscProtectedSettings')]"
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'), 'installRDMADriver')]",
-                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "hnAvSet",
-        "vnet"
-      ]
-    },
-    "configDBPermissions": {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "configDBPermissions",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "SqlVmExtName": {
-            "value": "[variables('SqlDscExtName')]"
-          },
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
-          },
-          "adminUsername": {
-            "value": "[parameters('adminUsername')]"
-          },
-          "domainName": {
-            "value": "[variables('_domainName')]"
-          },
-          "headNodeList": {
-            "value": "[variables('_headNodeList')]"
-          },
-          "sqlVmName": {
-            "value": "[variables('_sqlServerVMName')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "languageVersion": "2.0",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "6330314661187005990"
-            }
-          },
-          "parameters": {
-            "sqlVmName": {
-              "type": "string"
-            },
-            "SqlVmExtName": {
-              "type": "string"
-            },
-            "domainName": {
-              "type": "string"
-            },
-            "headNodeList": {
-              "type": "string"
-            },
-            "adminUsername": {
-              "type": "string"
-            },
-            "adminPassword": {
-              "type": "securestring"
-            }
-          },
-          "variables": {
-            "sharedResxBaseUrl": "https://raw.githubusercontent.com/Azure/hpcpack-template/master/SharedResources/Generated"
-          },
-          "resources": {
-            "dscExtension": {
-              "type": "Microsoft.Compute/virtualMachines/extensions",
-              "apiVersion": "2019-03-01",
-              "name": "[format('{0}/{1}', parameters('sqlVmName'), parameters('SqlVmExtName'))]",
-              "location": "[resourceGroup().location]",
-              "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.80",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "configuration": {
-                    "url": "[format('{0}/ConfigDBPermissions.ps1.zip', variables('sharedResxBaseUrl'))]",
-                    "script": "ConfigDBPermissions.ps1",
-                    "function": "ConfigDBPermissions"
-                  },
-                  "configurationArguments": {
-                    "DomainName": "[parameters('domainName')]",
-                    "HeadNodeList": "[parameters('headNodeList')]"
-                  }
-                },
-                "protectedSettings": {
-                  "configurationArguments": {
-                    "AdminCreds": {
-                      "UserName": "[parameters('adminUsername')]",
-                      "Password": "[parameters('adminPassword')]"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "headNodes",
-        "sqlServer"
       ]
     },
     "computeNodes": {
@@ -3632,7 +3108,7 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "windows"
+            "value": "linux"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
@@ -3640,12 +3116,15 @@
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           },
-          "availabilitySetName": "[if(variables('createCNInAVSet'), createObject('value', format('{0}{1}', variables('cnAvailabilitySetName'), padLeft(string(div(range(0, parameters('computeNodeNumber'))[copyIndex()], variables('nbrVMPerAvailabilitySet'))), 2, '0'))), createObject('value', ''))]",
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "availabilitySetName": "[if(variables('createCNInAVSet'), createObject('value', variables('availabilitySetName')), createObject('value', ''))]",
           "vmPriority": {
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
+            "value": "[and(and(variables('cnRDMACapable'), variables('autoEnableInfiniBand')), variables('rdmaDriverSupportedCNImage'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
@@ -3654,15 +3133,18 @@
             "value": "[reference('keyVault').outputs.certSettings.value]"
           },
           "headNodeList": {
-            "value": "[variables('_headNodeList')]"
+            "value": "[variables('_clusterName')]"
           },
           "joinDomain": {
-            "value": true
+            "value": false
           },
           "domainName": {
-            "value": "[variables('_domainName')]"
+            "value": ""
           },
-          "logSettings": "[if(variables('_enableAzureMonitor'), createObject('value', reference('monitor').outputs.logSettings.value), createObject('value', null()))]"
+          "logSettings": "[if(variables('_enableAzureMonitor'), createObject('value', reference('monitor').outputs.logSettings.value), createObject('value', null()))]",
+          "authenticationKey": {
+            "value": "[parameters('authenticationKey')]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -4237,7 +3719,8 @@
         }
       },
       "dependsOn": [
-        "cnAvSet",
+        "availabilitySet",
+        "headNode",
         "keyVault",
         "monitor",
         "vnet"
@@ -4282,13 +3765,16 @@
             "value": "[variables('computeNodeImageRef')]"
           },
           "imageOsPlatform": {
-            "value": "windows"
+            "value": "linux"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
           },
           "singlePlacementGroup": {
             "value": "[variables('vmssSinglePlacementGroup')]"
@@ -4297,7 +3783,7 @@
             "value": "[variables('vmPriority')]"
           },
           "installRDMADriver": {
-            "value": "[and(variables('cnRDMACapable'), variables('autoEnableInfiniBand'))]"
+            "value": "[and(and(variables('cnRDMACapable'), variables('autoEnableInfiniBand')), variables('rdmaDriverSupportedCNImage'))]"
           },
           "enableAcceleratedNetworking": {
             "value": "[equals(parameters('enableAcceleratedNetworking'), 'Yes')]"
@@ -4306,13 +3792,16 @@
             "value": "[reference('keyVault').outputs.certSettings.value]"
           },
           "headNodeList": {
-            "value": "[variables('_headNodeList')]"
+            "value": "[variables('_clusterName')]"
           },
           "joinDomain": {
-            "value": true
+            "value": false
           },
           "domainName": {
-            "value": "[variables('_domainName')]"
+            "value": ""
+          },
+          "authenticationKey": {
+            "value": "[parameters('authenticationKey')]"
           }
         },
         "template": {
@@ -4814,6 +4303,7 @@
         }
       },
       "dependsOn": [
+        "headNode",
         "keyVault",
         "vnet"
       ]
@@ -4822,7 +4312,7 @@
   "outputs": {
     "clusterDNSName": {
       "type": "string",
-      "value": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'No'), variables('privateClusterFQDN'), reference('lb').outputs.fqdn.value)]"
+      "value": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'No'), '', reference('headNode').outputs.fqdn.value)]"
     }
   }
 }

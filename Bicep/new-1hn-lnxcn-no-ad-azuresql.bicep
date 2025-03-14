@@ -1,4 +1,4 @@
-import { HpcPackRelease, getHeadNodeImageRef, HeadNodeImage, LinuxComputeNodeImage, linuxComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl, isRDMACapable } from 'shared/types-and-vars.bicep'
+import { HpcPackRelease, HeadNodeImage, getHeadNodeImageRef, LinuxComputeNodeImage, linuxComputeNodeImages, DiskType, diskTypes, DiskCount, DiskSizeInGB, YesOrNo, YesOrNoOrAuto, sharedResxBaseUrl, isRDMACapable, AzureSqlDataBaseServiceTier } from 'shared/types-and-vars.bicep'
 
 @description('The release of HPC Pack')
 param hpcPackRelease HpcPackRelease = '2019 Update 3'
@@ -6,25 +6,10 @@ param hpcPackRelease HpcPackRelease = '2019 Update 3'
 @description('Download URL for the setup package for head node(s) (or file path of baked-in setup files if you choose to bake setup files into your own custom image). Useful for bring-your-own-image scenarios. Defaults to C:\\HPCPack2019 which is where first-party HPC Pack images bake the setup files into. See https://github.com/Azure/hpcpack-template/blob/master/SharedResources/Src/InstallPrimaryHeadNode/xHpcPack/DSCResources/MSFT_xHpcHeadNodeInstall/MSFT_xHpcHeadNodeInstall.psm1 for more details.')
 param setupPkgPath string?
 
-@description('The name of the HPC cluster. It must be unique in the domain forest; It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter.')
+@description('The name of the HPC cluster, also used as the head node name. It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter.')
 @minLength(3)
 @maxLength(15)
 param clusterName string
-
-@description('The existing virtual network in which all VMs of the HPC cluster will be created.')
-param virtualNetworkName string
-
-@description('The resource group in which the existing virtual network was created.')
-param virtualNetworkResourceGroupName string
-
-@description('The existing subnet in which all VMs of the HPC cluster will be created.')
-param subnetName string
-
-@description('The fully qualified domain name (FQDN) for the existing domain forest in which the HPC cluster will join, for example \'hpc.cluster\'.')
-param domainName string
-
-@description('Optional, the organizational unit (OU) in the domain, for example \'OU=testOU,DC=domain,DC=Domain,DC=com\'. The default value is the default OU for machine objects in the domain.')
-param domainOUPath string = ''
 
 @description('The operating system of the head node.')
 param headNodeOS HeadNodeImage = 'WindowsServer2019'
@@ -47,7 +32,6 @@ param computeNodeImage LinuxComputeNodeImage = 'Ubuntu_24.04'
 @description('Specify only when \'CustomImage\' selected for computeNodeImage. The resource Id of the compute node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param computeNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
 
-//TODO: Must the Linux compute node name be unique in the domain forest?
 @description('The name prefix of the compute nodes. It must be no more than 12 characters, begin with a letter, and contain only letters, numbers and hyphens. For example, if \'IaaSCN\' is specified, the compute node names will be \'IaaSCN000\', \'IaaSCN001\', ...')
 @minLength(1)
 @maxLength(12)
@@ -73,12 +57,19 @@ param computeNodeVMSize string = 'Standard_D3_v2'
 ])
 param availabilitySetOption string = 'Auto'
 
-@description('Administrator user name for the virtual machines and the Active Directory domain.')
+@description('Administrator user name for the virtual machines.')
 param adminUsername string = 'hpcadmin'
 
-@description('Administrator password for the virtual machines and the Active Directory domain. Password must meet complexity requirements, see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements')
+@description('Administrator password for the virtual machines. Password must meet complexity requirements, see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements')
 @secure()
 param adminPassword string
+
+@description('Sql login name.')
+param sqlLoginName string = 'hpcsql'
+
+@description('Sql login password.')
+@secure()
+param sqlLoginPassword string
 
 @description('Specify the SSH public key for the Linux nodes if you want to use SSH Key pair to authenticate. If not specified, you can use the adminPassword to authenticate.')
 param sshPublicKey string = ''
@@ -126,26 +117,46 @@ param authenticationKey string
 @description('Monitor the HPC Pack cluster in Azure Monitor.')
 param enableAzureMonitor YesOrNo = 'Yes'
 
+@description('The Azure SQL Server name. It can contain only lowercase letters, numbers, and \'-\', but can\'t start or end with \'-\' or have more than 63 characters.')
+@minLength(1)
+@maxLength(63)
+param sqlServerName string
+
+@description('The service tier of the Azure SQL database for HPC Management.')
+param ManagementDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S3'
+
+@description('The service tier of the Azure SQL database for HPC Scheduler.')
+param SchedulerDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S4'
+
+@description('The service tier of the Azure SQL database for HPC Monitoring.')
+param MonitoringDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S0'
+
+@description('The service tier of the Azure SQL database for HPC Reporting.')
+param ReportingDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S0'
+
+@description('The service tier of the Azure SQL database for HPC Diagnostics.')
+param DiagnosticsDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S0'
+
+@description('The service tier of the Azure SQL database for HPC HA Storage.')
+param HAStorageDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S0'
+
+@description('The service tier of the Azure SQL database for HPC HA Witness.')
+param HAWitnessDBServiceTier AzureSqlDataBaseServiceTier = 'Standard_S2'
+
 var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
 var _clusterName = trim(clusterName)
-var _virtualNetworkName = trim(virtualNetworkName)
-var _virtualNetworkResourceGroupName = trim(virtualNetworkResourceGroupName)
-var _subnetName = trim(subnetName)
-var _domainName = trim(domainName)
-var _domainOUPath = trim(domainOUPath)
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
-
+var _sqlServerName = toLower(trim(sqlServerName))
 var storageAccountName = 'hpc${uniqueString(resourceGroup().id,_clusterName)}'
 var storageAccountId = storageAccount.id
-var vnetID = resourceId(
-  _virtualNetworkResourceGroupName,
-  'Microsoft.Network/virtualNetworks',
-  _virtualNetworkName
-)
-var subnetRef = '${vnetID}/subnets/${_subnetName}'
-
+var addressPrefix = '10.0.0.0/16'
+var subnet1Name = 'Subnet-1'
+var subnet1Prefix = '10.0.0.0/22'
+var virtualNetworkName = '${_clusterName}vnet'
+var vnetID = vnet.outputs.vNetId
+var subnetRef = '${vnetID}/subnets/${subnet1Name}'
 var availabilitySetName = '${_clusterName}-avset'
-var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id,subnetRef)}'
+var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id)}'
 var cnRDMACapable = isRDMACapable(computeNodeVMSize)
 var hnRDMACapable = isRDMACapable(headNodeVMSize)
 var autoEnableInfiniBand = (autoInstallInfiniBandDriver == 'Yes')
@@ -155,21 +166,59 @@ var createCNInAVSet = ((!useVmssForCN) && (((availabilitySetOption == 'AllNodes'
 var vmPriority = ((useSpotInstanceForComputeNodes == 'Yes') ? 'Spot' : 'Regular')
 var computeVmssName = take(replace(_computeNodeNamePrefix, '-', ''), 9)
 var vmssSinglePlacementGroup = (computeNodeNumber <= 100)
+var _virtualNetworkName = trim(virtualNetworkName)
 
-var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId), headNodeImageReference)
 var _computeNodeImages = union(linuxComputeNodeImages, {
   CustomImage: {
     id: trim(computeNodeImageResourceId)
   }
 })
+var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId), headNodeImageReference)
 var computeNodeImageRef = _computeNodeImages[computeNodeImage]
-
 var rdmaDriverSupportedCNImage = ((contains(computeNodeImage, 'CentOS_7') || contains(computeNodeImage, 'RHEL_7')) && (!contains(
   computeNodeImage,
   '_HPC'
 )))
 
 var certSettings = keyVault.outputs.certSettings
+
+var listOfSqlDatabaseSettings = [
+  {
+    name: 'HPCManagement'
+    maxSizeBytes: 214748364800
+    serviceTier: ManagementDBServiceTier
+  }
+  {
+    name: 'HPCScheduler'
+    maxSizeBytes: 214748364800
+    serviceTier: SchedulerDBServiceTier
+  }
+  {
+    name: 'HPCReporting'
+    maxSizeBytes: 107374182400
+    serviceTier: ReportingDBServiceTier
+  }
+  {
+    name: 'HPCDiagnostics'
+    maxSizeBytes: 107374182400
+    serviceTier: DiagnosticsDBServiceTier
+  }
+  {
+    name: 'HPCMonitoring'
+    maxSizeBytes: 107374182400
+    serviceTier: MonitoringDBServiceTier
+  }
+  {
+    name: 'HPCHAStorage'
+    maxSizeBytes: 107374182400
+    serviceTier: HAStorageDBServiceTier
+  }
+  {
+    name: 'HPCHAWitness'
+    maxSizeBytes: 107374182400
+    serviceTier: HAWitnessDBServiceTier
+  }
+]
 
 module keyVault 'shared/key-vault-with-cert.bicep' = {
   name: 'KeyVaultWithCert'
@@ -182,13 +231,6 @@ module monitor 'shared/azure-monitor.bicep' = if (_enableAzureMonitor) {
   }
 }
 
-module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
-  name: 'nsg'
-  params: {
-    name: nsgName
-  }
-}
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
   location: resourceGroup().location
@@ -197,6 +239,24 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
   kind: 'Storage'
   properties: {}
+}
+
+module vnet 'shared/vnet.bicep' = {
+  name: 'createVNet'
+  scope: resourceGroup()
+  params: {
+    vNetName: virtualNetworkName
+    addressPrefix: addressPrefix
+    subnetName: subnet1Name
+    subnetPrefix: subnet1Prefix
+  }
+}
+
+module nsg 'shared/nsg.bicep' = if (createPublicIPAddressForHeadNode == 'Yes') {
+  name: 'nsg'
+  params: {
+    name: nsgName
+  }
 }
 
 resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (createHNInAVSet || createCNInAVSet) {
@@ -211,6 +271,21 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (c
   }
 }
 
+module sqlServer 'shared/azure-sql-server.bicep' = {
+  name: 'azureSqlServerAndDatabases'
+  params: {
+    listOfSqlDatabaseSettings: listOfSqlDatabaseSettings
+    sqlLoginName: sqlLoginName
+    sqlLoginPassword: sqlLoginPassword
+    sqlServerName: _sqlServerName
+    sqlServerVnetRulesName: '${resourceGroup().name}-${_virtualNetworkName}'
+    subnetId: subnetRef
+  }
+  dependsOn: [
+    nsg
+  ]
+}
+
 module headNode 'shared/head-node.bicep' = {
   name: _clusterName
   params: {
@@ -219,12 +294,8 @@ module headNode 'shared/head-node.bicep' = {
     certSettings: certSettings
     clusterName: _clusterName
     createPublicIp: createPublicIPAddressForHeadNode == 'Yes'
-    domainName: _domainName
-    domainOUPath: _domainOUPath
     enableAcceleratedNetworking: enableAcceleratedNetworking == 'Yes'
     enableManagedIdentity: enableManagedIdentityOnHeadNode == 'Yes'
-    externalVNetName: _virtualNetworkName
-    externalVNetRg: _virtualNetworkResourceGroupName
     hnAvSetName: createHNInAVSet ? availabilitySet.name : null
     hnDataDiskCount: headNodeDataDiskCount
     hnDataDiskSize: headNodeDataDiskSize
@@ -237,6 +308,7 @@ module headNode 'shared/head-node.bicep' = {
     logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
     amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
+    privateIp: '10.0.0.4'
     subnetId: subnetRef
   }
   dependsOn: [
@@ -263,12 +335,13 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
         SetupPkgPath: setupPkgPath
         ClusterName: _clusterName
         SSLThumbprint: certSettings.thumbprint
+        SQLServerInstance: sqlServer.outputs.fqdn
         CNSize: computeNodeVMSize
         SubscriptionId: subscription().subscriptionId
-        VNet: _virtualNetworkName
-        Subnet: _subnetName
+        VNet: virtualNetworkName
+        Subnet: subnet1Name
         Location: resourceGroup().location
-        ResourceGroup: _virtualNetworkResourceGroupName
+        ResourceGroup: resourceGroup().name
         VaultResourceGroup: certSettings.vaultResourceGroup
         CertificateUrl: certSettings.url
         CNNamePrefix: _computeNodeNamePrefix
@@ -278,16 +351,22 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
     protectedSettings: {
       configurationArguments: {
         SetupUserCredential: {
-          UserName: '${_domainName}\\${adminUsername}'
+          UserName: adminUsername
           Password: adminPassword
         }
         AzureStorageConnString: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys(storageAccountId,'2019-04-01').keys[0].value}'
+        SqlLoginCredential: {
+          UserName: sqlLoginName
+          Password: sqlLoginPassword
+        }
         LinuxAuthenticationKey: authenticationKey
       }
     }
   }
   dependsOn: [
     headNode
+    #disable-next-line no-unnecessary-dependson // sql server needs to be created before head node setup
+    sqlServer
   ]
 }
 
@@ -314,7 +393,7 @@ module computeNodes 'shared/compute-node.bicep' = [
       certSettings: certSettings
       headNodeList: _clusterName
       joinDomain: false
-      domainName: _domainName
+      domainName: ''
       logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
       authenticationKey: authenticationKey
     }
@@ -349,7 +428,7 @@ module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && 
     certSettings: certSettings
     headNodeList: _clusterName
     joinDomain: false
-    domainName: _domainName
+    domainName: ''
     authenticationKey: authenticationKey
   }
   dependsOn: [

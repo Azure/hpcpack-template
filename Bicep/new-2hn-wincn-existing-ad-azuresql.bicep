@@ -63,6 +63,9 @@ param headNodeOS HeadNodeImage = 'WindowsServer2019'
 @description('Specify only when \'CustomImage\' selected for headNodeOS. The resource Id of the head node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;).')
 param headNodeImageResourceId string = '/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx'
 
+@description('Specify the imageReference for head node VM.')
+param headNodeImageReference object?
+
 @description('The disk type of head node VM. Note that Premium_SSD only supports some VM sizes, see <a href=\'https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes\' target=\'_blank\'>Azure VM Sizes</a>')
 param headNodeOsDiskType DiskType = 'Premium_SSD'
 
@@ -191,7 +194,7 @@ var vmPriority = ((useSpotInstanceForComputeNodes == 'Yes') ? 'Spot' : 'Regular'
 var computeVmssName = take(replace(_computeNodeNamePrefix, '-', ''), 9)
 var vmssSinglePlacementGroup = (computeNodeNumber <= 100)
 
-var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId))
+var headNodeImageRef = getHeadNodeImageRef(hpcPackRelease, headNodeOS, trim(headNodeImageResourceId), headNodeImageReference)
 var _computeNodeImages = union(windowsComputeNodeImages, {
   CustomImage: {
     id: trim(computeNodeImageResourceId)

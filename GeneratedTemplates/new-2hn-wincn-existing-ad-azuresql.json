@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "14146430497358588193"
+      "templateHash": "10332535660341559112"
     }
   },
   "definitions": {
@@ -105,6 +105,7 @@
       "type": "string",
       "allowedValues": [
         "CustomImage",
+        "CustomImageReference",
         "WindowsServer2019",
         "WindowsServer2022"
       ],
@@ -193,11 +194,16 @@
               "type": "string",
               "nullable": true,
               "name": "customImageId"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "name": "customImageReference"
             }
           ],
           "output": {
             "type": "object",
-            "value": "[union(variables('_1.headNodeImages')[parameters('release')], createObject('CustomImage', createObject('id', parameters('customImageId'))))[parameters('imageName')]]"
+            "value": "[union(variables('_1.headNodeImages')[parameters('release')], createObject('CustomImage', createObject('id', parameters('customImageId'))), createObject('CustomImageReference', parameters('customImageReference')))[parameters('imageName')]]"
           },
           "metadata": {
             "__bicep_imported_from!": {
@@ -356,6 +362,13 @@
       "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
       "metadata": {
         "description": "Specify only when 'CustomImage' selected for headNodeOS. The resource Id of the head node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
+      }
+    },
+    "headNodeImageReference": {
+      "type": "object",
+      "nullable": true,
+      "metadata": {
+        "description": "Specify the imageReference for head node VM."
       }
     },
     "headNodeOsDiskType": {
@@ -584,7 +597,7 @@
     "vmPriority": "[if(equals(parameters('useSpotInstanceForComputeNodes'), 'Yes'), 'Spot', 'Regular')]",
     "computeVmssName": "[take(replace(variables('_computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
-    "headNodeImageRef": "[__bicep.getHeadNodeImageRef(parameters('hpcPackRelease'), parameters('headNodeOS'), trim(parameters('headNodeImageResourceId')))]",
+    "headNodeImageRef": "[__bicep.getHeadNodeImageRef(parameters('hpcPackRelease'), parameters('headNodeOS'), trim(parameters('headNodeImageResourceId')), parameters('headNodeImageReference'))]",
     "_computeNodeImages": "[union(variables('windowsComputeNodeImages'), createObject('CustomImage', createObject('id', trim(parameters('computeNodeImageResourceId')))))]",
     "computeNodeImageRef": "[variables('_computeNodeImages')[parameters('computeNodeImage')]]",
     "listOfSqlDatabaseSettings": [

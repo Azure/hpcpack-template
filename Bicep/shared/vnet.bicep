@@ -26,6 +26,11 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
         name: subnetName
         properties: {
           addressPrefix: subnetPrefix
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.Sql'
+            }
+          ]
         }
       }
     ]

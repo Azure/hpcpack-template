@@ -30,7 +30,7 @@ type YesOrNoOrAuto = 'Yes' | 'No' | 'Auto'
 type HpcPackRelease = '2019 Update 2' | '2019 Update 3'
 
 @export()
-type HeadNodeImage = 'WindowsServer2022' | 'WindowsServer2019' | 'CustomImage'
+type HeadNodeImage = 'WindowsServer2022' | 'WindowsServer2019' | 'CustomImage' | 'CustomImageReference'
 
 var headNodeImages = {
   '2019 Update 2': {
@@ -66,11 +66,13 @@ var headNodeImages = {
 }
 
 @export()
-func getHeadNodeImageRef(release HpcPackRelease, imageName HeadNodeImage, customImageId string?) object =>
+func getHeadNodeImageRef(release HpcPackRelease, imageName HeadNodeImage, customImageId string?, customImageReference object?) object =>
   union(headNodeImages[release], {
     CustomImage: {
       id: customImageId
     }
+  }, {
+    CustomImageReference: customImageReference
   })[imageName]
 
 @export()

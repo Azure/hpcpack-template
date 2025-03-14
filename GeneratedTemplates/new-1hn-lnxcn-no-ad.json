@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "17777187937731386264"
+      "templateHash": "3943103930509890722"
     }
   },
   "definitions": {
@@ -60,6 +60,7 @@
       "type": "string",
       "allowedValues": [
         "CustomImage",
+        "CustomImageReference",
         "WindowsServer2019",
         "WindowsServer2022"
       ],
@@ -207,11 +208,16 @@
               "type": "string",
               "nullable": true,
               "name": "customImageId"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "name": "customImageReference"
             }
           ],
           "output": {
             "type": "object",
-            "value": "[union(variables('_1.headNodeImages')[parameters('release')], createObject('CustomImage', createObject('id', parameters('customImageId'))))[parameters('imageName')]]"
+            "value": "[union(variables('_1.headNodeImages')[parameters('release')], createObject('CustomImage', createObject('id', parameters('customImageId'))), createObject('CustomImageReference', parameters('customImageReference')))[parameters('imageName')]]"
           },
           "metadata": {
             "__bicep_imported_from!": {
@@ -274,6 +280,13 @@
       "defaultValue": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Compute/images/xxx",
       "metadata": {
         "description": "Specify only when 'CustomImage' selected for headNodeOS. The resource Id of the head node image, it can be a managed VM image in your own subscription (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/images/&lt;ImageName&gt;) or a shared VM image from Azure Shared Image Gallery (/subscriptions/&lt;SubscriptionId&gt;/resourceGroups/&lt;ResourceGroupName&gt;/providers/Microsoft.Compute/galleries/&lt;GalleryName&gt;/images/&lt;ImageName&gt;/versions/&lt;ImageVersion&gt;)."
+      }
+    },
+    "headNodeImageReference": {
+      "type": "object",
+      "nullable": true,
+      "metadata": {
+        "description": "Specify the imageReference for head node VM."
       }
     },
     "headNodeOsDiskType": {
@@ -489,7 +502,7 @@
     "computeVmssName": "[take(replace(variables('_computeNodeNamePrefix'), '-', ''), 9)]",
     "vmssSinglePlacementGroup": "[lessOrEquals(parameters('computeNodeNumber'), 100)]",
     "_computeNodeImages": "[union(variables('linuxComputeNodeImages'), createObject('CustomImage', createObject('id', trim(parameters('computeNodeImageResourceId')))))]",
-    "headNodeImageRef": "[__bicep.getHeadNodeImageRef(parameters('hpcPackRelease'), parameters('headNodeOS'), trim(parameters('headNodeImageResourceId')))]",
+    "headNodeImageRef": "[__bicep.getHeadNodeImageRef(parameters('hpcPackRelease'), parameters('headNodeOS'), trim(parameters('headNodeImageResourceId')), parameters('headNodeImageReference'))]",
     "computeNodeImageRef": "[variables('_computeNodeImages')[parameters('computeNodeImage')]]",
     "rdmaDriverSupportedCNImage": "[and(or(contains(parameters('computeNodeImage'), 'CentOS_7'), contains(parameters('computeNodeImage'), 'RHEL_7')), not(contains(parameters('computeNodeImage'), '_HPC')))]",
     "_1.headNodeImages": {
@@ -1794,7 +1807,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "1888521141722433670"
+              "templateHash": "2756137353335145769"
             }
           },
           "parameters": {
@@ -1835,7 +1848,12 @@
                   {
                     "name": "[parameters('subnetName')]",
                     "properties": {
-                      "addressPrefix": "[parameters('subnetPrefix')]"
+                      "addressPrefix": "[parameters('subnetPrefix')]",
+                      "serviceEndpoints": [
+                        {
+                          "service": "Microsoft.Sql"
+                        }
+                      ]
                     }
                   }
                 ]
