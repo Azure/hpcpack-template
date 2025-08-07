@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.37.4.10188",
-      "templateHash": "16939679759512067829"
+      "templateHash": "17310407105593398881"
     }
   },
   "definitions": {
@@ -1403,7 +1403,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.37.4.10188",
-              "templateHash": "4828240302960390401"
+              "templateHash": "5806477530300454316"
             }
           },
           "parameters": {
@@ -1430,20 +1430,6 @@
                       "destinationAddressPrefix": "*",
                       "access": "Allow",
                       "priority": 1000,
-                      "direction": "Inbound"
-                    }
-                  },
-                  {
-                    "name": "allow-RDP",
-                    "properties": {
-                      "description": "Allow RDP",
-                      "protocol": "Tcp",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "3389",
-                      "sourceAddressPrefix": "*",
-                      "destinationAddressPrefix": "*",
-                      "access": "Allow",
-                      "priority": 1010,
                       "direction": "Inbound"
                     }
                   },

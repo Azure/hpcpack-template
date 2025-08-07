@@ -19,20 +19,20 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = {
           direction: 'Inbound'
         }
       }
-      {
-        name: 'allow-RDP'
-        properties: {
-          description: 'Allow RDP'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '3389'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 1010
-          direction: 'Inbound'
-        }
-      }
+      // {
+      //   name: 'allow-RDP'
+      //   properties: {
+      //     description: 'Allow RDP'
+      //     protocol: 'Tcp'
+      //     sourcePortRange: '*'
+      //     destinationPortRange: '3389'
+      //     sourceAddressPrefix: '*'
+      //     destinationAddressPrefix: '*'
+      //     access: 'Allow'
+      //     priority: 1010
+      //     direction: 'Inbound'
+      //   }
+      // }
       {
         name: 'allow-HPCSession'
         properties: {
