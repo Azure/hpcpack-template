@@ -14,8 +14,11 @@ param virtualNetworkName string
 @description('The resource group in which the existing virtual network was created.')
 param virtualNetworkResourceGroupName string
 
-@description('The existing subnet in which all VMs of the HPC cluster will be created.')
-param subnetName string
+@description('The existing subnet in which all VMs of the HPC head nodes will be created.')
+param headNodeSubnetName string
+
+@description('The existing subnet in which all VMs of the HPC compute nodes will be created.')
+param computeNodeSubnetName string
 
 @description('The fully qualified domain name (FQDN) for the existing domain forest in which the HPC cluster will join, for example \'hpc.cluster\'.')
 param domainName string
@@ -118,7 +121,8 @@ var _enableAzureMonitor = (enableAzureMonitor == 'Yes')
 var _clusterName = trim(clusterName)
 var _virtualNetworkName = trim(virtualNetworkName)
 var _virtualNetworkResourceGroupName = trim(virtualNetworkResourceGroupName)
-var _subnetName = trim(subnetName)
+var _headNodeSubnetName = trim(headNodeSubnetName)
+var _computeNodeSubnetName = trim(computeNodeSubnetName)
 var _domainName = trim(domainName)
 var _domainOUPath = trim(domainOUPath)
 var _computeNodeNamePrefix = trim(computeNodeNamePrefix)
@@ -130,10 +134,11 @@ var vnetID = resourceId(
   'Microsoft.Network/virtualNetworks',
   _virtualNetworkName
 )
-var subnetRef = '${vnetID}/subnets/${_subnetName}'
+var headNodeSubnetRef = '${vnetID}/subnets/${_headNodeSubnetName}'
+var computeNodeSubnetRef = '${vnetID}/subnets/${_computeNodeSubnetName}'
 var privateClusterFQDN = '${toLower(_clusterName)}.${_domainName}'
 var availabilitySetName = '${_clusterName}-avset'
-var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id,subnetRef)}'
+var nsgName = 'hpcnsg-${uniqueString(resourceGroup().id, headNodeSubnetRef)}'
 var cnRDMACapable = isRDMACapable(computeNodeVMSize)
 var hnRDMACapable = isRDMACapable(headNodeVMSize)
 var autoEnableInfiniBand = (autoInstallInfiniBandDriver == 'Yes')
@@ -220,7 +225,7 @@ module headNode 'shared/head-node.bicep' = {
     logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
     amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
     nsgName: createPublicIPAddressForHeadNode == 'Yes' ? nsgName : null
-    subnetId: subnetRef
+    subnetId: headNodeSubnetRef
   }
   dependsOn: [
     monitor
@@ -249,7 +254,7 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
         CNSize: computeNodeVMSize
         SubscriptionId: subscription().subscriptionId
         VNet: _virtualNetworkName
-        Subnet: _subnetName
+        Subnet: _headNodeSubnetName
         Location: resourceGroup().location
         ResourceGroup: _virtualNetworkResourceGroupName
         VaultResourceGroup: certSettings.vaultResourceGroup
@@ -278,7 +283,7 @@ module computeNodes 'shared/compute-node.bicep' = [
   for i in range(0, computeNodeNumber): if (!useVmssForCN) {
     name: 'create${_computeNodeNamePrefix}${padLeft(string(i),3,'0')}'
     params: {
-      subnetId: subnetRef
+      subnetId: computeNodeSubnetRef
       vmName: '${_computeNodeNamePrefix}${padLeft(string(i), 3, '0')}'
       vmSize: computeNodeVMSize
       osDiskType: diskTypes[computeNodeOsDiskType]
@@ -310,7 +315,7 @@ module computeNodes 'shared/compute-node.bicep' = [
 module computeVmss 'shared/compute-vmss.bicep' = if ((computeNodeNumber > 0) && useVmssForCN) {
   name: 'create${computeVmssName}'
   params: {
-    subnetId: subnetRef
+    subnetId: computeNodeSubnetRef
     vmssName: computeVmssName
     vmNumber: computeNodeNumber
     vmSize: computeNodeVMSize
