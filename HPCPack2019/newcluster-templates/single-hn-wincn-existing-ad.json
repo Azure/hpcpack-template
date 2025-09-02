@@ -345,11 +345,11 @@
         "description": "Specify whether you want to install InfiniBandDriver automatically for the VMs with InfiniBand network. This setting is ignored for the VMs without InfiniBand network."
       }
     },
-    "c1guid": {
+    "i1guid": {
       "type": "string",
       "defaultValue": "[newGuid()]"
     },
-    "c2guid": {
+    "i2guid": {
       "type": "string",
       "defaultValue": "[newGuid()]"
     },
@@ -358,6 +358,14 @@
       "defaultValue": "[newGuid()]"
     },
     "p2guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    },
+    "q1guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    },
+    "q2guid": {
       "type": "string",
       "defaultValue": "[newGuid()]"
     }
@@ -779,8 +787,8 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('RGRoleAssignmentC1-', parameters('c1guid'))]",
-      "resourceGroup": "HPCPackBVT-IaaS-c1",
+      "name": "[concat('RGRoleAssignmentI1-', parameters('i1guid'))]",
+      "resourceGroup": "HPCPackBVT-IaaS-i1",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
       ],
@@ -792,7 +800,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[parameters('c1guid')]",
+              "name": "[parameters('i1guid')]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
@@ -807,8 +815,8 @@
       "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
       "apiVersion": "2022-09-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('RGRoleAssignmentC2-', parameters('c2guid'))]",
-      "resourceGroup": "HPCPackBVT-IaaS-c2",
+      "name": "[concat('RGRoleAssignmentI2-', parameters('i2guid'))]",
+      "resourceGroup": "HPCPackBVT-IaaS-i2",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
       ],
@@ -820,7 +828,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "name": "[parameters('c2guid')]",
+              "name": "[parameters('i2guid')]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
@@ -877,6 +885,62 @@
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "name": "[parameters('p2guid')]",
+              "apiVersion": "2022-04-01",
+              "properties": {
+                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "apiVersion": "2022-09-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('RGRoleAssignmentQ1-', parameters('q1guid'))]",
+      "resourceGroup": "HPCPackBVT-IaaS-q1",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "name": "[parameters('q1guid')]",
+              "apiVersion": "2022-04-01",
+              "properties": {
+                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines/', variables('clusterName')), '2019-03-01', 'Full').identity.principalId]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('enableManagedIdentityOnHeadNode'), 'Yes')]",
+      "apiVersion": "2022-09-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('RGRoleAssignmentQ2-', parameters('q2guid'))]",
+      "resourceGroup": "HPCPackBVT-IaaS-q2",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('clusterName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "name": "[parameters('q2guid')]",
               "apiVersion": "2022-04-01",
               "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
