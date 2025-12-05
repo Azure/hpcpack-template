@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "6817188086284306245"
+      "templateHash": "5686498151205244894"
     }
   },
   "definitions": {
@@ -1962,9 +1962,7 @@
           "installIBDriver": {
             "value": "[and(variables('hnRDMACapable'), variables('autoEnableInfiniBand'))]"
           },
-          "lbName": {
-            "value": "[variables('lbName')]"
-          },
+          "lbName": "[if(equals(parameters('createPublicIPAddressForHeadNode'), 'Yes'), createObject('value', variables('lbName')), createObject('value', null()))]",
           "lbPoolName": {
             "value": "[variables('lbPoolName')]"
           },
