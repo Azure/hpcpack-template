@@ -309,7 +309,7 @@ module headNodes 'shared/head-node.bicep' = [
       hnOsDiskType: headNodeOsDiskType
       hnVMSize: headNodeVMSize
       installIBDriver: hnRDMACapable && autoEnableInfiniBand
-      lbName: lbName
+      lbName: (createPublicIPAddressForHeadNode == 'Yes') ? lbName : null
       lbPoolName: lbPoolName
       logSettings: _enableAzureMonitor ? monitor.outputs.logSettings : null
       amaSettings: _enableAzureMonitor ? monitor.outputs.amaSettings : null
