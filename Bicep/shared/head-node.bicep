@@ -260,7 +260,7 @@ resource joinDomain 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = 
   ]
 }
 
-module ama '../Shared/ama-windows.bicep' = if (!empty(amaSettings)) {
+module ama 'ama-windows.bicep' = if (!empty(amaSettings)) {
   name: '${hnName}-windowsAMA'
   params: {
     dcrResId: empty(amaSettings) ? '' : amaSettings!.dcrResId

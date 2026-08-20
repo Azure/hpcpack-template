@@ -3,6 +3,9 @@ import { HeadNodeImage, HpcPackRelease, getHeadNodeImageRef, WindowsComputeNodeI
 @description('The release of HPC Pack')
 param hpcPackRelease HpcPackRelease = '2019 Update 3'
 
+@description('Download URL for the setup package for head node(s) (or file path of baked-in setup files if you choose to bake setup files into your own custom image). Useful for bring-your-own-image scenarios. Defaults to C:\\HPCPack2019 which is where first-party HPC Pack images bake the setup files into. See https://github.com/Azure/hpcpack-template/blob/master/SharedResources/Src/InstallPrimaryHeadNode/xHpcPack/DSCResources/MSFT_xHpcHeadNodeInstall/MSFT_xHpcHeadNodeInstall.psm1 for more details.')
+param setupPkgPath string?
+
 @description('The name of the HPC cluster, also used as the head node name. It must contain between 3 and 15 characters with lowercase letters and numbers, and must start with a letter.')
 @minLength(3)
 @maxLength(15)
@@ -235,6 +238,7 @@ resource setupHeadNode 'Microsoft.Compute/virtualMachines/extensions@2023-03-01'
         function: 'InstallPrimaryHeadNode'
       }
       configurationArguments: {
+        SetupPkgPath: setupPkgPath
         ClusterName: _clusterName
         SSLThumbprint: certSettings.thumbprint
         CNSize: computeNodeVMSize
