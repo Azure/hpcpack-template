@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.30.23.60470",
-      "templateHash": "10862216643156733247"
+      "version": "0.39.26.7824",
+      "templateHash": "11217938229853001426"
     }
   },
   "definitions": {
@@ -415,7 +415,7 @@
     },
     "keyvault": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "keyvaultandcert",
       "properties": {
         "expressionEvaluationOptions": {
@@ -434,8 +434,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "12428119165023799088"
+              "version": "0.39.26.7824",
+              "templateHash": "9984811134432771867"
             }
           },
           "definitions": {
@@ -543,7 +543,7 @@
     },
     "monitor": {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "monitor",
       "properties": {
         "expressionEvaluationOptions": {
@@ -562,8 +562,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "14822410904223362833"
+              "version": "0.39.26.7824",
+              "templateHash": "15373185434337982377"
             }
           },
           "definitions": {
@@ -623,7 +623,7 @@
       },
       "condition": "[not(variables('useVmssForCN'))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('create{0}{1}', variables('_computeNodeNamePrefix'), padLeft(string(add(range(0, parameters('computeNodeNumber'))[copyIndex()], parameters('computeNodeNameStartIndex'))), 3, '0'))]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -707,8 +707,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "15841975305160221807"
+              "version": "0.39.26.7824",
+              "templateHash": "7259943915323534177"
             }
           },
           "definitions": {
@@ -1281,7 +1281,7 @@
     "computeVmss": {
       "condition": "[and(greater(parameters('computeNodeNumber'), 0), variables('useVmssForCN'))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('create{0}', variables('computeVmssName'))]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -1365,8 +1365,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "4854452253482264996"
+              "version": "0.39.26.7824",
+              "templateHash": "12710826947838235184"
             }
           },
           "definitions": {

@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.30.23.60470",
-      "templateHash": "1570036264169961778"
+      "version": "0.39.26.7824",
+      "templateHash": "9960455831666061941"
     }
   },
   "definitions": {
@@ -282,7 +282,7 @@
         "count": "[length(range(parameters('nodeNameStartIndex'), parameters('nodeNumber')))]"
       },
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('{0}{1}', parameters('nodeNamePrefix'), padLeft(range(parameters('nodeNameStartIndex'), parameters('nodeNumber'))[copyIndex()], 3, '0'))]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -340,8 +340,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "5971084183388865605"
+              "version": "0.39.26.7824",
+              "templateHash": "4960524073522899726"
             }
           },
           "definitions": {
@@ -508,10 +508,7 @@
               "type": "Microsoft.Network/virtualNetworks/subnets",
               "apiVersion": "2024-01-01",
               "resourceGroup": "[parameters('vnetRg')]",
-              "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetName'))]",
-              "dependsOn": [
-                "vnet"
-              ]
+              "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetName'))]"
             },
             "nsg": {
               "condition": "[not(empty(parameters('nsgName')))]",
@@ -557,9 +554,7 @@
                 "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
               },
               "dependsOn": [
-                "nsg",
-                "publicIp",
-                "subnet"
+                "publicIp"
               ]
             },
             "vm": {
